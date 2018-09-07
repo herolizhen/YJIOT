@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.device.dao.DevExamDetailMapper">
+	<resultMap id="BaseResultMap" type="com.yjyz.iot.device.entity.DevExamDetail">
+		<id column="GUID" jdbcType="VARCHAR" property="guid" />
+		<result column="device_id" jdbcType="VARCHAR" property="deviceId" />
+		<result column="exam_id" jdbcType="VARCHAR" property="examId" />
+		<result column="exam_item" jdbcType="VARCHAR" property="examItem" />
+		<result column="result" jdbcType="DECIMAL" property="result" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		GUID, device_id, exam_id, exam_item, result
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_dev_exam_detail
+		where GUID = #{guid,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from t_dev_exam_detail
+		where GUID = #{guid,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.yjyz.iot.device.entity.DevExamDetail">
+		insert into t_dev_exam_detail (GUID, device_id, exam_id,
+		exam_item, result)
+		values (#{guid,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR},
+		#{examId,jdbcType=VARCHAR},
+		#{examItem,jdbcType=VARCHAR}, #{result,jdbcType=DECIMAL})
+	</insert>
+	<insert id="insertSelective" parameterType="com.yjyz.iot.device.entity.DevExamDetail">
+		insert into t_dev_exam_detail
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="guid != null">
+				GUID,
+			</if>
+			<if test="deviceId != null">
+				device_id,
+			</if>
+			<if test="examId != null">
+				exam_id,
+			</if>
+			<if test="examItem != null">
+				exam_item,
+			</if>
+			<if test="result != null">
+				result,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="guid != null">
+				#{guid,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceId != null">
+				#{deviceId,jdbcType=VARCHAR},
+			</if>
+			<if test="examId != null">
+				#{examId,jdbcType=VARCHAR},
+			</if>
+			<if test="examItem != null">
+				#{examItem,jdbcType=VARCHAR},
+			</if>
+			<if test="result != null">
+				#{result,jdbcType=DECIMAL},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yjyz.iot.device.entity.DevExamDetail">
+		update t_dev_exam_detail
+		<set>
+			<if test="deviceId != null">
+				device_id = #{deviceId,jdbcType=VARCHAR},
+			</if>
+			<if test="examId != null">
+				exam_id = #{examId,jdbcType=VARCHAR},
+			</if>
+			<if test="examItem != null">
+				exam_item = #{examItem,jdbcType=VARCHAR},
+			</if>
+			<if test="result != null">
+				result = #{result,jdbcType=DECIMAL},
+			</if>
+		</set>
+		where GUID = #{guid,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yjyz.iot.device.entity.DevExamDetail">
+		update t_dev_exam_detail
+		set device_id = #{deviceId,jdbcType=VARCHAR},
+		exam_id = #{examId,jdbcType=VARCHAR},
+		exam_item = #{examItem,jdbcType=VARCHAR},
+		result = #{result,jdbcType=DECIMAL}
+		where GUID = #{guid,jdbcType=VARCHAR}
+	</update>
+	<select id="selectByExamId" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_dev_exam_detail
+		where exam_id = #{examId,jdbcType=VARCHAR}
+	</select>
+
+</mapper>

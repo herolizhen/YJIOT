@@ -1,0 +1,90 @@
+C51 COMPILER V9.52.0.0   UART0                                                             01/22/2018 10:28:12 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE UART0
+OBJECT MODULE PLACED IN .\Objects\UART0.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\UART\UART0.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(..\project;.\USE
+                    -R\BUZZER;.\USER\DC_MOTOR;.\USER\EXINT;.\USER\IIC;.\USER\inc;.\USER\ION;.\USER\PWM;.\USER\step_motor;.\USER\SYS_RUN;.\USE
+                    -R\timer;.\USER\TM1620;.\USER\touch_key;.\USER\UART;.\USER\UV;.\USER\Sensor;.\USER\user_timer) DEBUG OBJECTEXTEND PRINT(.
+                    -\Listings\UART0.lst) TABS(2) OBJECT(.\Objects\UART0.obj)
+
+line level    source
+
+   1          #include "OB39R32T1.h"
+   2          #include "UART0.h"
+   3          #include "global.h"
+   4          #include "TM1620.h"
+   5          
+   6          //===============================================================
+   7          //DEFINITIONs
+   8          //===============================================================
+   9          #define d_S0RELH        0x03
+  10          #define d_S0RELL        0xB8
+  11          
+  12          //===============================================================
+  13          //GLOBAL VARIABLE
+  14          //===============================================================
+  15          bit bU0TX = 0;
+  16          
+  17          //=========================================================================
+  18          void init_UART0(void)
+  19          {
+  20   1          S0RELH   = d_S0RELH;
+  21   1          S0RELL   = d_S0RELL;
+  22   1          AUX     |= 0x80;            // BRS = 1
+  23   1          PCON    |= 0x80;            // SMOD =1
+  24   1          IEN0    |= 0x90;            // EA=1, ES0=1, interrupt enable
+  25   1          S0CON    = 0x50;            // mode 1, SM20=0, Revice enable
+  26   1          TI       = 0;
+  27   1      }
+  28          
+  29          void UART0_ISR(void) interrupt d_UART0_Vector
+  30          {
+  31   1          //unsigned char RXBUF0;
+  32   1      
+  33   1          if (RI)                     // INT_RX
+  34   1          {
+  35   2              RI = 0;                 // RI clear
+  36   2              if(U0RxPtr < U0RxBuff_MAXSIZE)
+  37   2              {
+  38   3                  U0RxBuffer[U0RxPtr] = S0BUF;         // Read BUF
+  39   3                  U0RxPtr += 1;
+  40   3              }
+  41   2              
+  42   2          }
+  43   1          else                        // INT_TX
+  44   1          {
+  45   2              bU0TX  = 0;
+  46   2              TI     = 0;             // TI clear
+  47   2          }
+  48   1          
+  49   1          
+  50   1      }
+  51          
+  52          void UART0_TX(unsigned char n_temp0)
+C51 COMPILER V9.52.0.0   UART0                                                             01/22/2018 10:28:12 PAGE 2   
+
+  53          {
+  54   1          bU0TX = 1;
+  55   1          S0BUF = n_temp0;
+  56   1          while(bU0TX)
+  57   1          {
+  58   2              ;
+  59   2          }
+  60   1      }
+  61          
+  62          //=========================================================================
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     78    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

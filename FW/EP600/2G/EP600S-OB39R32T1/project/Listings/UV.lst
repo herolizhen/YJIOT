@@ -1,0 +1,161 @@
+C51 COMPILER V9.52.0.0   UV                                                                01/11/2018 14:22:52 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE UV
+OBJECT MODULE PLACED IN .\Objects\UV.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\UV\UV.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(..\project;.\USER\BUZ
+                    -ZER;.\USER\charge;.\USER\common;.\USER\DC_MOTOR;.\USER\EEPROM;.\USER\EXINT;.\USER\IIC;.\USER\inc;.\USER\ION;.\USER\M26;.
+                    -\USER\PWM;.\USER\Sensor;.\USER\step_motor;.\USER\SYS_RUN;.\USER\timer;.\USER\TM1620;.\USER\touch_key;.\USER\UART;.\USER\
+                    -UV;.\USER\LVI) DEBUG OBJECTEXTEND PRINT(.\Listings\UV.lst) TABS(2) OBJECT(.\Objects\UV.obj)
+
+line level    source
+
+   1          #include <stdio.h>
+   2          #include "UV.h"
+   3          #include "ADC.h"
+   4          #include "global.h"
+   5          #include "wifi_uart.h"
+   6          #include "common.h"
+   7          #include "TM1620.h"
+   8          #include "M26.h"
+   9          #include "debug_uart.h"
+  10          
+  11          
+  12          extern M26_Cmd_Typedef m26_cmd_info;
+  13          
+  14          
+  15          void UV_Pin_Init(void)
+  16          {
+  17   1      
+  18   1          UV_PIN_PxM0 |= (1 << UV_PIN_PORTBIT);
+  19   1          UV_PIN_PxM1 &= ~(1 << UV_PIN_PORTBIT);
+  20   1        
+  21   1          UV_CONTROL_PIN = 0;
+  22   1        
+  23   1          ADCInit(d_ADC_EN_CH3, d_ADC_CLK_Sel);
+  24   1      
+  25   1      }
+  26          
+  27          void UV_On(void)
+  28          {
+  29   1          //unsigned char *wifi_send_buff = "uv on\n";
+  30   1        
+  31   1          UV_CONTROL_PIN = 1;
+  32   1          IsUVOn = 1;
+  33   1        
+  34   1          //每次刚上电时，第一次检测到的ADC的值为0，所以初始化为-1，上电后最开始检测4次，忽略第1次，以后每次都是
+             -检测3次
+  35   1          uv_check_times = -1;
+  36   1        
+  37   1          //上电后5秒检测ADC的值
+  38   1          uv_check_timeinterval = UV_CHECK_TIME_INTERVAL - 5;
+  39   1        
+  40   1          TM1620_LED_Control(LED_UV,LED_ON);
+  41   1        
+  42   1          dev_status = 1;
+  43   1        
+  44   1      
+  45   1         
+  46   1          //Wifi_Uart_Sendbytes(wifi_send_buff,mystrlen(wifi_send_buff)); 
+  47   1      }
+  48          
+  49          void UV_Off(void)
+  50          {  
+  51   1          UV_CONTROL_PIN = 0;
+C51 COMPILER V9.52.0.0   UV                                                                01/11/2018 14:22:52 PAGE 2   
+
+  52   1          IsUVOn = 0;
+  53   1          TM1620_LED_Control(LED_UV,LED_OFF);
+  54   1          dev_status = 1;    
+  55   1        
+  56   1          ADCfinish = 0;
+  57   1          IsUVCheck = 0;
+  58   1      }
+  59          
+  60          void UV_ADC_Start(void)
+  61          {
+  62   1          ADCfinish = 0;
+  63   1          n_data = 0;
+  64   1          ADCstart(d_ADC_CH3_IN);
+  65   1      }
+  66          
+  67          unsigned int Get_UV_ADC_Data(void)
+  68          {
+  69   1          ADCfinish = 0;
+  70   1      
+  71   1          return n_data;
+  72   1      }
+  73          
+  74          //每次检测3秒钟，每1秒检测一次，3次数据都正常才可以，3次检测中如果有一次检测到的数据不正常则判定为UV出故障
+  75          void UV_Check(void)
+  76          {
+  77   1          unsigned int uv_adc_data = 0;
+  78   1          //unsigned char uv_adc_byte[3] = {0};
+  79   1          //unsigned char wifi_send_buff[50] = {0};
+  80   1        
+  81   1          if(IsUVOn == 1)
+  82   1          {           
+  83   2              if(IsUVCheck == 1 && ADCfinish == 1)
+  84   2              {
+  85   3                  uv_adc_data = Get_UV_ADC_Data();
+  86   3               
+  87   3                  if(uv_adc_data < UV_ADC_CRITICAL_VALUE && uv_check_times >= 0)
+  88   3                  {
+  89   4                      IsUVfault = 1;
+  90   4                  }
+  91   3                  if(++uv_check_times == 3)
+  92   3                  {   
+  93   4                      IsUVCheck = 0;
+  94   4                      uv_check_flag = 0;
+  95   4                      uv_check_times = 0;     
+  96   4                  }
+  97   3      
+  98   3      //            mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+  99   3      //            sprintf(m26_cmd_info.sendtring,"adc data: %d,IsUVfault:%d\r\n",(unsigned int)uv_adc_data,(un
+             -signed int)IsUVfault);
+ 100   3      //            DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));            
+ 101   3      
+ 102   3                  
+ 103   3              }
+ 104   2              
+ 105   2              
+ 106   2              if(IsUVCheck)
+ 107   2              {
+ 108   3                  if(uv_check_flag)
+ 109   3                  {
+ 110   4                      UV_ADC_Start();
+ 111   4                      uv_check_flag = 0;
+ 112   4                  }
+C51 COMPILER V9.52.0.0   UV                                                                01/11/2018 14:22:52 PAGE 3   
+
+ 113   3              }
+ 114   2              
+ 115   2      
+ 116   2              
+ 117   2              if(uv_check_timeinterval >= UV_CHECK_TIME_INTERVAL)
+ 118   2              {
+ 119   3                  IsUVCheck = 1;
+ 120   3                  uv_check_timeinterval = 0;
+ 121   3              }
+ 122   2              
+ 123   2              
+ 124   2              if(IsUVfault == 1)
+ 125   2              {
+ 126   3                  UV_Off();
+ 127   3              }
+ 128   2          }
+ 129   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    178    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

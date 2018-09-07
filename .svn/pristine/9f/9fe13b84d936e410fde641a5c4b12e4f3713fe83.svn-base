@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.device.dao.DevTestDetailMapper">
+  <resultMap id="BaseResultMap" type="com.yjyz.iot.device.entity.DevTestDetail">
+    <id column="GUID" jdbcType="VARCHAR" property="guid" />
+    <result column="device_id" jdbcType="VARCHAR" property="deviceId" />
+    <result column="test_id" jdbcType="VARCHAR" property="testId" />
+    <result column="test_item" jdbcType="VARCHAR" property="testItem" />
+    <result column="test_result" jdbcType="DECIMAL" property="testResult" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    GUID, device_id, test_id, test_item, test_result
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_dev_test_detail
+    where GUID = #{guid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_dev_test_detail
+    where GUID = #{guid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yjyz.iot.device.entity.DevTestDetail">
+    insert into t_dev_test_detail (GUID, device_id, test_id, 
+      test_item, test_result)
+    values (#{guid,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR}, #{testId,jdbcType=VARCHAR}, 
+      #{testItem,jdbcType=VARCHAR}, #{testResult,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yjyz.iot.device.entity.DevTestDetail">
+    insert into t_dev_test_detail
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="guid != null">
+        GUID,
+      </if>
+      <if test="deviceId != null">
+        device_id,
+      </if>
+      <if test="testId != null">
+        test_id,
+      </if>
+      <if test="testItem != null">
+        test_item,
+      </if>
+      <if test="testResult != null">
+        test_result,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="guid != null">
+        #{guid,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null">
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="testId != null">
+        #{testId,jdbcType=VARCHAR},
+      </if>
+      <if test="testItem != null">
+        #{testItem,jdbcType=VARCHAR},
+      </if>
+      <if test="testResult != null">
+        #{testResult,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yjyz.iot.device.entity.DevTestDetail">
+    update t_dev_test_detail
+    <set>
+      <if test="deviceId != null">
+        device_id = #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="testId != null">
+        test_id = #{testId,jdbcType=VARCHAR},
+      </if>
+      <if test="testItem != null">
+        test_item = #{testItem,jdbcType=VARCHAR},
+      </if>
+      <if test="testResult != null">
+        test_result = #{testResult,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where GUID = #{guid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yjyz.iot.device.entity.DevTestDetail">
+    update t_dev_test_detail
+    set device_id = #{deviceId,jdbcType=VARCHAR},
+      test_id = #{testId,jdbcType=VARCHAR},
+      test_item = #{testItem,jdbcType=VARCHAR},
+      test_result = #{testResult,jdbcType=DECIMAL}
+    where GUID = #{guid,jdbcType=VARCHAR}
+  </update>
+</mapper>

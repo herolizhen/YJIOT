@@ -1,0 +1,83 @@
+{
+	
+	"folders":
+	[
+		{
+			"path": "../../../../include"
+		},
+		{
+			"path": "../../../../Platform"
+		},
+		{
+			"path": "../../../../libraries"
+		},
+		{
+			"path": "../../../../Board/MiCOKit-3238"
+		},
+		{
+			"path": "../../../../Demos/bluetooth"
+		},
+		{
+			"path": "../../../../mico"
+		}
+	],
+	"settings":
+	{
+		"sublimeclang_options":
+		[
+			"-Wno-typedef-redefinition",
+			"-Wno-empty-body",
+			"-Wno-attributes",
+			"-ferror-limit=0",
+			"-W",
+			"-c",
+			"-D__int64=long long",
+			"-D__pure=__attribute__((const))",
+			"-D__value_in_regs=__attribute__(())",
+			"-DUSE_STDPERIPH_DRIVER",
+			"-DDEBUG",
+			"-DEMW3238",
+			"-DBUILDCFG",
+			"-DBLUETOOTH_BTE",
+			"-DMICO_BTE_LIB",
+			"-DGATT_ENABLE",
+			"-I/Users/william/Develop/MiCO/Demos/bluetooth/ble_hello_sensor/",
+			"-I/Users/william/Develop/MiCO/Platform/",
+			"-I/Users/william/Develop/MiCO/Platform/include/",
+			"-I/Users/William/Develop/MiCO/Platform/Cortex-M4/",
+			"-I/Users/william/Develop/MiCO/Platform/MCU/",
+			"-I/Users/william/Develop/MiCO/Platform/Drivers/",
+			"-I/Users/william/Develop/MiCO/Platform/Drivers/spi_flash/",
+			"-I/Users/william/Develop/MiCO/Platform/MCU/STM32F4xx/",
+			"-I/Users/william/Develop/MiCO/Platform/MCU/STM32F4xx/peripherals/",
+			"-I/Users/william/Develop/MiCO/Platform/MCU/STM32F4xx/peripherals/Libraries/",
+			"-I/Users/william/Develop/MiCO/Platform/MCU/STM32F4xx/peripherals/Libraries/STM32F4xx_StdPeriph_Driver/inc/",
+			"-I/Users/william/Develop/MiCO/Board/MiCOKit-3238/",
+			"-I/Users/william/Develop/MiCO/include/",
+			"-I/Users/william/Develop/MiCO/include/Micoble/",
+			"-I/Users/william/Develop/MiCO/mico/system/",
+			"-I/Users/william/Develop/MiCO/mico/system/command_console/",
+			"-I/Users/william/Develop/MiCO/mico/security/",
+			"-I/Users/william/Develop/MiCO/libraries/utilities/",
+			"-I/Users/william/Develop/MiCO/libraries/daemons/bt_smart/include/",
+			"-I/Users/william/Develop/MiCO/libraries/daemons/bt_smart/internal/",
+			"-I/Users/william/Develop/MiCO/libraries/",
+			"-I/Users/william/Develop/Clang_lib/Include/",
+			"-I/Users/william/Develop/Clang_lib/ARMCC/include/",
+			"-I/Users/william/Develop/MiCO/libraries/bluetooth/",
+			"-I/Users/william/Develop/MiCO/libraries/bluetooth/include/",
+			"-I/Users/william/Develop/MiCO/libraries/bluetooth/BTE/Projects/bte/main/",
+			"-I/Users/william/Develop/MiCO/libraries/bluetooth/BTE/Components/stack/include/",
+			"-I/Users/william/Develop/MiCO/libraries/bluetooth/BTE/Components/gki/common/",
+			"-I/Users/william/Develop/MiCO/libraries/bluetooth/BTE/Components/udrv/include/",
+			"-I/Users/william/Develop/MiCO/libraries/bluetooth/BTE/Components/stack/wiced/",
+			"-I/Users/william/Develop/MiCO/libraries/bluetooth/BTE/Components/hcis/include/",
+			"-I/Users/william/Develop/MiCO/libraries/bluetooth/BTE/Components/hcis/",
+			"-I/Users/william/Develop/MiCO/libraries/bluetooth/BTE/Components/stack/brcm/",
+			"-I/Users/william/Develop/MiCO/libraries/bluetooth/BTE/Components/stack/btm/",
+			"-I/Users/william/Develop/MiCO/libraries/bluetooth/BTE/Components/stack/gatt/",
+			"-I/Users/william/Develop/MiCO/libraries/bluetooth/BTE/Components/stack/gatt/legattdb/inc/",
+			"-I/Users/william/Develop/MiCO/libraries/bluetooth/BTE/proto_disp/"
+		]
+	}
+}

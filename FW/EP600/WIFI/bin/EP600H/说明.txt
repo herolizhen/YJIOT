@@ -1,0 +1,15 @@
+WIFI版家用机
+
+EP600HFV2@xxx是OTA上传文件，如果给WIFI烧录该程序，烧录地址是0x800C000
+
+EP600HFV2@xxx_512K是工厂烧录WIFI程序，烧录地址0x8000000
+
+
+EP600H-OB39R16A6-1S是HPD05-C传感器MCU的程序
+
+
+EP600H-OB39R16A6-2S是PMS5003S传感器MCU的程序
+
+TOUH-OB39A08T1@001是触摸按键的程序，LED灯控制IO使用准双向模式
+
+TOUH-OB39A08T1@002是触摸按键的程序，LED灯控制IO使用推挽模式，采用PWM方式，占空比2/3

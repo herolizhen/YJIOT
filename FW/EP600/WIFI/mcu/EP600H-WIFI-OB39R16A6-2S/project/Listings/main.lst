@@ -1,0 +1,224 @@
+C51 COMPILER V9.52.0.0   MAIN                                                              01/22/2018 11:49:59 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(..\project;.\USER\BUZZER;.\
+                    -USER\DC_MOTOR;.\USER\EXINT;.\USER\IIC;.\USER\inc;.\USER\ION;.\USER\PWM;.\USER\step_motor;.\USER\SYS_RUN;.\USER\timer;.\U
+                    -SER\TM1620;.\USER\touch_key;.\USER\UART;.\USER\UV;.\USER\Sensor;.\USER\user_timer) DEBUG OBJECTEXTEND PRINT(.\Listings\m
+                    -ain.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <stdio.h>
+   2          #include <string.h>
+   3          #include "IIC.h"
+   4          #include "TM1620.h"
+   5          #include "sensor.h"
+   6          #include "SOFT_IIC.h"
+   7          #include "PWM.h"
+   8          #include "dc_motor.h"
+   9          #include "timer.h"
+  10          #include "global.h"
+  11          #include "INT.h"
+  12          #include "step_motor.h"
+  13          #include "sys_run.h"
+  14          #include "buzzer.h"
+  15          #include "wifi_uart.h"
+  16          #include "debug_uart.h"
+  17          #include "soft_uart.h"
+  18          #include "ADC.h"
+  19          #include "UV.h"
+  20          #include "ION.h"
+  21          #include "global.h"
+  22          #include "UART0.h"
+  23          //#include "common.h"
+  24          #include "sensor_uart.h"
+  25          #include "user_timer.h"
+  26          
+  27          
+  28          
+  29          /*
+  30          sprintfÐè×¢ÒâµÄµØ·½£º
+  31          1.¸ñÊ½»¯ÕûÊýÊ±£¬±ØÐë´«²Î unsigned int ¸ñÊ½
+  32          */
+  33          /*
+  34          ³ÌÐòÐè×¢ÒâÎÊÌâ£º
+  35          1.ÔÚÊ¹ÓÃlongÀàÐÍºÍºê¶¨ÒåÊ±ÈÝÒ×³öÏÖÎÊÌâ£¬¼ÆËã½á¹û²»¶Ô£¬ÈçÏÂÊ¾Àý
+  36          #define TEST_NUM   60000
+  37          unsigned long temp = 0;
+  38          temp = TEST_NUM + 10000;
+  39          
+  40          ¼ÆËã½á¹û±¾Ó¦¸ÃÊÇ70000 = 0x11170,µ«ÊÇÊµ¼ÊÔËËã³öÀ´µÄ½á¹ûÊÇ0xffff1170¡£
+  41          ºê¶¨ÒåµÄÊýÖµÈç¹ûÐ¡ÓÚ0xFFFF,ÓÃ¸Ãºê¶¨ÒåµÄÖµºÍÒ»¸öÐ¡ÓÚ0xFFFFµÄÊýÔËËã£¬Èç¹û½á¹û³¬¹ý0xFFFF£¬Ôò³öÏÖ´íÎó½á¹û¡£×ö³
+             -Ë·¨ÔËËãÒ»Ñù´æÔÚÕâÑùµÄÎÊÌâ
+  42          µ«ÊÇÈç¹û¶¨Òå 
+  43          #define TEST_NUM   70000  
+  44          ¼´ºê¶¨ÒåµÄÊýÖµ³¬¹ý 0xFFFF£¬¼ÆËã½á¹ûÊÇÕýÈ·µÄ¡£
+  45          
+  46          Èç¹ûÖ±½ÓÊ¹ÓÃ temp = 60000 + 10000; Ö±½ÓÊ¹ÓÃÊý×Ö½øÐÐ¼ÆËãÃ»ÓÐÎÊÌâ
+  47          
+  48          
+  49          ½â¾ö°ì·¨£º
+  50          temp = (TEST_NUM | 0x00) + 10000;  
+  51          ÕâÖÖÔËËã½á¹ûÕýÈ·
+C51 COMPILER V9.52.0.0   MAIN                                                              01/22/2018 11:49:59 PAGE 2   
+
+  52          
+  53          
+  54          */
+  55          
+  56          
+  57          extern reset_sensor_t reset_sensor_s;
+  58          
+  59          
+  60          void main(void)
+  61          {
+  62   1      
+  63   1        unsigned long times_1s = 0;
+  64   1        
+  65   1        //unsigned char test = 0;
+  66   1      
+  67   1        //unsigned char debug_buff[40] = {0};
+  68   1        
+  69   1        TM1620_Init();
+  70   1        
+  71   1        Key_IIC_PinConifg();
+  72   1        Start_Timer1();
+  73   1        Start_INT3();
+  74   1      
+  75   1        
+  76   1        PWM_Init();
+  77   1      
+  78   1        
+  79   1        
+  80   1        Step_Motor_Pin_Init();
+  81   1        Buzzer_PinConfig();
+  82   1        Soft_UART_Init();
+  83   1      
+  84   1        init_UART0();
+  85   1        sensor_init();
+  86   1        
+  87   1      
+  88   1        DEBUG_Uart_Init();
+  89   1        UV_Pin_Init();
+  90   1        ION_Pin_Init();
+  91   1        
+  92   1        //ÉèÖÃPMS5003Sµ½±»¶¯Ä£Ê½
+  93   1        set_sensor_to_unactive_mode();
+  94   1        
+  95   1        Buzzer_Power_On();
+  96   1        TM1620_DispalyData(SENSOR_PM25,0);
+  97   1        TM1620_LED_Control(LED_ALL,LED_OFF);
+  98   1        TM1620_LED_Control(LED_POWER,LED_ON);
+  99   1        TM1620_LED_Control(LED_SLEEP_MODE,LED_ON);
+ 100   1        
+ 101   1        
+ 102   1        user_timer_init();
+ 103   1        
+ 104   1        
+ 105   1        
+ 106   1        
+ 107   1        //ÎªÁË±£Ö¤°²È«Æô¶¯±ØÐë½øÐÐ²ÖÃÅ¼ì²â
+ 108   1        sys_init_check();
+ 109   1        
+ 110   1      
+ 111   1      
+ 112   1        while(1)
+ 113   1        {       
+C51 COMPILER V9.52.0.0   MAIN                                                              01/22/2018 11:49:59 PAGE 3   
+
+ 114   2            if(_test_timeflag(g_1ms_flag))
+ 115   2            {
+ 116   3                g_1ms_flag = 0;
+ 117   3                sys_run();
+ 118   3                DirectMotor();       
+ 119   3            }  
+ 120   2      
+ 121   2            if(_test_timeflag(g_2ms_flag))
+ 122   2            {
+ 123   3                g_2ms_flag = 0;
+ 124   3                TurnMotor();
+ 125   3              
+ 126   3                get_sensor_data();  
+ 127   3            }        
+ 128   2            
+ 129   2            if(_test_timeflag(g_10ms_flag))
+ 130   2            {
+ 131   3                g_10ms_flag = 0;
+ 132   3                Scan_TouchPad();  
+ 133   3                Deal_Wifi_Uart_Data();                   
+ 134   3            }   
+ 135   2      
+ 136   2            if(_test_timeflag(g_100ms_flag))
+ 137   2            {
+ 138   3                g_100ms_flag = 0;
+ 139   3              
+ 140   3                if(is_sys_auto_check == 1)
+ 141   3                {
+ 142   4                    sys_dev_auto_check();
+ 143   4                }         
+ 144   3                Dcmoto_adj();   
+ 145   3                UV_Check();                    
+ 146   3            }
+ 147   2            
+ 148   2            if(_test_timeflag(g_1s_flag))
+ 149   2            {
+ 150   3                g_1s_flag = 0;
+ 151   3                times_1s++;   
+ 152   3           
+ 153   3                if(reset_sensor_s.is_reset_sensor == 1)
+ 154   3                {
+ 155   4                    reset_sensor_loop();
+ 156   4                }
+ 157   3                else
+ 158   3                {
+ 159   4                    if(is_set_senor_mode_success == 0)
+ 160   4                    {
+ 161   5                        set_sensor_to_unactive_mode();
+ 162   5                    }
+ 163   4                }
+ 164   3                     
+ 165   3                if(times_1s % 5 == 0)
+ 166   3                {             
+ 167   4                    get_sensor_data_cmd();
+ 168   4                }
+ 169   3      
+ 170   3                display_sensor_data();
+ 171   3      
+ 172   3                if(user_timer_info.timer_state == 1)
+ 173   3                {  
+ 174   4                    //¶¨Ê±
+ 175   4                    user_timer_count();
+C51 COMPILER V9.52.0.0   MAIN                                                              01/22/2018 11:49:59 PAGE 4   
+
+ 176   4                }
+ 177   3                
+ 178   3                //TM1620_DispalyData(SENSOR_PM25,sys_check_info.fg_count);     
+ 179   3      
+ 180   3                //ÊÖ¶¯²âÊÔÊ±£¬Èç¹û3·ÖÖÓÄÚ²»Í¨¹ýAPPÍ£Ö¹£¬Ôò³ÌÐò×Ô¶¯Í£Ö¹
+ 181   3                if(is_sys_manual_check == 1)
+ 182   3                {
+ 183   4                    check_if_stop_manual_check();
+ 184   4                }                    
+ 185   3            }    
+ 186   2        }
+ 187   1      }
+ 188          
+ 189          
+ 190          
+ 191          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    316    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----       4
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

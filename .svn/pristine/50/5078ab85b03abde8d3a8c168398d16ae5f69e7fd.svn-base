@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ResourceInfo.html</title>
+<meta charset="UTF-8">
+<meta name="keywords" content="keyword1,keyword2,keyword3">
+<meta name="description" content="this is my page">
+<link href="../../compontents/bootstarp/css/bootstrap-UI.css.css"
+	rel="stylesheet" media="screen">
+<link href="../../compontents/iot/css/table.css" rel="stylesheet" />
+<link
+	href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"
+	rel="stylesheet" />
+<script
+	src="https://cdn.staticfile.org/flat-ui/2.3.0/js/vendor/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/flat-ui/2.3.0/js/flat-ui.min.js"></script>
+<script src="https://cdn.staticfile.org/vue/2.2.6/vue.min.js"></script>
+<script src="../../compontents/bootstarp/js/bootstrap-table.js"></script>
+<script
+	src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="../../compontents/iot/js/api.js"></script>
+</head>
+<style type="text/css">
+body {
+	font-family: "华文细黑";
+	width: 100%;
+	height: auto;
+	background: #f7f7f7;
+	margin-left: 30px;
+	padding-right: 50px;
+}
+</style>
+<body>
+
+	<!-- 资源添加 -->
+	<div class="modal fade myModal" id="myModal" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">资源添加</h4>
+				</div>
+				<div class="modal-body">
+					<form id="userform">
+						<div class="col-md-12" style="margin-left:30px">
+							<div class="col-md-6">
+								<div class="input-group">
+									<span class="input-group-addon">资源名称</span> <input type="text"
+										id="resName" class="form-control" placeholder="请输入资源名称"
+										style="width:160px;height:40px ">
+								</div>
+								<br>
+
+								<div class="input-group">
+									<span class="input-group-addon">控制项目</span> <input type="text"
+										id="resDetail" class="form-control" placeholder="请输入资源描述"
+										style="width:355px;height:40px ">
+								</div>
+							</div>
+							<div>
+
+								<div class="input-group">
+									<span class="input-group-addon">资源类型</span><select id="resType"
+										class="form-control" style="width:100px;height:40px ">
+										<option value="Menu">菜单</option>
+										<option value="Fun">功能</option>
+										<option value="Butten">按钮</option>
+										<option value="URL">路径</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div style=" clear:both"></div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">关闭
+					</button>
+					<button type="button" class="btn btn-primary"
+						onclick="addResource()">确认</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+
+	<!-- 资源修改-->
+	<div class="modal fade myModal" id="myModalUpd" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">资源维护</h4>
+				</div>
+				<div class="modal-body">
+					<div class="col-md-12" style="margin-left:30px">
+						<div class="col-md-6">
+							<input type="hidden" id="resIdUpd">
+							<div class="input-group">
+								<span class="input-group-addon">资源名称</span> <input type="text"
+									id="resNameUpd" class="form-control" placeholder="请输入资源名称"
+									style="width:160px;height:40px ">
+							</div>
+							<br>
+
+							<div class="input-group">
+								<span class="input-group-addon">控制项目</span> <input type="text"
+									id="resDetailUpd" class="form-control" placeholder="请输入资源描述"
+									style="width:355px;height:40px ">
+							</div>
+						</div>
+						<div>
+
+							<div class="input-group">
+								<span class="input-group-addon">资源类型</span><select
+									id="resTypeUpd" class="form-control"
+									style="width:100px;height:40px ">
+									<option value="Menu">菜单</option>
+									<option value="Fun">功能</option>
+									<option value="Butten">按钮</option>
+									<option value="URL">路径</option>
+								</select>
+							</div>
+						</div>
+
+					</div>
+					<div style=" clear:both"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">关闭
+					</button>
+					<button type="button" class="btn btn-primary"
+						onclick="updResource()">确认</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+
+	<!-- 资源删除 -->
+	<div class="modal fade myModal" id="myModalDel" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog" style="width: 250px">
+			<div class="modal-content" onclick="">
+				<div class="modal-header">
+					<h4 class="modal-title" id="myModalLabel">资源删除</h4>
+				</div>
+				<div class="modal-body" style="height: 100px">
+					<br> 请确认是否要删除资源：<span id="span_name"></span> <input
+						type="hidden" id="resIdDel">
+					<div style=" clear:both"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消
+					</button>
+					<button type="button" class="btn btn-primary" onclick="delRes()">确认</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--资源列表 -->
+	<h4 style="margin-bottom: -15px;margin-top: 2px">资源列表</h4>
+	<hr
+		style="height:1px;border:none;border-top:3px solid #028cfd;margin-bottom: 15px;" />
+
+
+	<div class="input-group col-md-2"
+		style="float: left;margin-bottom: 5px">
+		<button class="btn btn-primary btn-sm" data-toggle="modal"
+			data-target="#myModal" style="float: left;margin-bottom: 5px">资源添加</button>
+	</div>
+
+	<table id="tableData"></table>
+
+
+
+</body>
+<script type="text/javascript">
+	//初始化 资源信息
+	var appId = $api.getCurrApp();
+	function initTable() {
+		$api.ui_openLoading('提示', '资源信息加载中，请耐心等待......');
+		window.setTimeout(function() {
+			$api.ui_closeLoading();
+		}, 500);
+		var data = {};
+		$pow.selResourceByApp(data, success, error);
+		function success(ret) {
+			var obj = ret.resourceList;
+			$table = $('#tableData').bootstrapTable({
+				data : obj, //最终的JSON数据放在这里
+				height : $(window).height() - 100,
+				striped : true,
+				pagination : true,
+				pageNumber : 1,
+				pageSize : 10,
+				pageList : [ 5, 10, 20, 50, 100 ],
+				search : true,
+				showRefresh : true,
+				sidePagination : "client",
+				showColumns : true,
+				minimunCountColumns : 2,
+				columns : [
+					{
+						title : '序号',
+						formatter : function(value, row, index) {
+							return index + 1;
+						}
+					},
+					{
+						field : 'resId',
+						title : '资源ID',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : 'resName',
+						title : '资源名称',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : 'resDetail',
+						title : '控制项目',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : 'resType',
+						title : '资源类型',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : 'operate',
+						title : '操作',
+						align : 'center',
+						formatter : function(value, row, index) {
+							var a = '<button type="button" class="btn btn-danger  btn-sm" style="margin-right:15px;"   onclick="delResource(\'' + row.resName + '\',\'' + row.resId + '\')">删除</a> ';
+							var b = '<button type="button" class="btn btn-warning  btn-sm" style="margin-right:15px;" data-toggle="modal" data-target="#myModalUpd" onclick="toupdResource(\'' + row.resName + '\',\'' + row.resId + '\',\'' + row.resDetail + '\',\'' + row.resType + '\')">修改</button>';
+							return a + b;
+						}
+					} ],
+				formatNoMatches : function() {
+					return "没有相关的匹配结果";
+				},
+				formatLoadingMessage : function() {
+					return "";
+				}
+			});
+		}
+		;
+		function error() {
+		}
+		;
+
+	}
+	function refreshTableData() {
+		var data = {
+			"appId" : appId
+		}
+		$pow.selResourceByApp(data, success, error);
+		function success(ret) {
+			var data = ret.resourceList;
+			$("#tableData").bootstrapTable('load', data);
+		}
+		function error() {
+		}
+
+	}
+</script>
+<script type="text/javascript">
+	function clearFrom() {
+		$(':input', '#userform')
+			.not(':button, :submit, :reset, :hidden')
+			.val('')
+			.removeAttr('checked')
+			.removeAttr('selected');
+
+	}
+</script>
+<script type="text/javascript">
+	//资源添加
+	function addResource() {
+		var resName = $("#resName").val();
+		var resDetail = $("#resDetail").val();
+		var resType = $("#resType").val();
+		var data = {};
+		data.appId = appId;
+		data.resName = resName;
+		data.resDetail = resDetail;
+		data.resType = resType;
+		$pow.addResource(data, success, error);
+		function success() {
+			refreshTableData() ;
+			$("#myModal").modal("hide");
+			clearFrom();
+		}
+		;
+		function error() {
+			alert("添加失败");
+			clearFrom();
+		}
+		;
+	}
+</script>
+<script type="text/javascript">
+	function toupdResource(resName, resId, resDetail, resType) {
+		$("#resIdUpd").val(resId);
+		$("#resNameUpd").val(resName);
+		$("#resDetailUpd").val(resDetail);
+		$('#resTypeUpd option').each(function() {
+			var self = $(this);
+			var selfVal = self.val();
+			if (selfVal == resType) self.attr('selected', 'true');
+		});
+	}
+	//提交修改
+	function updResource() {
+		var appId = appId;
+		var resId = $("#resIdUpd").val();
+		var resName = $("#resNameUpd").val();
+		var resDetail = $("#resDetailUpd").val();
+		var resType = $("#resTypeUpd").val();
+		var data = {};
+		data.appId = appId;
+		data.resId = resId;
+		data.resName = resName;
+		data.resDetail = resDetail;
+		data.resType = resType;
+		$pow.updResource(data, success, error);
+		function success(ret) {
+			refreshTableData();
+			$("#myModalUpd").modal("hide");
+		}
+		;
+		function error() {
+			alert("修改失败");
+		}
+		;
+	}
+</script>
+<script type="text/javascript">
+	function delResource(resName, resId) {
+		$api.ui_openAlert('资源删除', '请确认是否要删除资源：' + resName, function(tag) {
+			if (tag) {
+				var data = {};
+				data.appId = appId;
+				data.resId = resId;
+				$pow.delResource(data, success, error);
+				function success() {
+					refreshTableData();
+				}
+				;
+				function error() {
+					$api.ui_openAlert('删除提示', '删除失败!');
+				}
+				;
+			}
+		});
+	}
+</script>
+<script type="text/javascript">
+	$(function() {
+		$api.Initialize();
+		initTable();
+	});
+</script>
+</html>

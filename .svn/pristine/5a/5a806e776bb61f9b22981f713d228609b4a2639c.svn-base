@@ -1,0 +1,217 @@
+C51 COMPILER V9.52.0.0   TIMER_1                                                           10/19/2017 16:46:51 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE TIMER_1
+OBJECT MODULE PLACED IN .\Objects\timer_1.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\timer\timer_1.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\USER\IIC;.\
+                    -USER\UART;.\USER\TM1618;.\USER\Sensor;.\USER;.\USER\PWM;.\USER\DC_MOTOR;.\USER\timer;.\USER\inc;.\USER\EXINT;.\USER\touc
+                    -h_key;.\USER\SYS_RUN;.\USER\step_motor;.\USER\BUZZER;.\USER\UART;.\USER\common;.\USER\lib;.\USER\UV;.\USER\ION;.\USER\EE
+                    -PROM;.\USER\TM1620;.\USER\charge) DEBUG OBJECTEXTEND PRINT(.\Listings\timer_1.lst) TABS(2) OBJECT(.\Objects\timer_1.obj)
+
+line level    source
+
+   1          #include "timer.h"
+   2          #include "global.h"
+   3          #include "touch_key.h"
+   4          #include "buzzer.h"
+   5          
+   6          /*
+   7          //时钟周期 22.1184MHz
+   8          1秒的机器周期为 22118400/12
+   9          
+  10          
+  11          1ms的需要的机器周期为 22118.4/12
+  12          22118.4/12 = 1843.2(0x0733)
+  13          65536 - 1843 = 43418（0xF8CD）
+  14          
+  15          0.5ms需要的机器周期为 22118.4/12/2 = 921.6
+  16          65536 - 921  = 64615(0xFC67)
+  17          
+  18          0.25ms需要的机器周期为 22118.4/12/2/2 = 460.8
+  19          65536 - 461  = 65075(0xFE33)
+  20          
+  21          0.1ms需要的机器周期为 22118.4/12/10 = 184.32
+  22          65536 - 184  = 65352(0xFF48)
+  23          256 - 184 = 72(0x48)
+  24          256 - 185 = 71(0x47)
+  25          
+  26          0.05ms = 50us 需要的机器周期为 22118.4/12/10/2 = 92.16
+  27          65536 - 92  = 65444(0xFFA4)
+  28          
+  29          
+  30          
+  31          */
+  32          
+  33          
+  34          
+  35          
+  36          void TIMER1_initialize(void)  //Initialize TIMER0
+  37          {
+  38   1          ET1 = 1;
+  39   1          TMOD  = d_T1MOD;
+  40   1          TH1   = d_T1_TH1;  //MODE1 16bit
+  41   1          //TL0   = d_T0_TL0;
+  42   1      }
+  43          
+  44          
+  45          void Start_Timer1(void)
+  46          {
+  47   1          TIMER1_initialize();
+  48   1          
+  49   1          EA   = 1;
+  50   1          TR1  = 1;
+  51   1      }
+  52          
+C51 COMPILER V9.52.0.0   TIMER_1                                                           10/19/2017 16:46:51 PAGE 2   
+
+  53          
+  54          /*当定时器为1ms时 TIMER_BASE = 1，当定时器为0.5ms时 TIMER_BASE = 2；当定时器为0.25ms时， TIMER_BASE = 4；.
+             -..
+  55          当定时器为0.05ms时， TIMER_BASE = 20；
+  56          
+  57          依次类推
+  58          
+  59          */
+  60          //#define TIMER_BASE  4
+  61          
+  62          /* 
+  63          修改定时器参数只需修改timer.h中的 TIMER_BASE  d_T0_TH0  d_T0_TL0 这3个宏定义即可
+  64          
+  65          每次修改定时器定时时间后 TIMER_BASE 必须修改，否则定时的 1ms 2ms 10ms等等就都错了
+  66          
+  67          */
+  68          
+  69          //0.1ms timer
+  70          void TIMER1_ISR(void) interrupt d_T1_Vector
+  71          {
+  72   1          static unsigned char times_1ms = 1 * TIMER_BASE;
+  73   1          static unsigned char times_2ms = 2 * TIMER_BASE;
+  74   1          static unsigned char times_10ms = 10 * TIMER_BASE;
+  75   1          static unsigned char times_100ms = 100 * TIMER_BASE;
+  76   1          static unsigned int times_1s = 1000 * TIMER_BASE;
+  77   1          static unsigned char buzzer_cnt = 0;
+  78   1        
+  79   1          if(--times_1ms == 0)
+  80   1          {
+  81   2              g_1ms_flag = 1;
+  82   2              times_1ms = 1 * TIMER_BASE;
+  83   2              g_sys_time_ms += 1;
+  84   2              if(g_sys_time_ms == 0xFFFFFFFF)
+  85   2              {
+  86   3                  g_sys_time_ms = 0;
+  87   3              }
+  88   2          }  
+  89   1          
+  90   1          if(--times_2ms == 0)
+  91   1          {
+  92   2              g_2ms_flag = 1;
+  93   2              times_2ms = 2 * TIMER_BASE;
+  94   2          }  
+  95   1          
+  96   1        
+  97   1          if(--times_10ms == 0)
+  98   1          {
+  99   2              g_10ms_flag = 1;
+ 100   2              times_10ms = 10 * TIMER_BASE;
+ 101   2          }
+ 102   1          
+ 103   1          if(--times_100ms == 0)
+ 104   1          {
+ 105   2              g_100ms_flag = 1;
+ 106   2              times_100ms = 100 * TIMER_BASE;
+ 107   2          }
+ 108   1          
+ 109   1          if(--times_1s == 0)
+ 110   1          {
+ 111   2              g_1s_flag = 1;
+ 112   2              times_1s = 1000 * TIMER_BASE;
+ 113   2              if(IsUVOn == 1)
+C51 COMPILER V9.52.0.0   TIMER_1                                                           10/19/2017 16:46:51 PAGE 3   
+
+ 114   2              {
+ 115   3                  uv_check_timeinterval++;
+ 116   3                  if(IsUVCheck)
+ 117   3                  {
+ 118   4                      uv_check_flag = 1;
+ 119   4                  }
+ 120   3              }
+ 121   2              
+ 122   2              g_1s_times ++;
+ 123   2              if(g_1s_times % 60 == 0)
+ 124   2              {
+ 125   3                  g_1min_flag = 1;
+ 126   3              }
+ 127   2      
+ 128   2           
+ 129   2          }  
+ 130   1          
+ 131   1          //用于触摸按键的延时消抖
+ 132   1          if(key_info.IsCount == 1)
+ 133   1          {
+ 134   2              key_info.count_times++;
+ 135   2          } 
+ 136   1          
+ 137   1          
+ 138   1          if(gBuzzerTimes_cnt > 0)
+ 139   1          { 
+ 140   2              
+ 141   2              buzzer_cnt--;
+ 142   2              if(buzzer_cnt == 0)
+ 143   2              {
+ 144   3                  //用于蜂鸣器上升沿和下降沿的跳变
+ 145   3                  BUZZER_N_PIN = !BUZZER_N_PIN;
+ 146   3                  buzzer_cnt = gBuzzerEdge_cnt;
+ 147   3              }
+ 148   2              
+ 149   2              gBuzzerTimes_cnt --;
+ 150   2              if(gBuzzerTimes_cnt == 0)
+ 151   2              {
+ 152   3                  buzzer_cnt = 0 ;
+ 153   3                  BUZZER_P_PIN = 0;
+ 154   3                  BUZZER_N_PIN = 0;
+ 155   3              }
+ 156   2              else if(gBuzzerTimes_cnt == (200 * TIMER_BASE))
+ 157   2              {
+ 158   3                  //蜂鸣器响的时间剩余200ms时，控制管脚关闭，尾音会逐渐削弱，听起来好听一点
+ 159   3                  BUZZER_P_PIN = 0;
+ 160   3              }
+ 161   2          }
+ 162   1      
+ 163   1            
+ 164   1      
+ 165   1      //    TH0   = d_T0_TH0;  //MODE1 16bit
+ 166   1      //    TL0   = d_T0_TL0;
+ 167   1      //    TR0 = 1;
+ 168   1          
+ 169   1      }
+ 170          
+ 171          //获取系统时间，单位ms
+ 172          unsigned long get_sys_mstime(void)
+ 173          {
+ 174   1          return g_sys_time_ms;
+ 175   1      }
+C51 COMPILER V9.52.0.0   TIMER_1                                                           10/19/2017 16:46:51 PAGE 4   
+
+ 176          
+ 177          //获取系统时间，单位s
+ 178          unsigned long get_sys_stime(void)
+ 179          {
+ 180   1          return g_1s_times;
+ 181   1      }
+ 182          
+ 183          
+ 184          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    441    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      7    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

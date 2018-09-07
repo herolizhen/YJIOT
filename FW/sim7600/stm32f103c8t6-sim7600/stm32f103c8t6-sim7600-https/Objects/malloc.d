@@ -1,0 +1,10 @@
+.\objects\malloc.o: malloc\malloc.c
+.\objects\malloc.o: malloc\malloc.h
+.\objects\malloc.o: .\CMSIS\stm32f10x.h
+.\objects\malloc.o: .\CMSIS\core_cm3.h
+.\objects\malloc.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\malloc.o: .\CMSIS\system_stm32f10x.h
+.\objects\malloc.o: .\user\stm32f10x_conf.h
+.\objects\malloc.o: .\FWlib\inc\stm32f10x_gpio.h
+.\objects\malloc.o: .\CMSIS\stm32f10x.h
+.\objects\malloc.o: .\FWlib\inc\stm32f10x_rcc.h

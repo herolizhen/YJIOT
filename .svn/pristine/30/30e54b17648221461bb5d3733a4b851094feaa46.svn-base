@@ -1,0 +1,27 @@
+package com.yjyz.iot.notice.service;
+
+import com.yjyz.iot.notice.entity.NoticeConfig;
+import com.yjyz.iot.notice.entity.NoticeRule;
+
+public interface INoticeService {
+
+	boolean delNoticeConfig(String appId) throws Exception;
+
+	boolean insNoticeConfig(NoticeConfig record) throws Exception;
+
+	NoticeConfig selNoticeConfig(String appId) throws Exception;
+
+	boolean updNoticeConfig(NoticeConfig record) throws Exception;
+
+	boolean delNoticeRule(String productId) throws Exception;
+
+	boolean insNoticeRule(NoticeRule record) throws Exception;
+
+	NoticeRule selNoticeRule(String productId) throws Exception;
+
+	boolean updNoticeRule(NoticeRule record) throws Exception;
+
+	boolean noticeMessage(String deviceId, int pushType) throws Exception;
+
+	public boolean noticeTest(String appId, String tel, int type) throws Exception;
+}

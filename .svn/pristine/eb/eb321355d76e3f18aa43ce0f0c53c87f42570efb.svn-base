@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.device.dao.DevTestMainMapper">
+  <resultMap id="BaseResultMap" type="com.yjyz.iot.device.entity.DevTestMain">
+    <id column="test_ID" jdbcType="VARCHAR" property="testId" />
+    <result column="device_id" jdbcType="VARCHAR" property="deviceId" />
+    <result column="test_type" jdbcType="VARCHAR" property="testType" />
+    <result column="test_date" jdbcType="TIMESTAMP" property="testDate" />
+    <result column="op_user" jdbcType="VARCHAR" property="opUser" />
+    <result column="is_pass" jdbcType="BIT" property="isPass" />
+    <result column="test_memo" jdbcType="VARCHAR" property="testMemo" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    test_ID, device_id, test_type, test_date, op_user, is_pass, test_memo
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_dev_test_main
+    where test_ID = #{testId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_dev_test_main
+    where test_ID = #{testId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yjyz.iot.device.entity.DevTestMain">
+    insert into t_dev_test_main (test_ID, device_id, test_type, 
+      test_date, op_user, is_pass, 
+      test_memo)
+    values (#{testId,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR}, #{testType,jdbcType=VARCHAR}, 
+      #{testDate,jdbcType=TIMESTAMP}, #{opUser,jdbcType=VARCHAR}, #{isPass,jdbcType=BIT}, 
+      #{testMemo,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yjyz.iot.device.entity.DevTestMain">
+    insert into t_dev_test_main
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="testId != null">
+        test_ID,
+      </if>
+      <if test="deviceId != null">
+        device_id,
+      </if>
+      <if test="testType != null">
+        test_type,
+      </if>
+      <if test="testDate != null">
+        test_date,
+      </if>
+      <if test="opUser != null">
+        op_user,
+      </if>
+      <if test="isPass != null">
+        is_pass,
+      </if>
+      <if test="testMemo != null">
+        test_memo,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="testId != null">
+        #{testId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null">
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="testType != null">
+        #{testType,jdbcType=VARCHAR},
+      </if>
+      <if test="testDate != null">
+        #{testDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="opUser != null">
+        #{opUser,jdbcType=VARCHAR},
+      </if>
+      <if test="isPass != null">
+        #{isPass,jdbcType=BIT},
+      </if>
+      <if test="testMemo != null">
+        #{testMemo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yjyz.iot.device.entity.DevTestMain">
+    update t_dev_test_main
+    <set>
+      <if test="deviceId != null">
+        device_id = #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="testType != null">
+        test_type = #{testType,jdbcType=VARCHAR},
+      </if>
+      <if test="testDate != null">
+        test_date = #{testDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="opUser != null">
+        op_user = #{opUser,jdbcType=VARCHAR},
+      </if>
+      <if test="isPass != null">
+        is_pass = #{isPass,jdbcType=BIT},
+      </if>
+      <if test="testMemo != null">
+        test_memo = #{testMemo,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where test_ID = #{testId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yjyz.iot.device.entity.DevTestMain">
+    update t_dev_test_main
+    set device_id = #{deviceId,jdbcType=VARCHAR},
+      test_type = #{testType,jdbcType=VARCHAR},
+      test_date = #{testDate,jdbcType=TIMESTAMP},
+      op_user = #{opUser,jdbcType=VARCHAR},
+      is_pass = #{isPass,jdbcType=BIT},
+      test_memo = #{testMemo,jdbcType=VARCHAR}
+    where test_ID = #{testId,jdbcType=VARCHAR}
+  </update>
+</mapper>

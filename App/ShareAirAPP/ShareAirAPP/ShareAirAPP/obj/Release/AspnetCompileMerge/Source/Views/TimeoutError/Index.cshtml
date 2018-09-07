@@ -1,0 +1,56 @@
+﻿@using YJIOT.ShareAirAPP.Models
+@using YJIOT.ShareAirAPP.ViewModel
+@model TimeoutErrorViewModel
+<div class="app-content">
+    <div class="weui-msg">
+        <div class="weui-msg__icon-area"><i class="weui-icon-warn weui-icon_msg"></i></div>
+        <div class="weui-msg__text-area">
+            <h2 class="weui-msg__title">运行超时异常</h2>
+            <p class="weui-msg__desc">
+                您可以拨打电话: 400-9922-602；
+                <br />
+                或联系商家寻求帮助；
+            </p>
+        </div>
+        <div class="weui-msg__text-area">
+            <h2 class="weui-msg__title">请联系400客服，或重新扫码重试</h2>
+        </div>
+    </div>
+</div>
+@if (@Model.Step == ShareStep.Four)
+{
+    <div class="app-content app-content-bottom">
+        <div class="title">
+            <img src="~/Content/Icon/logo-0.png" class="logo" />
+        </div>
+        <div class="weui-flex">
+            <div class="weui-flex__item app-center" style="padding:5px 0;">
+                <h3 class="app-font-color">本次消费信息</h3>
+            </div>
+        </div>
+        <div class="weui-form-preview app-background font-color">
+            <div class="weui-form-preview__hd">
+                <label class="weui-form-preview__label">本次支付</label>
+                <em class="weui-form-preview__value">¥@Model.StrPayment</em>
+            </div>
+            <div class="weui-form-preview__bd">
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">商户订单号</label>
+                    <span class="weui-form-preview__value">@Model.OrderNo</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">支付单号</label>
+                    <span class="weui-form-preview__value">@Model.PayNo</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">支付时间</label>
+                    <span class="weui-form-preview__value">@Model.PayTime</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">可用时长</label>
+                    <span class="weui-form-preview__value">@Model.Chips 分钟</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}

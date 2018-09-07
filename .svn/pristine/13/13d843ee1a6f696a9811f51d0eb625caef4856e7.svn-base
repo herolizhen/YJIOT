@@ -1,0 +1,35 @@
+C51 COMPILER V9.52.0.0   DATA                                                              12/27/2017 15:56:30 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE DATA
+OBJECT MODULE PLACED IN .\Objects\data.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\User\data.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\User;..\User\led;..\Us
+                    -er\touch;..\User\timer;..\User\inc) DEBUG OBJECTEXTEND PRINT(.\Listings\data.lst) TABS(2) OBJECT(.\Objects\data.obj)
+
+line level    source
+
+   1          #include "global.h"
+   2          
+   3          bit g_1ms_flag = 0;
+   4          bit g_2ms_flag = 0;
+   5          bit g_10ms_flag = 0;
+   6          bit g_100ms_flag = 0;
+   7          //volatile unsigned char g_1000ms_flag = 0;
+   8          bit g_1000ms_flag = 0;
+   9                
+  10                
+  11                
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   ----    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      5    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

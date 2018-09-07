@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.security.dao.PowAppInfoMapper">
+	<resultMap id="BaseResultMap" type="com.yjyz.iot.security.entity.PowAppInfo">
+		<id column="app_id" jdbcType="VARCHAR" property="appId" />
+		<result column="app_name" jdbcType="VARCHAR" property="appName" />
+		<result column="master_id" jdbcType="VARCHAR" property="masterId" />
+		<result column="master_name" jdbcType="VARCHAR" property="masterName" />
+		<result column="firm_name" jdbcType="VARCHAR" property="firmName" />
+		<result column="firm_credit_code" jdbcType="VARCHAR" property="firmCreditCode" />
+		<result column="firm_address" jdbcType="VARCHAR" property="firmAddress" />
+		<result column="firm_longitude" jdbcType="DOUBLE" property="firmLongitude" />
+		<result column="firm_latitude" jdbcType="DOUBLE" property="firmLatitude" />
+		<result column="firm_legal" jdbcType="VARCHAR" property="firmLegal" />
+		<result column="firm_found_date" jdbcType="DATE" property="firmFoundDate" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		app_id, app_name, master_id, master_name, firm_name, firm_credit_code,
+		firm_address,
+		firm_longitude, firm_latitude, firm_legal, firm_found_date
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_pow_app_info
+		where app_id = #{appId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from t_pow_app_info
+		where app_id = #{appId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.yjyz.iot.security.entity.PowAppInfo">
+		insert into t_pow_app_info (app_id, app_name, master_id,
+		master_name, firm_name, firm_credit_code,
+		firm_address, firm_longitude, firm_latitude,
+		firm_legal, firm_found_date)
+		values (#{appId,jdbcType=VARCHAR}, #{appName,jdbcType=VARCHAR},
+		#{masterId,jdbcType=VARCHAR},
+		#{masterName,jdbcType=VARCHAR}, #{firmName,jdbcType=VARCHAR}, #{firmCreditCode,jdbcType=VARCHAR},
+		#{firmAddress,jdbcType=VARCHAR}, #{firmLongitude,jdbcType=DOUBLE},
+		#{firmLatitude,jdbcType=DOUBLE},
+		#{firmLegal,jdbcType=VARCHAR}, #{firmFoundDate,jdbcType=DATE})
+	</insert>
+	<insert id="insertSelective" parameterType="com.yjyz.iot.security.entity.PowAppInfo">
+		insert into t_pow_app_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="appId != null">
+				app_id,
+			</if>
+			<if test="appName != null">
+				app_name,
+			</if>
+			<if test="masterId != null">
+				master_id,
+			</if>
+			<if test="masterName != null">
+				master_name,
+			</if>
+			<if test="firmName != null">
+				firm_name,
+			</if>
+			<if test="firmCreditCode != null">
+				firm_credit_code,
+			</if>
+			<if test="firmAddress != null">
+				firm_address,
+			</if>
+			<if test="firmLongitude != null">
+				firm_longitude,
+			</if>
+			<if test="firmLatitude != null">
+				firm_latitude,
+			</if>
+			<if test="firmLegal != null">
+				firm_legal,
+			</if>
+			<if test="firmFoundDate != null">
+				firm_found_date,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="appId != null">
+				#{appId,jdbcType=VARCHAR},
+			</if>
+			<if test="appName != null">
+				#{appName,jdbcType=VARCHAR},
+			</if>
+			<if test="masterId != null">
+				#{masterId,jdbcType=VARCHAR},
+			</if>
+			<if test="masterName != null">
+				#{masterName,jdbcType=VARCHAR},
+			</if>
+			<if test="firmName != null">
+				#{firmName,jdbcType=VARCHAR},
+			</if>
+			<if test="firmCreditCode != null">
+				#{firmCreditCode,jdbcType=VARCHAR},
+			</if>
+			<if test="firmAddress != null">
+				#{firmAddress,jdbcType=VARCHAR},
+			</if>
+			<if test="firmLongitude != null">
+				#{firmLongitude,jdbcType=DOUBLE},
+			</if>
+			<if test="firmLatitude != null">
+				#{firmLatitude,jdbcType=DOUBLE},
+			</if>
+			<if test="firmLegal != null">
+				#{firmLegal,jdbcType=VARCHAR},
+			</if>
+			<if test="firmFoundDate != null">
+				#{firmFoundDate,jdbcType=DATE},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yjyz.iot.security.entity.PowAppInfo">
+		update t_pow_app_info
+		<set>
+			<if test="appName != null">
+				app_name = #{appName,jdbcType=VARCHAR},
+			</if>
+			<if test="masterId != null">
+				master_id = #{masterId,jdbcType=VARCHAR},
+			</if>
+			<if test="masterName != null">
+				master_name = #{masterName,jdbcType=VARCHAR},
+			</if>
+			<if test="firmName != null">
+				firm_name = #{firmName,jdbcType=VARCHAR},
+			</if>
+			<if test="firmCreditCode != null">
+				firm_credit_code = #{firmCreditCode,jdbcType=VARCHAR},
+			</if>
+			<if test="firmAddress != null">
+				firm_address = #{firmAddress,jdbcType=VARCHAR},
+			</if>
+			<if test="firmLongitude != null">
+				firm_longitude = #{firmLongitude,jdbcType=DOUBLE},
+			</if>
+			<if test="firmLatitude != null">
+				firm_latitude = #{firmLatitude,jdbcType=DOUBLE},
+			</if>
+			<if test="firmLegal != null">
+				firm_legal = #{firmLegal,jdbcType=VARCHAR},
+			</if>
+			<if test="firmFoundDate != null">
+				firm_found_date = #{firmFoundDate,jdbcType=DATE},
+			</if>
+		</set>
+		where app_id = #{appId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yjyz.iot.security.entity.PowAppInfo">
+		update t_pow_app_info
+		set app_name = #{appName,jdbcType=VARCHAR},
+		master_id = #{masterId,jdbcType=VARCHAR},
+		master_name = #{masterName,jdbcType=VARCHAR},
+		firm_name = #{firmName,jdbcType=VARCHAR},
+		firm_credit_code = #{firmCreditCode,jdbcType=VARCHAR},
+		firm_address = #{firmAddress,jdbcType=VARCHAR},
+		firm_longitude = #{firmLongitude,jdbcType=DOUBLE},
+		firm_latitude = #{firmLatitude,jdbcType=DOUBLE},
+		firm_legal = #{firmLegal,jdbcType=VARCHAR},
+		firm_found_date = #{firmFoundDate,jdbcType=DATE}
+		where app_id = #{appId,jdbcType=VARCHAR}
+	</update>
+	<select id="selectAll" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_pow_app_info
+	</select>
+</mapper>

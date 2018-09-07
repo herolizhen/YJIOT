@@ -1,0 +1,184 @@
+C51 COMPILER V9.52.0.0   SENSOR_UART                                                       01/22/2018 10:28:13 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE SENSOR_UART
+OBJECT MODULE PLACED IN .\Objects\sensor_uart.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\UART\sensor_uart.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(..\project
+                    -;.\USER\BUZZER;.\USER\DC_MOTOR;.\USER\EXINT;.\USER\IIC;.\USER\inc;.\USER\ION;.\USER\PWM;.\USER\step_motor;.\USER\SYS_RUN
+                    -;.\USER\timer;.\USER\TM1620;.\USER\touch_key;.\USER\UART;.\USER\UV;.\USER\Sensor;.\USER\user_timer) DEBUG OBJECTEXTEND P
+                    -RINT(.\Listings\sensor_uart.lst) TABS(2) OBJECT(.\Objects\sensor_uart.obj)
+
+line level    source
+
+   1          #include <stdio.h>
+   2          #include <stdlib.h>
+   3          #include <string.h>
+   4          #include "sensor_uart.h"
+   5          
+   6          
+   7          #include "OB39R32T1.h"
+   8          //#include "UART0.h"
+   9          #include "global.h"
+  10          #include "TM1620.h"
+  11          //#include "common.h"
+  12          #include "debug_uart.h"
+  13          
+  14          //===============================================================
+  15          //DEFINITIONs
+  16          //===============================================================
+  17          #define d_S1RELH  0x03
+  18          #define d_S1RELL  0xB8
+  19          
+  20          //===============================================================
+  21          //GLOBAL VARIABLE
+  22          //===============================================================
+  23          bit bU1TX = 0;
+  24          
+  25          
+  26          //=========================================================================
+  27          void init_UART1(void)
+  28          {
+  29   1          S1RELH  = d_S1RELH;
+  30   1          S1RELL  = d_S1RELL;
+  31   1          IEN0   |= 0x80;        // EA =1
+  32   1          IEN2   |= 0x01;        // ES1 =1, interrupt enable
+  33   1          S1CON   = 0xB0;        // d_mode_B, S1M2 =1, REN1 =1
+  34   1      }
+  35          
+  36          
+  37          bit is_sensor_uart_get_data = 0;
+  38          void UART1_ISR(void) interrupt d_UART1_Vector
+  39          {
+  40   1          //static unsigned char i = 0;
+  41   1        
+  42   1          //unsigned char debug_buff[40] = {0};
+  43   1        
+  44   1          static unsigned int frame_length = 0;
+  45   1      
+  46   1          if (S1CON & 0x01)                     // INT_RX
+  47   1          {
+  48   2              S1CON  &= 0xFE;                // RI clear
+  49   2              if(U1RxPtr < SENSOR_MAX_BUFF_LENGTH)
+  50   2              {
+  51   3                  U1RxBuffer[U1RxPtr] = S1BUF;         // Read BUF           
+  52   3                  U1RxPtr += 1;
+C51 COMPILER V9.52.0.0   SENSOR_UART                                                       01/22/2018 10:28:13 PAGE 2   
+
+  53   3                           
+  54   3                  if(U1RxPtr == 1)
+  55   3                  {
+  56   4                      frame_length = 0; 
+  57   4                      if(U1RxBuffer[0] != 0x42)
+  58   4                      {
+  59   5      //                    memset(debug_buff,0,sizeof(debug_buff));
+  60   5      //                    sprintf(debug_buff,"buff[0] = 0x%x\r\n",(unsigned int)U1RxBuffer[0]);
+  61   5      //                    DEBUG_Uart_Sendbytes(debug_buff,strlen(debug_buff)); 
+  62   5                        
+  63   5                          goto error_exit;
+  64   5                      }
+  65   4                  }
+  66   3                  else if(U1RxPtr == 2)
+  67   3                  {
+  68   4                      if(U1RxBuffer[1] != 0x4D)
+  69   4                      {
+  70   5                          goto error_exit;
+  71   5                      }
+  72   4                  }
+  73   3                  else if(U1RxPtr >= 4)
+  74   3                  {
+  75   4                      if(U1RxPtr == 4)
+  76   4                      {
+  77   5                          frame_length = (((unsigned int)U1RxBuffer[2] << 8) | U1RxBuffer[3]) + 4;  
+  78   5                        
+  79   5      //                    mymemset(debug_buff,0,sizeof(debug_buff));
+  80   5      //                    //sprintf(debug_buff,"frame length:%d\r\n",(unsigned int)frame_length);
+  81   5      //                    sprintf(debug_buff,"frame length:\r\n");
+  82   5      //                    DEBUG_Uart_Sendbytes(debug_buff,mystrlen(debug_buff));                   
+  83   5                      }
+  84   4                      
+  85   4                      if(frame_length > SENSOR_DATA_MAX_LENGTH)
+  86   4                      {
+  87   5                          goto error_exit;
+  88   5                      }
+  89   4                    
+  90   4                      if(U1RxPtr == frame_length)
+  91   4                      {                   
+  92   5                          is_sensor_uart_get_data = 1;                 
+  93   5                      }
+  94   4                      
+  95   4                  }            
+  96   3              }
+  97   2              else
+  98   2              {
+  99   3                  clear_sensor_uart_buff();
+ 100   3              }
+ 101   2              
+ 102   2          }
+ 103   1          else                        // INT_TX
+ 104   1          {
+ 105   2              bU1TX  = 0;
+ 106   2              S1CON &= 0xFD;     // TI clear
+ 107   2          }
+ 108   1          
+ 109   1          return;
+ 110   1          
+ 111   1          
+ 112   1      error_exit:
+ 113   1          
+ 114   1          clear_sensor_uart_buff();
+C51 COMPILER V9.52.0.0   SENSOR_UART                                                       01/22/2018 10:28:13 PAGE 3   
+
+ 115   1          
+ 116   1          
+ 117   1      }
+ 118          
+ 119          void UART1_TX(unsigned char n_temp1)
+ 120          {
+ 121   1          bU1TX = 1;
+ 122   1          S1BUF = n_temp1;
+ 123   1          while(bU1TX)
+ 124   1          {
+ 125   2              ;
+ 126   2          }
+ 127   1      }
+ 128          
+ 129          
+ 130          
+ 131          void clear_sensor_uart_buff(void)
+ 132          {
+ 133   1          //unsigned char i = 0;
+ 134   1          
+ 135   1          memset(U1RxBuffer,0,U1RxPtr);
+ 136   1        
+ 137   1          U1RxPtr = 0;
+ 138   1        
+ 139   1      }
+ 140          
+ 141          
+ 142          
+ 143          void Sensor_Uart_Sendbytes(const unsigned char *sendbuff,unsigned char sendnum)
+ 144          {
+ 145   1          unsigned char i = 0;
+ 146   1          
+ 147   1          for(i = 0;i < sendnum;i++)
+ 148   1          {
+ 149   2              UART1_TX(sendbuff[i]);
+ 150   2          }
+ 151   1      }
+ 152          
+ 153          
+ 154          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    306    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      2       3
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      2    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

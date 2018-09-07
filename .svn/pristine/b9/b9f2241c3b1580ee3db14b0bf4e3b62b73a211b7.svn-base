@@ -1,0 +1,30 @@
+package com.yjyz.iot.dict.service;
+
+import java.util.List;
+
+import com.yjyz.iot.dict.entity.DictCharge;
+import com.yjyz.iot.dict.entity.DictMerchant;
+
+public interface IDictService {
+
+	DictCharge addCharge(DictCharge charge) throws Exception;
+
+	boolean delCharge(DictCharge charge) throws Exception;
+
+	boolean updCharge(DictCharge charge) throws Exception;
+
+	List<DictCharge> selChargeByType(DictCharge charge) throws Exception;
+
+	List<DictCharge> selChargeAll() throws Exception;
+
+	DictMerchant addMerchant(DictMerchant merchant) throws Exception;
+
+	boolean delMerchant(DictMerchant merchant) throws Exception;
+
+	boolean updMerchant(DictMerchant merchant) throws Exception;
+
+	List<DictMerchant> selMerchantAll() throws Exception;
+
+	List<DictMerchant> selMerchantByName(String name) throws Exception;
+
+}

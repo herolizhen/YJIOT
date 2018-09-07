@@ -1,0 +1,960 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>用户列表</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate" />
+<link href="../../compontents/bootstarp/css/bootstrap-UI.css.css"
+	rel="stylesheet" media="screen">
+<link href="../../compontents/iot/css/table.css" rel="stylesheet" />
+<script
+	src="https://cdn.staticfile.org/flat-ui/2.3.0/js/vendor/jquery.min.js"></script>
+<script
+	src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="../../compontents/bootstarp/js/bootstrap-table.js"></script>
+<script
+	src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
+<script
+	src="https://cdn.bootcss.com/bootstrap-validator/0.5.3/js/bootstrapValidator.js"></script>
+<script src="../../compontents/iot/js/api.js"></script>
+</head>
+<style type="text/css">
+body {
+	font-family: "华文细黑";
+	width: 100%;
+	height: auto;
+	background: #f7f7f7;
+	margin-left: 30px;
+	padding-right: 50px;
+}
+</style>
+<body>
+
+	<!-- 用户添加 -->
+	<div class="modal fade myModal" id="myModal" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div id="modalDialog" class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">用户添加</h4>
+				</div>
+				<div class="modal-body">
+					<form id="userform">
+						<div class="col-md-12">
+
+							<div class="col-md-6">
+								<div class="input-group">
+									<span class="input-group-addon">用户名</span> <input type="text"
+										id="username" class="form-control" placeholder="请输入用户名"
+										style="width:178px;height:40px" name="username">
+								</div>
+								<br>
+								<div class="input-group">
+									<span class="input-group-addon">密&nbsp;&nbsp;&nbsp;&nbsp;码</span>
+									<input type="text" id="password" class="form-control"
+										placeholder="请输入密码" style="width:178px;height:40px">
+								</div>
+								<br>
+								<div class="input-group">
+									<span class="input-group-addon">昵&nbsp;&nbsp;&nbsp;&nbsp;称</span>
+									<input type="text" id="nickname" class="form-control"
+										placeholder="请输入昵称" style="width:178px;height:40px">
+								</div>
+								<br>
+								<div class="input-group">
+									<span class="input-group-addon">公&nbsp;&nbsp;&nbsp;&nbsp;司</span><input
+										type="text" id="company" placeholder="请输入公司"
+										class="form-control" style="width:178px;height:40px">
+								</div>
+								<br>
+								<div class="input-group">
+									<span class="input-group-addon">地&nbsp;&nbsp;&nbsp;&nbsp;址</span>
+									<input type="text" id="address" placeholder="请输入地址"
+										class="form-control" style="width:178px;height:40px">
+								</div>
+								<br>
+							</div>
+
+							<div class="input-group">
+								<span class="input-group-addon">姓&nbsp;&nbsp;&nbsp;&nbsp;名</span>
+								<input type="text" id="realname" class="form-control"
+									placeholder="请输入姓名" style="width:178px;height:40px">
+							</div>
+							<br>
+							<div class="input-group">
+								<span class="input-group-addon" style="height:40px">性&nbsp;&nbsp;&nbsp;&nbsp;别</span>
+								<div style="width:178px;height:40px; border: 1px solid #ccc; ">
+									<div style=" padding-left:50px;padding-top:7px">
+										<input type="radio" name="sex" id="optionsRadios1" value="1"
+											checked>男 &nbsp;&nbsp;&nbsp;&nbsp;<input type="radio"
+											name="sex" id="optionsRadios2" value="0">女
+									</div>
+								</div>
+							</div>
+							<br>
+							<div class="input-group">
+								<span class="input-group-addon">职&nbsp;&nbsp;&nbsp;&nbsp;务</span>
+								<input style="width:178px;height:40px " type="text" id="job"
+									placeholder="请输入职务" class="form-control"
+									style="width:178px;height:40px">
+							</div>
+							<br>
+							<div class="input-group">
+								<span class="input-group-addon">状&nbsp;&nbsp;&nbsp;&nbsp;态</span>
+								<select class="form-control" id="status"
+									style="width:178px;height:40px ">
+									<option value="0">停用</option>
+									<option value="1">启用</option>
+								</select>
+							</div>
+
+						</div>
+					</form>
+
+
+					<div style=" clear:both"></div>
+				</div>
+
+				<div class="modal-footer">
+
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消
+					</button>
+					<button type="button" class="btn btn-primary" onclick="addUser()">确认</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /用户添加 -->
+
+	<!-- 用户修改 -->
+	<div class="modal fade myModal" id="myModalUpd" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" onclick="">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">用户信息维护</h4>
+				</div>
+				<div class="modal-body">
+					<div class="col-md-12">
+						<div class="col-md-6">
+							<div class="input-group">
+								<span class="input-group-addon">用户名</span> <input type="text"
+									id="username3" class="form-control" disabled="disabled"
+									style="width:178px;height:40px">
+							</div>
+							<br>
+							<div class="input-group">
+								<span class="input-group-addon">密&nbsp;&nbsp;&nbsp;&nbsp;码</span>
+								<input type="password" id="password3" class="form-control"
+									placeholder="请输入密码" style="width:178px;height:40px">
+							</div>
+							<br>
+							<div class="input-group">
+								<span class="input-group-addon">昵&nbsp;&nbsp;&nbsp;&nbsp;称</span>
+								<input type="text" id="nickname3" class="form-control"
+									placeholder="请输入昵称" style="width:178px;height:40px">
+							</div>
+							<br>
+							<div class="input-group">
+								<span class="input-group-addon">公&nbsp;&nbsp;&nbsp;&nbsp;司</span><input
+									type="text" id="company3" placeholder="请输入公司"
+									class="form-control" style="width:178px;height:40px">
+							</div>
+							<br>
+							<div class="input-group">
+								<span class="input-group-addon">地&nbsp;&nbsp;&nbsp;&nbsp;址</span>
+								<input type="text" id="address3" placeholder="请输入地址"
+									class="form-control" style="width:178px;height:40px">
+							</div>
+							<br>
+						</div>
+
+						<div class="input-group">
+							<span class="input-group-addon">姓&nbsp;&nbsp;&nbsp;&nbsp;名</span>
+							<input type="text" id="realname3" class="form-control"
+								placeholder="请输入姓名" style="width:178px;height:40px">
+						</div>
+						<br>
+						<div class="input-group">
+							<span class="input-group-addon">性&nbsp;&nbsp;&nbsp;&nbsp;别</span>
+							<div style="width:178px;height:40px; border: 1px solid #ccc; ">
+								<div style=" padding-left:50px;padding-top:7px">
+									<input type="radio" name="sex3" id="optionsRadios1" value="1">男
+									&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="sex3"
+										id="optionsRadios2" value="0">女
+								</div>
+							</div>
+						</div>
+						<br>
+						<div class="input-group">
+							<span class="input-group-addon">职&nbsp;&nbsp;&nbsp;&nbsp;务</span>
+							<input style="width:178px;height:40px " type="text" id="job3"
+								placeholder="请输入职务" class="form-control"
+								style="width:178px;height:40px">
+						</div>
+						<br>
+						<div class="input-group">
+							<span class="input-group-addon">状&nbsp;&nbsp;&nbsp;&nbsp;态</span>
+							<select class="form-control" id="status3"
+								style="width:178px;height:40px ">
+								<option value="0">停用</option>
+								<option value="1">启用</option>
+							</select>
+						</div>
+					</div>
+					<div style=" clear:both"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消
+					</button>
+					<button type="button" class="btn btn-primary saveUserUpd">确认</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /用户修改 -->
+
+	<!-- 用户授权 -->
+	<div class="modal fade myModal" id="userRole" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" onclick="">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">
+						用户&nbsp;:&nbsp;<span id="span_name1"></span>权限管理
+					</h4>
+				</div>
+				<div class="modal-body" style="max-height: 350px;">
+					<div class="row-md-12" style="margin-left: 50px;">
+						<div class="col-md-12">
+							<div style="width:450px;">
+								<div class="col-md-5">
+									<div class="centent">
+										<h4>已有角色</h4>
+										<select multiple="multiple" id="selectUpd" class="ddl"
+											style="height: 240px; width: 170px;">
+										</select>
+									</div>
+								</div>
+								<div class="col-md-2">
+
+									<div style="float:left ; margin-top: 100px;">
+										<button type="button" id="add"
+											class="btn btn-primary addUserRole">&lt;&lt;</button>
+										<button type="button" id="remove"
+											class="btn btn-primary delUserRole" style="margin-top: 10px">&gt;&gt;</button>
+									</div>
+								</div>
+								<div class="col-md-5">
+									<div class="centent" style="float:right ">
+										<h4>可授权角色</h4>
+										<!--	id="selGroup"  -->
+										<select multiple="multiple" id="selectInfo" class="ddl"
+											style="height: 240px; width: 170px;">
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div style=" clear:both"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消
+					</button>
+					<button type="button" class="btn btn-primary"
+						onclick="saveUserRole()">确认</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- 用户授权  -->
+
+	<div>
+		<h4 style="margin-left: 15px;margin-bottom: -15px;margin-top: 2px">用户列表</h4>
+		<hr
+			style="height:1px;border:none;border-top:3px solid #028cfd;margin-bottom: 15px;" />
+
+		<div class="input-group col-md-2"
+			style="float: left;margin-bottom: 5px">
+			<button class="btn btn-primary btn-sm" data-toggle="modal"
+				onclick="clearFrom()" data-target="#myModal"
+				style="float:left; margin-right: 50px; margin-bottom: 1px">用户添加</button>
+		</div>
+
+		<table id="tableData"></table>
+	</div>
+	<!--用户列表 -->
+</body>
+<script type="text/javascript">
+	var appId = $api.getCurrApp();
+	function initpassword() {
+		if (appId == '8888') {
+			$("#password").attr("readOnly", "true");
+		} else {
+			document.getElementById("password").readonly = false;
+		}
+	}
+</script>
+
+<script>
+
+	//初始化 用户信息
+	function initUserTable() {
+		$api.ui_openLoading('提示', '用户信息加载中，请耐心等待......');
+		window.setTimeout(function() {
+			$api.ui_closeLoading();
+		}, 500);
+		var data = {
+			"appId" : appId
+		}
+		$pow.selSysUserByApp(data,
+			function(ret) {
+				var list = ret.sysUserList;
+				for (i in list) {
+					if (1 == list[i].sex) {
+						list[i].sex = "男";
+					} else {
+						list[i].sex = "女";
+					}
+					if (1 == list[i].status) {
+						list[i].status = "启用";
+					} else {
+						list[i].status = "停用";
+					}
+					//时间戳转换
+				
+		
+					list[i].createtime = $api.fromUnixtime(list[i].createtime);
+				}
+				var obj = list;
+				//bootstrap-Table获取数据
+				$table = $('#tableData').bootstrapTable({
+					data : obj, //最终的JSON数据放在这里
+					height : $(window).height() - 100,
+					striped : true,
+					pagination : true,
+					pageNumber : 1,
+					pageSize : 10,
+					pageList : [ 5, 10, 20, 50, 100 ],
+					search : true,
+					sidePagination : "client",
+					minimunCountColumns : 2,
+					columns : [
+						{
+							title : '序号',
+							formatter : function(value, row, index) {
+								return index + 1;
+							}
+						},
+						{
+							field : 'username',
+							title : '用户名',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'realname',
+							title : '姓名',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'nickname',
+							title : '昵称',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'sex',
+							title : '性别',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'address',
+							title : '地址',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'company',
+							title : '公司',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'job',
+							title : '职务',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'createtime',
+							title : '注册时间',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'status',
+							title : '状态',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'operate',
+							title : '操作',
+							align : 'center',
+							formatter : function(value, row, index) {
+								var a = '<button type="button" class="btn btn-danger  btn-sm" style="margin-right:15px;"   onclick="delUser(\'' + row.username + '\',\'' + row.realname + '\')">删除</a> ';
+								var b = '<button type="button" class="btn btn-warning  btn-sm" style="margin-right:15px;" data-toggle="modal" data-target="#myModalUpd" onclick="updUser(\'' + row.username + '\')">修改</button>';
+								var c = '<button type="button" class="btn btn-success  btn-sm" style="margin-right:15px;" data-toggle="modal" data-target="#userRole" onclick="userRole(\'' + row.username + '\',\'' + row.realname + '\')">授权</button>';
+								return a + b + c;
+							}
+						} ],
+					formatNoMatches : function() {
+						return "没有相关的匹配结果";
+					},
+					formatLoadingMessage : function() {
+						return "";
+					}
+				});
+			},
+			function() {
+				$api.ui_openAlert('查询提示', '用户信息加载失败');
+			});
+
+	}
+
+	function initAdminTable() {
+		$api.ui_openLoading('提示', '用户信息加载中，请耐心等待......');
+		window.setTimeout(function() {
+			$api.ui_closeLoading();
+		}, 500);
+		var data = {
+			"appId" : appId
+		}
+		$pow.selSysUserByApp(data,
+			function(ret) {
+				var list = ret.sysUserList;
+				for (i in list) {
+					if (1 == list[i].sex) {
+						list[i].sex = "男";
+					} else {
+						list[i].sex = "女";
+					}
+					if (1 == list[i].status) {
+						list[i].status = "启用";
+					} else {
+						list[i].status = "停用";
+					}
+					//时间戳转换
+				
+					list[i].createtime = 	$api.fromUnixtime(list[i].createtime);
+				}
+				var obj = list;
+				//bootstrap-Table获取数据
+				$table = $('#tableData').bootstrapTable({
+					data : obj, //最终的JSON数据放在这里
+					height : $(window).height() - 100,
+					striped : true,
+					pagination : true,
+					pageNumber : 1,
+					pageSize : 10,
+					pageList : [ 5, 10, 20, 50, 100 ],
+					search : true,
+					sidePagination : "client",
+					minimunCountColumns : 2,
+					columns : [
+						{
+							title : '序号',
+							formatter : function(value, row, index) {
+								return index + 1;
+							}
+						},
+						{
+							field : 'username',
+							title : '用户名',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'realname',
+							title : '姓名',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'nickname',
+							title : '昵称',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'sex',
+							title : '性别',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'address',
+							title : '地址',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'company',
+							title : '公司',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'job',
+							title : '职务',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'createtime',
+							title : '注册时间',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'status',
+							title : '状态',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'operate',
+							title : '操作',
+							align : 'center',
+							formatter : function(value, row, index) {
+								var a = '<button type="button" class="btn btn-danger  btn-sm" style="margin-right:15px;"   onclick="delUser(\'' + row.username + '\',\'' + row.realname + '\')">删除</a> ';
+								var b = '<button type="button" class="btn btn-warning  btn-sm" style="margin-right:15px;" data-toggle="modal" data-target="#myModalUpd" onclick="updUser(\'' + row.username + '\')">修改</button>';
+								return a + b;
+							}
+						} ],
+					formatNoMatches : function() {
+						return "没有相关的匹配结果";
+					},
+					formatLoadingMessage : function() {
+						return "";
+					}
+				});
+			},
+			function() {
+				$api.ui_openAlert('查询提示', '用户信息加载失败');
+			});
+
+	}
+	function initTable() {
+		if ('8888' == appId  ) {
+		initAdminTable() ;
+			
+		} else {
+			initUserTable();
+		}
+	}
+
+	/*  刷新用户信息 */
+	function refreshTableData() {
+		var data = {
+			"appId" : appId
+		}
+		$pow.selSysUserByApp(data,
+			function(ret) {
+				var list = ret.sysUserList;
+				for (i in list) {
+					if (1 == list[i].sex) {
+						list[i].sex = "男";
+					} else {
+						list[i].sex = "女";
+					}
+					if (1 == list[i].status) {
+						list[i].status = "启用";
+					} else {
+						list[i].status = "停用";
+					}
+					//时间戳转换
+					var time = list[i].createtime; //获取时间戳 
+					var timestamp = time / 1000;
+					// 减少8个小时，北京时间比utc时间多八个时区
+					timestamp = timestamp - 8 * 60 * 60;
+					//直接用 new Date(时间戳) 格式转化获得当前时间
+					var timestamp = new Date(parseInt(timestamp) * 1000);
+					//再利用拼接正则等手段转化为yyyy-MM-dd hh:mm:ss 格式
+					beijing_datetime = timestamp.toLocaleDateString().replace(/\//g, "-") + " " + timestamp.toTimeString().substr(0, 8);
+					list[i].createtime = beijing_datetime;
+				}
+				var data = list; //要传入table的数据值
+				$("#tableData").bootstrapTable('load', data);
+			},
+			function() {
+				$api.ui_openAlert('查询提示', '用户信息更新失败');
+			});
+
+
+	}
+</script>
+
+<script type="text/javascript">
+	function clearFrom() {
+		$(':input', '#userform')
+			.not(':button, :submit, :reset, :hidden')
+			.val('')
+			.removeAttr('checked')
+			.removeAttr('selected');
+
+	}
+</script>
+<script>
+	/* 用户添加 */
+	function addUser() {
+
+		//进行表单验证
+		var bv = form.data('bootstrapValidator');
+		bv.validate();
+		if (bv.isValid()) {
+
+			var password;
+			if (appId == '8888') {
+				password = 'yjiotadmin8888';
+			} else {
+				password = $("#password").val();
+			}
+			var username = $("#username").val();
+
+			var realname = $("#realname").val();
+			var nickname = $("#nickname").val();
+			var sex = $('input:radio[name="sex"]:checked').val();
+			var address = $("#address").val();
+			var company = $("#company").val();
+			var job = $("#job").val();
+			var status = $("#status").val();
+			var data = {};
+			data.appId = appId;
+			data.username = username;
+			data.password = password;
+			data.realname = realname;
+			data.nickname = nickname;
+			data.sex = sex;
+			data.address = address;
+			data.company = company;
+			data.job = job;
+			data.status = status;
+			
+			$pow.addSysUser(data, success, error);
+			function success() {
+				refreshTableData();
+				$("#myModal").modal("hide");
+				clearFrom();
+			}
+			;
+			function error() {
+				$api.ui_openAlert('提示', '添加失败!该用户已经存在请核实');
+				clearFrom();
+			}
+			;
+		}
+
+	}
+</script>
+<script>
+	/* 修改用户信息 */
+	function updUser(data) {
+		//显示要修改的用户信息
+		var username = data;
+		var savePassWord;
+		var datas = {};
+		datas.appId = appId;
+		datas.username = data;
+		$pow.selSysUser(datas, success, error);
+		function success(ret) {
+			//回显用户信息
+			$("#username3").val(ret.sysUser.username);
+			$("#password3").val(ret.sysUser.password);
+			$("#realname3").val(ret.sysUser.realname);
+			$("#nickname3").val(ret.sysUser.nickname);
+			var sex = ret.sysUser.sex;
+			$("input[name='sex3'][value='" + sex + "']").attr("checked", true);
+			$("#address3").val(ret.sysUser.address);
+			$("#company3").val(ret.sysUser.company);
+			$("#job3").val(ret.sysUser.job);
+			var brand = ret.sysUser.status;
+			if (brand != "") {
+				var s = document.getElementById("status3"); //获取select对象  
+				var ops = s.options;
+				for (var i = 0; i < ops.length; i++) {
+					var tempValue = ops[i].value;
+					if (tempValue == brand) {
+						ops[i].selected = true; //如果后台的值与下拉列表的某一个value相等，就设置此项为选中项  
+						break;
+					}
+				}
+			}
+		}
+		;
+		function error() {
+			$api.ui_openAlert('修改提示', '请核实要修改用户信息');
+		}
+		;
+		//确认要修改的用户信息
+		$(".saveUserUpd").click(function() {
+			var username = $("#username3").val();
+			var password = $("#password3").val();
+			var realname = $("#realname3").val();
+			var nickname = $("#nickname3").val();
+			var sex = $('input:radio[name="sex3"]:checked').val();
+			var address = $("#address3").val();
+			var company = $("#company3").val();
+			var job = $("#job3").val();
+			var status = $("#status3").val();
+			var data = {};
+			data.appId = appId;
+			data.username = username;
+			data.password = password;
+			data.realname = realname;
+			data.nickname = nickname;
+			data.sex = sex;
+			data.address = address;
+			data.company = company;
+			data.job = job;
+			data.status = status;
+			$pow.updSysUser(data, success, error);
+			function success(ret) {
+				refreshTableData();
+				$("#myModalUpd").modal("hide");
+			}
+			;
+			function error() {
+				$api.ui_openAlert('修改提示', '请检查用户信息');
+
+
+			}
+			;
+
+		});
+	}
+</script>
+<script>
+	/* 删除用户 */
+	function delUser(username, realname) {
+		$api.ui_openAlert('用户删除', '请确认是否要删除用户：' + realname, function(tag) {
+			if (tag) {
+				var data = {};
+				data.appId = appId;
+				data.username = username;
+				$pow.delSysUser(data, success, error);
+				function success() {
+					refreshTableData();
+					$api.ui_closeLoading();
+				}
+				;
+				function error() {
+					$api.ui_openAlert('删除提示', '删除失败请检查用户信息');
+				}
+				;
+
+			}
+		});
+	}
+</script>
+<script>
+	/* 用户授权 */
+	var saveName
+	var str_selectUpd;
+	function userRole(username, realname) {
+		saveName = username;
+		$("#span_name1").text(realname);
+		var data = {};
+		data.appId = appId;
+		$("#selectInfo").empty();
+		$("#selectUpd").empty();
+
+		$pow.selRoleByApp(data, function(ret) {
+			$("#selectInfo").empty();
+			//初始化角色清单
+			ret = ret.roleList;
+			console.log(ret)
+			for (i in ret) {
+				$("#selectInfo").append("<option class='' value=" + ret[i].roleId + ">" + ret[i].roleName + "</option>");
+			}
+
+		}, function() {
+			$api.ui_openAlert('提示', '权限信息加载失败!');
+		})
+
+		//回显用户已有角色
+		var odata = {};
+		odata.username = saveName;
+		$pow.selUserRole(odata, function(ret) {
+			$("#selectUpd").empty();
+			if (!$api.isNull(ret)) {
+				var data = ret.roleList;
+				for (i in data) {
+					$("#selectUpd").append("<option class='' value=" + data[i].roleId + ">" + data[i].roleName + "</option>");
+				}
+			}
+			$("#selectUpd option").map(function() {
+				str_selectUpd = $("#selectUpd option").map(function() {
+					return $(this).val();
+				}).get().join(",");
+			})
+		}, function() {})
+		//添加用户权限
+		$(document).on("click", ".addUserRole", function() {
+			var rid = $('#selectInfo option:selected').val();
+			var str = $("#selectUpd option").map(function() {
+				return $(this).val();
+			}).get().join(",")
+			var strs = new Array();
+			strs = str.split(",");
+			var flag = true;
+			for (i = 0; i < strs.length; i++) {
+				if (rid == strs[i]) {
+					flag = true;
+					break;
+				} else {
+					flag = false;
+				}
+			}
+			;
+			if (flag) {
+				$api.ui_openAlert('提示', '该用户以拥有此权限！');
+			} else {
+				$('#selectInfo option:selected').appendTo('#selectUpd');
+			}
+			;
+
+		})
+
+		//删除用户权限
+		$(document).on("click", ".delUserRole", function() {
+			var rid = $('#selectUpd option:selected').val();
+			var str = $("#selectInfo option").map(function() {
+				return $(this).val();
+			}).get().join(",")
+			var strs = new Array();
+			strs = str.split(",");
+			var flag = true;
+			for (i = 0; i < strs.length; i++) {
+				if (rid == strs[i]) {
+					flag = true;
+					break;
+				} else {
+					flag = false;
+				}
+			}
+			;
+			if (flag) {
+				$('#selectUpd option:selected').remove();
+			} else {
+				$('#selectUpd option:selected').appendTo('#selectInfo');
+			}
+			;
+		})
+	}
+	//保存用户权限
+	function saveUserRole() {
+		$api.ui_openLoading('授权提示', '用户权限更新中，请耐心等待......');
+		window.setTimeout(function() {
+			$api.ui_closeLoading();
+		}, 500);
+		//删除已经存在的资源
+		if (str_selectUpd != null) {
+			var strs1 = new Array();
+			strs1 = str_selectUpd.split(",");
+			for (i = 0; i < strs1.length; i++) {
+				var roleId1 = strs1[i];
+				var data1 = {};
+				data1.roleId = strs1[i];
+				data1.username = saveName;
+				$pow.delUserRole(data1, function() {}, function() {});
+			}
+		}
+		//添加资源
+		var str_select = $("#selectUpd option").map(function() {
+			return $(this).val();
+		}).get().join(",")
+		if (str_select != null || str_select != '') {
+			var strs = new Array();
+			strs = str_select.split(",");
+			for (i = 0; i < strs.length; i++) {
+				var roleId = strs[i];
+				var data = {};
+				data.roleId = roleId;
+				data.username = saveName;
+				$pow.addUserRole(data, function() {
+					$("#userRole").modal("hide");
+				}, function() {
+					$("#userRole").modal("hide");
+				});
+			}
+		} else {
+			$("#userRole").modal("hide");
+		}
+	}
+</script>
+<script>
+	$(function() {
+		$api.Initialize();
+		initpassword();
+		initTable();
+	});
+</script>
+
+<script type='text/javascript'>
+	var form = $('#userform');
+	$(document).ready(function() {
+		form.bootstrapValidator({
+			message : '输入值不合法',
+			feedbackIcons : {
+				valid : 'glyphicon glyphicon-ok',
+				invalid : 'glyphicon glyphicon-remove',
+				validating : 'glyphicon glyphicon-refresh'
+			},
+			fields : {
+				username : {
+					message : '用户名不合法',
+					validators : {
+						notEmpty : {
+							message : '用户名不能为空'
+						},
+						stringLength : {
+							min : 3,
+							max : 30,
+							message : '请输入3到30个字符'
+						},
+						regexp : {
+							regexp : /^[a-zA-Z0-9_\. \u4e00-\u9fa5 ]+$/,
+							message : '用户名只能由字母、数字、点、下划线和汉字组成 '
+						},
+					}
+				}
+			}
+		});
+	});
+</script>
+
+
+
+</html>
+
+
+

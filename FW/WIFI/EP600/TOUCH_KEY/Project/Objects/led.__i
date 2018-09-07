@@ -1,0 +1,1 @@
+"..\User\led\led.c" OPTIMIZE (8,SPEED) BROWSE INCDIR(..\User;..\User\led;..\User\touch;..\User\timer;..\User\inc) DEBUG OBJECTEXTEND PRINT(.\Listings\led.lst) TABS (2) OBJECT(.\Objects\led.obj)

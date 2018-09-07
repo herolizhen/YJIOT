@@ -1,0 +1,104 @@
+package com.yjyz.iot.ota.service.impl;
+
+import java.net.URLDecoder;
+import java.util.List;
+import java.util.UUID;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import com.yjyz.iot.ota.util.MD5Util;
+import javax.annotation.Resource;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.yjyz.iot.ota.dao.OTAFileInfoMapper;
+import com.yjyz.iot.ota.entity.OTAFileInfo;
+import com.yjyz.iot.ota.service.IOTAFileService;
+
+@Service("otaFileService")
+public class OTAFileServiceImpl implements IOTAFileService {
+	
+	@Resource
+	OTAFileInfoMapper OTAFileInfoDao;
+	@Value("${cfg.sys.otafile.filePathl}")
+	private String OTAFILEPATH;
+	
+	@Override
+	public List<OTAFileInfo> selectByProduceId(String produceId) throws Exception {
+		return this.OTAFileInfoDao.selectByProductId(produceId);
+	}
+
+	@Override
+	public boolean deleteByPrimaryKey(Integer id) throws Exception {
+		int ret = this.OTAFileInfoDao.deleteByPrimaryKey(id);
+		if (ret == 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	// 需要增加非空保护
+	@Override
+	public OTAFileInfo insert(OTAFileInfo record,MultipartFile file) throws Exception {
+		/*multiFile转File*/
+        /*防止中文路径乱码*/
+        String temppath = this.getClass().getResource("").toString();
+        temppath = URLDecoder.decode(temppath,"UTF-8");
+        /*设置本机的盘*/
+        int count=temppath.indexOf(":/");
+        String temppath_temp=temppath;
+        if(count>-1){
+        	temppath_temp=temppath.substring(count,temppath.length());
+        	}
+        /*count+2防止数组索引超出*/
+        temppath = temppath.substring(count+2,temppath.lastIndexOf("/classes/"))+"/temp";
+        /*截取文件后缀*/
+        /*.substring(file.getOriginalFilename().lastIndexOf("."))*/
+        String fileName = "/"+file.getOriginalFilename();
+        /*判断路径是否存在*/
+        File tempFile = new File(OTAFILEPATH);
+        /*判断路径是否存在如果存在，跳过，不存在创建路径*/
+        if(!tempFile.exists()){
+            tempFile.mkdirs();
+        }
+        /*路径拼接*/
+        //System.out.println(temppath+fileName);
+        tempFile = new File(OTAFILEPATH+fileName);
+        /*buff用来把文件写入到文件夹中*/
+    	BufferedOutputStream buff = new BufferedOutputStream(new FileOutputStream(tempFile));
+    	buff.write(file.getBytes());
+        buff.close();
+        /*获取文件MD5码*/
+        String uploadMd5Code =MD5Util.getFileMD5String(tempFile);
+        OTAFileInfo vo = new OTAFileInfo();
+        vo.setMd5(uploadMd5Code);
+		int maxId = this.OTAFileInfoDao.getOTAFileInofMaxId();
+		record.setId(maxId + 1);
+		record.setOtaId(UUID.randomUUID().toString());
+		int ret = this.OTAFileInfoDao.insertSelective(record);
+		if (ret == 1) {
+			return record;
+		} else {
+			return null;
+		}
+
+	}
+
+	@Override
+	public boolean updateByPrimaryKey(OTAFileInfo record) throws Exception {
+		int ret = this.OTAFileInfoDao.updateByPrimaryKeySelective(record);
+		if (ret == 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public OTAFileInfo selectByPrimaryKey(Integer id) throws Exception {
+		return this.OTAFileInfoDao.selectByPrimaryKey(id);
+	}
+}

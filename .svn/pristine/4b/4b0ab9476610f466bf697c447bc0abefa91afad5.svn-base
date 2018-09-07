@@ -1,0 +1,1297 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>应用管理</title>
+<meta charset="UTF-8">
+<meta name="keywords" content="keyword1,keyword2,keyword3">
+<meta name="description" content="this is my page">
+<link href="../../compontents/bootstarp/css/bootstrap-UI.css.css"
+	rel="stylesheet" media="screen">
+<link
+	href="../../compontents/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css"
+	rel="stylesheet" media="screen">
+
+<link
+	href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"
+	rel="stylesheet" />
+<link href="../../compontents/iot/css/table.css" rel="stylesheet" />
+<script
+	src="https://cdn.staticfile.org/flat-ui/2.3.0/js/vendor/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/flat-ui/2.3.0/js/flat-ui.min.js"></script>
+<script src="../../compontents/bootstarp/js/bootstrap-table.js"></script>
+<script
+	src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript"
+	src="../../compontents/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"
+	charset="UTF-8"></script>
+<script
+	src="https://cdn.bootcss.com/bootstrap-validator/0.5.3/js/bootstrapValidator.js"></script>
+<script src="../../compontents/jquery/js/md5.js"></script>
+<script src="../../compontents/iot/js/api.js"></script>
+</head>
+<style type="text/css">
+body {
+	font-family: "华文细黑";
+	width: 100%;
+	height: auto;
+	background: #f7f7f7;
+	margin-left: 30px;
+	padding-right: 50px;
+}
+</style>
+<body>
+
+
+
+	<!-- 推送 -->
+	<div id="device-openone" tabindex="-1" role="dialog"
+		aria-labelledby="device-openone-title"
+		class="modal fade bs-example-modal-lg">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">
+						<span id="pushName"></span>
+					</h4>
+					<ul id="device-openone-title" class="nav nav-tabs modal-title"
+						role="tablist">
+						<li><a href="#device-open-a" role="tab">短信</a></li>
+						<li><a href="#device-open-b" role="tab">通知</a></li>
+						<li><a href="#device-open-c" role="tab">语音</a></li>
+					</ul>
+				</div>
+				<div id="alert-dialog-modal-body" class="modal-body">
+					<div id="device-open-content" class="tab-content">
+
+						<div class="tab-pane fade in active " id="device-open-a"
+							style="margin-left: 50px;margin-top: 20px">
+							<div class="row" style="margin-bottom: 5px">
+								<div id='div_standardMd'>
+									<table>
+										<tr style="display:block;margin-bottom: 10px">
+											<td colspan=2><label style="font-size: 16px">是否选择易享云标准模板</label>
+												<label class="btn btn-default" id='btn_selNoticeConfig'>
+													<input type="checkbox" id="ck_selNoticeConfig"
+													style="width: 20px;height: 20px;">
+											</label> <input type="text" id="NoticeConfig" hidden="hidden"></td>
+
+											<td><button type="button" class="btn btn-danger"
+													onclick="noticeOpen()" style="margin-left: 200px">
+													<span id="noticeOpen"></span>配置
+												</button></td>
+										</tr>
+									</table>
+								</div>
+								<table>
+
+									<tr>
+										<td><span class="input-group-addon" style="height:40px;">&nbsp;云通讯APPID</span></td>
+										<td><input type="text" name="appID_YTXshortMes"
+											id="appID_YTXshortMes" style="width:350px;height:40px;"
+											class="form-control"></td>
+									</tr>
+									<tr>
+										<td><span class="input-group-addon"
+											style="height:40px;width: 112px">签&nbsp;&nbsp;名</span></td>
+										<td><input type="text" name="appName_shortMes"
+											id="appName_shortMes" style="width:350px;height:40px;"
+											class="form-control"></td>
+									</tr>
+								</table>
+								<table style="margin-top: 10px">
+									<tr style="display:block;margin-bottom: 10px">
+										<td colspan=2><label style="font-size: 16px">验证吗</label>
+										</td>
+									</tr>
+									<tr>
+										<td><span class="input-group-addon"
+											style="height:40px;width: 112px">&nbsp;&nbsp;模板ID</span></td>
+										<td><input type="text" name="verTemplateId_shortMes"
+											id="verTemplateId_shortMes" style="width:350px;height:40px;"
+											class="form-control"></td>
+									</tr>
+									<tr>
+										<td><span class="input-group-addon"
+											style="height:40px;width: 112px;height: 53px">模&nbsp;&nbsp;板</span></td>
+										<td><textarea class="form-control"
+												id="verTemplate_shortMes" name="verTemplate_shortMes"
+												style="width:350px"></textarea></td>
+									</tr>
+								</table>
+
+								<table style="margin-top: 10px">
+									<tr style="display:block;margin-bottom: 10px">
+										<td colspan=2><label style="font-size: 16px">通知</label></td>
+									</tr>
+									<tr>
+										<td><span class="input-group-addon"
+											style="height:40px;width: 112px">&nbsp;&nbsp;模板ID</span></td>
+										<td><input type="text" name="mesTemplateId_shortMes"
+											id="mesTemplateId_shortMes" style="width:350px;height:40px;"
+											class="form-control"></td>
+									</tr>
+									<tr>
+										<td><span class="input-group-addon"
+											style="height:40px;width: 112px;height: 53px">模&nbsp;&nbsp;板</span></td>
+										<td><textarea class="form-control"
+												id="mesTemplate_shortMes" name="verTemplate_shortMes"
+												style="width:350px"></textarea></td>
+									</tr>
+								</table>
+
+								<table style="margin-top: 10px">
+									<tr>
+										<td><span class="input-group-addon"
+											style="height:40px;width: 112px">&nbsp;&nbsp;手机号</span></td>
+										<td><input type="text" name="tel_a" id="tel_a"
+											style="width:130px;height:40px;" class="form-control"></td>
+										<td>
+											<button type="button" class="btn btn-success"
+												onclick="codedDebug_a()" style="margin-left: 15px">验证码调试</button>
+											<button type="button" class="btn btn-success"
+												onclick="noticeDebug_a()" style="margin-left: 15px">通知调试</button>
+										</td>
+									</tr>
+								</table>
+
+							</div>
+
+
+							<div class="row" style="margin-bottom: 5px;margin-top: 20px">
+								<div class="col-md-10"></div>
+								<div class="col-md-2">
+									<button type="button" class="btn btn-primary"
+										onclick="saveNoticeConfig_shortMes()">保存</button>
+								</div>
+							</div>
+
+						</div>
+						<div class="tab-pane fade in active " id="device-open-b"
+							style="margin-left: 10px;margin-top: 20px">
+							<div class="row" style="margin-left: 20px;margin-bottom: 15px">
+								<div class="input-group">
+									<span class="input-group-addon" style="height:40px">&nbsp;&nbsp;APPID&nbsp;</span>
+									<input type="text" name="apiAppid" id="apiAppid"
+										style="width:400px;height:40px" class="form-control">
+								</div>
+							</div>
+
+							<div class="row" style="margin-left: 20px ;margin-bottom: 15px">
+								<div class="input-group">
+									<span class="input-group-addon" style="height:40px">APPKEY</span>
+									<input type="text" name="apiAppkey" id="apiAppkey"
+										style="width:400px;height:40px" class="form-control">
+								</div>
+							</div>
+
+							<div class="row"
+								style="margin-left:20px;  margin-bottom: 5px;margin-top: 5px">
+								<div class="input-group">
+									<span class="input-group-addon" style="height:40px">通知模板</span>
+									<textarea class="form-control" id="mesTemplate_b"
+										name="verTemplate_b" style="width: 395px"></textarea>
+								</div>
+							</div>
+							<div class="row"
+								style="margin-left: 20px ;margin-top: 15px;margin-bottom: 15px">
+								<div class="input-group">
+									<span class="input-group-addon" style="height:40px">&nbsp;&nbsp;手机号&nbsp;&nbsp;</span>
+									<input type="text" name="tel_b" id="tel_b"
+										style="width:200px;height:40px" class="form-control">
+									<button type="button" class="btn btn-success"
+										onclick="noticeDebug_b()"
+										style="margin-left: 15px;margin-top: 2px">通知调试</button>
+								</div>
+
+							</div>
+
+
+							<div class="row" style="margin-bottom: 5px;margin-top: 10px">
+								<div class="col-md-1"></div>
+								<div class="col-md-11">
+									<span class="fa fa-asterisk"
+										style="color: red;margin-left: -20px">提示：</span><br>
+									“通知”主要是针对APICloud平台android版本APP的通知推送配置<br>
+									APICloud平台APP的“ID”<br>APICloud平台APP的“appKey”
+
+								</div>
+							</div>
+
+
+							<div class="row" style="margin-bottom: 5px;margin-top: -120px">
+								<div class="col-md-9"></div>
+								<div class="col-md-2">
+									<button type="button" class="btn btn-primary"
+										onclick="saveNoticeConfig_b()">保存</button>
+								</div>
+								<div class="col-md-1"></div>
+							</div>
+
+
+						</div>
+						<div class="tab-pane fade in active " id="device-open-c"
+							style="margin-left: 40px">
+
+
+
+
+							<div class="row" style="margin-bottom: 5px">
+								<div class="col-md-6" style="margin-left: -20px">
+									<label style="font-size: 16px">语音配置</label>
+								</div>
+							</div>
+							<div class="row" style="margin-left: 20px ;margin-bottom: 15px">
+								<div class="input-group">
+									<span class="input-group-addon" style="height:40px">来电显示号码</span>
+									<input type="text" name="voiceTelNo" id="voiceTelNo"
+										style="width:357px;height:40px" class="form-control">
+								</div>
+							</div>
+
+
+
+							<div style="width:470px">
+								<div class="row" style="margin-left:20px;  margin-bottom: 15px；">
+									<div class="input-group">
+										<span class="input-group-addon" style="height:40px">语音文件</span>
+										<input type="text" name="voiceWav" id="voiceWav"
+											style="height:40px;width: 200px" placeholder="请输入文件名称"
+											class="form-control"> <span class="fa fa-asterisk"
+											style="color: red;margin-left: 10px;margin-top: 12px">文件格式
+											.WAV</span>
+									</div>
+								</div>
+								<div class="row"
+									style="margin-left:20px;  margin-bottom: 5px;margin-top: 15px">
+									<div class="input-group">
+										<span class="input-group-addon" style="height:40px">语音内容
+										</span>
+										<textarea class="form-control" id="voiceText" name="voiceText"></textarea>
+									</div>
+								</div>
+
+								<div class="row" style="margin-bottom: 5px;margin-top: 10px">
+									<div class="col-md-1"></div>
+									<div class="col-md-11">
+										<span class="fa fa-asterisk"
+											style="color: red;margin-left: -20px">提示：</span><br>
+										APPID对应云通讯平台 <br> 语音文件为云通讯平台审核通过的.WAV文件
+
+									</div>
+								</div>
+
+
+								<div class="row" style="margin-bottom: 5px;margin-top: 20px">
+									<div class="col-md-10"></div>
+									<div class="col-md-2">
+										<button type="button" class="btn btn-primary"
+											onclick="saveNoticeConfig_c()">保存</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+
+
+	<!-- 应用添加 -->
+	<div class="modal fade myModal" id="myModal" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">应用添加</h4>
+				</div>
+				<div class="modal-body" style="height:450x">
+					<form id="userform">
+						<div class="col-md-12" style="margin-left:60px;margin-top:10px">
+							<div class="row">
+								<div class="input-group">
+									<span class="input-group-addon">应用名称</span> <input type="text"
+										class="form-control" id="appName" placeholder="请输入应用名称"
+										style="width:360px;height:40px ">
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="input-group">
+									<span class="input-group-addon">超级管理员</span> <select
+										id="master" class="form-control"
+										style="width:345px;height:40px "></select>
+								</div>
+							</div>
+						</div>
+
+						<br>
+						<div class="col-md-12" style="margin-left:60px;margin-top:20px">
+							<div
+								style="height: 1px;width:550px;height:1px;border:0.5px solid #CCC;margin-left: -70px;margin-bottom: 20px;"></div>
+
+							<div class="row">
+
+								<div class="input-group">
+									<span class="input-group-addon">公司名称</span> <input type="text"
+										class="form-control" name="firmName" id="firmName"
+										placeholder="请输入公司名称" style="width:360px;height:40px "><span
+										class="fa fa-asterisk"
+										style="color: red;margin-left: 10px;margin-top: 12px"></span>
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="input-group">
+									<span class="input-group-addon">信用代码</span> <input type="text"
+										class="form-control" name="firmCreditCode" id="firmCreditCode"
+										placeholder="请输入信用代码" style="width:360px;height:40px "><span
+										class="fa fa-asterisk"
+										style="color: red;margin-left: 10px;margin-top: 12px"></span>
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="col-md-5" style="margin-left: -15px">
+									<div class="input-group">
+										<span class="input-group-addon">&nbsp;负&nbsp;责&nbsp;人</span> <input
+											type="text" id="firmLegal" class="form-control"
+											style="width:128px;height:40px">
+									</div>
+								</div>
+								<div class="col-md-5">
+									<div class="input-group">
+										<span class="input-group-addon">注册时间</span> <input type="text"
+											id="firmFoundDate" class="form-control"
+											style="width:128px;height:40px">
+									</div>
+									<!-- 	<div class="input-group">
+			
+													<span class="input-group-addon" style="height: 40px;">注册日期</span>
+													<div class="controls input-append date form_datetime"
+														data-date="2018-01-01" data-date-format="yyyy-mm-dd"
+														data-link-field="dtp_input1"
+														style="height: 10px;max-height: 10px;">
+														<input name="foundDate " id="foundDate" type="text"
+															style="width:128px;height:40px" value="" readonly> <span
+															class="add-on"><i class="icon-remove"></i></span> <span
+															class="add-on"><i class="icon-th"></i></span>
+													</div>
+												</div> -->
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="col-md-5" style="margin-left: -15px">
+									<div class="input-group">
+										<span class="input-group-addon">&nbsp;&nbsp;&nbsp;经&nbsp;度&nbsp;&nbsp;&nbsp;</span>
+										<input type="text" id="firmLongitude" class="form-control"
+											style="width:128px;height:40px">
+									</div>
+								</div>
+								<div class="col-md-5">
+									<div class="input-group">
+										<span class="input-group-addon">&nbsp;&nbsp;&nbsp;纬&nbsp;度&nbsp;&nbsp;&nbsp;</span>
+										<input type="text" id="firmLatitude" class="form-control"
+											style="width:128px;height:40px">
+									</div>
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="input-group">
+									<span class="input-group-addon">公司地址</span> <input type="text"
+										class="form-control" id="firmAddress" placeholder="请输入公司地址"
+										style="width:360px;height:40px ">
+								</div>
+							</div>
+						</div>
+
+					</form>
+					<div style=" clear:both"></div>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					<button type="button" class="btn btn-primary" onclick="addApp()">确认</button>
+				</div>
+			</div>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+
+	<!-- 应用修改 -->
+	<div class="modal fade myModal" id="myModalUpd" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">应用信息维护</h4>
+				</div>
+				<div class="modal-body" style="height:450x">
+					<form id="userformUpd">
+						<div class="col-md-12" style="margin-left:60px;margin-top:10px">
+							<div class="row">
+								<div class="input-group">
+									<input type="hidden" class="form-control" id="appIdUpd"
+										style="width:360px;height:40px ">
+								</div>
+								<div class="input-group">
+									<span class="input-group-addon">应用名称</span> <input type="text"
+										class="form-control" id="appNameUpd" placeholder="请输入应用名称"
+										style="width:360px;height:40px ">
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="input-group">
+									<span class="input-group-addon">超级管理员</span> <select
+										id="masterUpd" class="form-control"
+										style="width:345px;height:40px "></select>
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="input-group">
+									<span class="input-group-addon">APPKEY</span> <input
+										type="text" class="form-control" id="appKey" placeholder=""
+										style="width:360px;height:40px " readonly="readonly">
+								</div>
+							</div>
+						</div>
+
+						<br>
+						<div class="col-md-12" style="margin-left:60px;margin-top:20px">
+							<div
+								style="height: 1px;width:550px;height:1px;border:0.5px solid #CCC;margin-left: -70px;margin-bottom: 20px;"></div>
+
+							<div class="row">
+
+								<div class="input-group">
+									<span class="input-group-addon">公司名称</span> <input type="text"
+										class="form-control" id="firmNameUpd" name="firmNameUpd"
+										placeholder="请输入公司名称" style="width:360px;height:40px "><span
+										class="fa fa-asterisk"
+										style="color: red;margin-left: 10px;margin-top: 12px"></span>
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="input-group">
+									<span class="input-group-addon">信用代码</span> <input type="text"
+										class="form-control" id="firmCreditCodeUpd"
+										name="firmCreditCodeUpd" placeholder="请输入信用代码"
+										style="width:360px;height:40px "><span
+										class="fa fa-asterisk"
+										style="color: red;margin-left: 10px;margin-top: 12px"></span>
+								</div>
+							</div>
+
+							<br>
+							<div class="row">
+								<div class="col-md-5" style="margin-left: -15px">
+									<div class="input-group">
+										<span class="input-group-addon">&nbsp;负&nbsp;责&nbsp;人</span> <input
+											type="text" id="firmLegalUpd" class="form-control"
+											style="width:128px;height:40px">
+									</div>
+								</div>
+								<div class="col-md-5">
+									<div class="input-group">
+										<span class="input-group-addon">注册时间</span> <input type="text"
+											id="firmFoundDateUpd" class="form-control"
+											style="width:128px;height:40px">
+									</div>
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="col-md-5" style="margin-left: -15px">
+									<div class="input-group">
+										<span class="input-group-addon">&nbsp;&nbsp;&nbsp;经&nbsp;度&nbsp;&nbsp;&nbsp;</span>
+										<input type="text" id="firmLongitudeUpd" class="form-control"
+											style="width:128px;height:40px">
+									</div>
+								</div>
+								<div class="col-md-5">
+									<div class="input-group">
+										<span class="input-group-addon">&nbsp;&nbsp;&nbsp;纬&nbsp;度&nbsp;&nbsp;&nbsp;</span>
+										<input type="text" id="firmLatitudeUpd" class="form-control"
+											style="width:128px;height:40px">
+									</div>
+								</div>
+							</div>
+							<br>
+							<div class="row">
+								<div class="input-group">
+									<span class="input-group-addon">公司地址</span> <input type="text"
+										class="form-control" id="firmAddressUpd" placeholder="请输入公司地址"
+										style="width:360px;height:40px ">
+								</div>
+							</div>
+						</div>
+
+					</form>
+					<div style=" clear:both"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭
+					</button>
+					<button type="button" class="btn btn-primary" onclick="updApp()">确认</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+
+	<!--应用列表 -->
+	<h4 style="margin-bottom: -15px;margin-top: 2px">应用列表</h4>
+	<hr
+		style="height:1px;border:none;border-top:3px solid #028cfd;margin-bottom: 15px;" />
+	<div class="input-group col-md-2"
+		style="float: left;margin-bottom: 10px">
+		<button class="btn btn-primary btn-sm" data-toggle="modal"
+			data-target="#myModal" style="float: left;margin-bottom: 5px"
+			onclick="toaddApp()">应用添加</button>
+	</div>
+
+	<table id="tableData"></table>
+</body>
+
+<script type="text/javascript">
+	//初始化 资源信息
+	var appId = $api.getCurrApp();
+	function initTable() {
+		$api.ui_openLoading('提示', '资源信息加载中，请耐心等待......');
+		window.setTimeout(function() {
+			$api.ui_closeLoading();
+		}, 500);
+		var data = {
+			"appId" : appId
+		}
+		$pow.selAppAll('', success, error);
+		function success(ret) {
+			var obj = ret.appInfoList;
+			$table = $('#tableData').bootstrapTable({
+				data : obj, //最终的JSON数据放在这里
+				height : $(window).height() - 100,
+				striped : true,
+				pagination : true,
+				pageNumber : 1,
+				pageSize : 10,
+				pageList : [ 5, 10, 20, 50, 100 ],
+				search : true,
+				columns : [
+					{
+						title : '序号',
+						formatter : function(value, row, index) {
+							return index + 1;
+						}
+					},
+					{
+						field : 'appId',
+						title : '应用Id',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : 'appName',
+						title : '应用名称',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : 'masterName',
+						title : '管理员',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : 'operate',
+						title : '操作',
+						align : 'center',
+						formatter : function(value, row, index) {
+							var b = '';
+							var c = '';
+							if (row.appId != '8888') {
+								b = '<button type="button" class="btn btn-warning  btn-sm" style="margin-right:15px;" data-toggle="modal" data-target="#myModalUpd" ' +
+									'onclick="toupdApp(\''
+									+ row.appId + '\',\''
+									+ row.appName + '\',\''
+									+ row.masterId + '\',\''
+									+ row.masterName + '\',\''
+									+ row.firmName + '\',\''
+									+ row.firmCreditCode + '\',\''
+									+ row.firmAddress + '\',\''
+									+ row.firmLongitude + '\',\''
+									+ row.firmLatitude + '\',\''
+									+ row.firmLegal + '\',\''
+									+ row.firmFoundDate
+									+ '\')">修改</button>';
+								c = '<button type="button" class="btn btn-success  btn-sm" style="margin-right:15px;" data-toggle="modal" data-target="#myModal2" ' +
+									'onclick="toPush(\''
+									+ row.appId + '\',\''
+									+ row.appName + '\',\''
+									+ row.masterId + '\',\''
+									+ row.masterName + '\',\''
+									+ row.firmName + '\',\''
+									+ row.firmCreditCode + '\',\''
+									+ row.firmAddress + '\',\''
+									+ row.firmLongitude + '\',\''
+									+ row.firmLatitude + '\',\''
+									+ row.firmLegal + '\',\''
+									+ row.firmFoundDate
+									+ '\')">推送</button>';
+							}
+							return b + c;
+
+						}
+					} ],
+				formatNoMatches : function() {
+					return "没有相关的匹配结果";
+				},
+				formatLoadingMessage : function() {
+					return "";
+				}
+			});
+		}
+		;
+		function error() {
+			$api.ui_openAlert('提示', '应用信息加载失败');
+		}
+		;
+
+	}
+	function refreshTableData() {
+		var data = {
+			"appId" : appId
+		}
+		$pow.selAppAll('', success, error);
+		function success(ret) {
+			var data = ret.appInfoList;
+			$("#tableData").bootstrapTable('load', data);
+		}
+		function error() {
+			$api.ui_openAlert('提示', '应用信息更新失败');
+		}
+
+	}
+</script>
+<script type="text/javascript">
+	//时间转化
+	function js_strto_time(str_time) {
+		var timestamp2 = Date.parse(new Date(str_time));
+		return strtotime = timestamp2 = timestamp2 / 1000;
+	}
+	function js_date_time(unixtime) {
+		var timestr = new Date(parseInt(unixtime) * 1000);
+		var datetime = timestr.toLocaleString().replace(/年|月/g, "-").replace(/日/g, " ");
+		return datetime;
+	}
+</script>
+<script type="text/javascript">
+	function clearFrom() {
+		$(':input')
+			.not(':button, :submit, :reset, :hidden')
+			.val('')
+			.removeAttr('checked')
+			.removeAttr('selected');
+
+	}
+</script>
+<script type="text/javascript">
+	/* 添加应用 */
+	function toaddApp() {
+		var data = {
+			"appId" : $api.getCurrApp()
+		}
+		$pow.selSysUserByApp(data, function(ret) {
+			$("#master").empty();
+			ret = ret.sysUserList;
+			for (i in ret) {
+				$("#master").append("<option class='' value=" + ret[i].username + ">" + ret[i].realname + "</option>");
+			}
+		}, function() {})
+	}
+
+	function addApp() {
+		//进行表单验证
+		var bv = form.data('bootstrapValidator');
+		bv.validate();
+		if (bv.isValid()) {
+			var appName = $("#appName").val();
+			var masterId = $("#master option:selected").val();
+			var masterName = $("#master option:selected").text();
+			var firmName = $("#firmName").val();
+			var firmCreditCode = $("#firmCreditCode").val();
+			var firmAddress = $("#firmAddress").val();
+			var firmLongitude = $("#firmLongitude").val();
+			var firmLatitude = $("#firmLatitude").val();
+			var firmLegal = $("#firmLegal").val();
+			var firmFoundDate = $("#firmFoundDate").val();
+			if (!$api.isNull(firmFoundDate)) {
+				firmFoundDate = js_strto_time($("#firmFoundDate").val()) + '000';
+			} else {
+				firmFoundDate = null;
+			}
+			var data = {};
+			data.appName = appName;
+			data.masterId = masterId;
+			data.masterName = masterName;
+			data.firmName = firmName;
+			data.firmCreditCode = firmCreditCode;
+			data.firmAddress = firmAddress;
+			data.firmLongitude = firmLongitude;
+			data.firmLatitude = firmLatitude;
+			data.firmLegal = firmLegal;
+			data.firmFoundDate = firmFoundDate;
+			console.log(data);
+			$pow.addApp(data, success, error);
+			function success() {
+				refreshTableData();
+				$("#myModal").modal("hide");
+				clearFrom() ;
+				var data = {};
+				data.roleId = '6666';
+				data.username = masterName;
+				$pow.addUserRole(data, function() {}, function() {
+					$api.ui_openAlert('提示', '管理员权限保存失败');
+				});
+			}
+			;
+			function error() {
+				$api.ui_openAlert('提示', '应用信息添加失败');
+				clearFrom() ;
+			}
+			;
+		}
+
+	}
+</script>
+<script type="text/javascript">
+	function toupdApp(appId, appName, masterId, masterName, firmName, firmCreditCode, firmAddress, firmLongitude, firmLatitude, firmLegal, firmFoundDate) {
+		var data = {
+			"appId" : $api.getCurrApp()
+		}
+		$pow.selSysUserByApp(data, function(ret) {
+			$("#masterUpd").empty();
+
+			ret = ret.sysUserList;
+			for (i in ret) {
+				$("#masterUpd").append("<option class='' value=" + ret[i].username + ">" + ret[i].realname + "</option>");
+			}
+			//回显要修改的应用信息
+			$("#appIdUpd").val(appId);
+			
+			var appKey = hex_md5($("#appIdUpd").val()).toLocaleUpperCase();
+			$("#appNameUpd").val(appName);
+			$("#appKey").val(appKey);
+			$("#firmNameUpd").val(firmName);
+			$("#firmCreditCodeUpd").val(firmCreditCode);
+			$("#firmAddressUpd").val(firmAddress);
+			$("#firmLongitudeUpd").val(firmLongitude);
+			$("#firmLatitudeUpd").val(firmLatitude);
+			$("#firmLegalUpd").val(firmLegal);
+			if (!$api.isNull(firmFoundDate)) {
+				var time = firmFoundDate; //获取时间戳 
+				var timestamp = time / 1000;
+				//直接用 new Date(时间戳) 格式转化获得当前时间
+				var timestamp = new Date(parseInt(timestamp) * 1000);
+				//再利用拼接正则等手段转化为yyyy-MM-dd hh:mm:ss 格式
+				firmFoundDate = timestamp.toLocaleDateString().replace(/\//g, "-");
+
+			}
+
+			$("#firmFoundDateUpd").val(firmFoundDate);
+			var date = $("#firmFoundDateUpd").val();
+			if ('Invalid Date' == date) {
+				$("#firmFoundDateUpd").val('');
+			}
+
+			$('#masterUpd option').each(function() {
+				var self = $(this);
+				var selfVal = self.val();
+				if (selfVal == masterId) self.attr('selected', 'true');
+			});
+			var masterName = $("#master option:selected").text();
+			var data = {};
+			data.roleId = '6666';
+			data.username = masterName;
+		}, function() {})
+	}
+	//提交修改
+	function updApp() {
+		var appId = $("#appIdUpd").val();
+		var appName = $("#appNameUpd").val();
+		var masterId = $("#masterUpd option:selected").val();
+		var masterName = $("#masterUpd option:selected").text();
+		var firmName = $("#firmNameUpd").val();
+		var firmCreditCode = $("#firmCreditCodeUpd").val();
+		var firmAddress = $("#firmAddressUpd").val();
+		var firmLongitude = $("#firmLongitudeUpd").val();
+		var firmLatitude = $("#firmLatitudeUpd").val();
+		var firmLegal = $("#firmLegalUpd").val();
+		var firmFoundDate = $("#firmFoundDateUpd").val();
+		if (!$api.isNull(firmFoundDate)) {
+			firmFoundDate = js_strto_time($("#firmFoundDateUpd").val()) + '000';
+		} else {
+			firmFoundDate = null;
+		}
+		var data = {};
+		data.appId = appId;
+		data.appName = appName;
+		data.masterId = masterId;
+		data.masterName = masterName;
+		data.firmName = firmName;
+		data.firmCreditCode = firmCreditCode;
+		data.firmAddress = firmAddress;
+		data.firmLongitude = firmLongitude;
+		data.firmLatitude = firmLatitude;
+		data.firmLegal = firmLegal;
+		data.firmFoundDate = firmFoundDate;
+		console.log(data)
+		$pow.updApp(data, success, error);
+		function success() {
+			refreshTableData();
+			$("#myModalUpd").modal("hide");
+		}
+		;
+		function error() {
+			$api.ui_openAlert('提示', '应用信息修改失败');
+		}
+		;
+
+	}
+</script>
+
+<script type='text/javascript'>
+	var form = $('#userform');
+	$(document).ready(function() {
+		form.bootstrapValidator({
+			message : '输入值不合法',
+			feedbackIcons : {
+				valid : 'glyphicon glyphicon-ok',
+				invalid : 'glyphicon glyphicon-remove',
+				validating : 'glyphicon glyphicon-refresh'
+			},
+			fields : {
+				firmName : {
+					message : '公司名称名不合法',
+					validators : {
+						notEmpty : {
+							message : '公司名称不能为空'
+						}
+					}
+				},
+				firmCreditCode : {
+					message : '信用代码不合法',
+					validators : {
+						notEmpty : {
+							message : '信用代码不能为空'
+						}
+					}
+				}
+			}
+		});
+	});
+</script>
+
+<script type='text/javascript'>
+	var formUpd = $('#userformUpd');
+	$(document).ready(function() {
+		form.bootstrapValidator({
+			message : '输入值不合法',
+			feedbackIcons : {
+				valid : 'glyphicon glyphicon-ok',
+				invalid : 'glyphicon glyphicon-remove',
+				validating : 'glyphicon glyphicon-refresh'
+			},
+			fields : {
+				firmNameUpd : {
+					message : '公司名称名不合法',
+					validators : {
+						notEmpty : {
+							message : '公司名称不能为空'
+						}
+					}
+				},
+				firmCreditCodeUpd : {
+					message : '信用代码不合法',
+					validators : {
+						notEmpty : {
+							message : '信用代码不能为空'
+						}
+					}
+				}
+			}
+		});
+	});
+</script>
+
+<script type="text/javascript">
+	function showMyTabContent() {
+		$("#device-openone-title a").click(function(e) {
+			e.preventDefault();
+			$(this).tab("show");
+		});
+	}
+
+	function toPush(appId, appName) {
+		$('#device-openone').modal('show');
+		$('#device-openone-title a:first').tab('show');
+		$("#pushName").text(appName);
+		$("#NoticeConfig").val(appId);
+		$("#appName_shortMes").val(appName);
+
+
+		var data = {};
+		data.appId = appId;
+		$notice.selNoticeConfig(data, function(ret) {
+			$("#appID_YTXshortMes").val(ret.NoticeConfig.ytxAppid);
+			var appId = ret.NoticeConfig.appId;
+			var ytxAppid = ret.NoticeConfig.ytxAppid;
+
+			var noticeOpen = ret.NoticeConfig.noticeOpen
+			if (noticeOpen == true) {
+				$("#noticeOpen").text('禁用');
+			} else {
+				$("#noticeOpen").text('启用');
+			}
+			noticeConfig_a(appId, appName, ytxAppid);
+
+		}, function() {})
+	}
+	function noticeConfig_a(appId, appName, ytxAppid) {
+		if (!$api.isNull(appId)) {
+			noCkecd_a(appId);
+			$("#ck_selNoticeConfig").prop("checked", false);
+
+		} else {
+			$("#ck_selNoticeConfig").prop("checked", true);
+			ckecd_a(appId);
+
+		}
+		$("#ck_selNoticeConfig").click(function() {
+			if ($('#ck_selNoticeConfig').is(':checked')) {
+				//当前为选中状态
+
+				ckecd_a(appId);
+
+			} else {
+				//当前为不选中状态
+				noCkecd_a(appId);
+			}
+		})
+	}
+
+	function ckecd_a(appId) {
+		var data = {};
+		$notice.selNoticeConfig({}, function(ret) {
+			/* document.getElementById("verTemplateId_shortMes").readOnly = true;
+							document.getElementById("verTemplate_shortMes").readOnly = true;
+							document.getElementById("mesTemplateId_shortMes").readOnly = true;
+							document.getElementById("mesTemplate_shortMes").readOnly = true;
+							document.getElementById("appID_YTXshortMes").readOnly = true;
+							document.getElementById("appName_shortMes").readOnly = true; */
+			$("#verTemplateId_shortMes").val(ret.NoticeConfig.verTemplateId);
+			$("#verTemplate_shortMes").val(ret.NoticeConfig.verTemplate);
+			$("#mesTemplateId_shortMes").val(ret.NoticeConfig.mesTemplateId);
+			$("#mesTemplate_shortMes").val(ret.NoticeConfig.mesTemplate);
+
+
+		}, function() {})
+
+	}
+	function noCkecd_a(appId) {
+		/* 		 document.getElementById("verTemplateId_shortMes").readOnly = false;
+				document.getElementById("verTemplate_shortMes").readOnly = false;
+				document.getElementById("mesTemplateId_shortMes").readOnly = false;
+				document.getElementById("mesTemplate_shortMes").readOnly = false;
+				document.getElementById("appID_YTXshortMes").readOnly = false;
+				document.getElementById("appName_shortMes").readOnly = false;  */
+		var data = {};
+		data.appId = appId;
+		$notice.selNoticeConfig(data, function(ret) {
+			console.log(ret)
+			$("#verTemplateId_shortMes").val(ret.NoticeConfig.verTemplateId);
+			$("#verTemplate_shortMes").val(ret.NoticeConfig.verTemplate);
+			$("#mesTemplateId_shortMes").val(ret.NoticeConfig.mesTemplateId);
+			$("#mesTemplate_shortMes").val(ret.NoticeConfig.mesTemplate);
+			$("#mesTemplate_b").val(ret.NoticeConfig.mesTemplate);
+			$("#apiAppid").val(ret.NoticeConfig.apiAppid);
+			$("#apiAppkey").val(ret.NoticeConfig.apiAppkey);
+		}, function() {})
+	//$("#verTemplateId_shortMes").val('');
+	//	$("#verTemplate_shortMes").val('');
+	//$("#mesTemplateId_shortMes").val('');
+	//$("#mesTemplate_shortMes").val('');
+	}
+
+	//验证码测试
+	function codedDebug_a() {
+		var data = {};
+		data.appId = $("#NoticeConfig").val();
+		data.tel = $("#tel_a").val();
+		data.type = '1';
+		console.log(data);
+		$notice.noticeTest(data, function(ret) {
+		$api.ui_openAlert('提示', '验证码调试成功！');
+		}, function() {
+			$api.ui_openAlert('提示', '验证码调试失败！');
+		})
+	}
+	//短信通知测试
+	function noticeDebug_a() {
+		var data = {};
+		data.appId = $("#NoticeConfig").val();
+		data.tel = $("#tel_a").val()	;
+		data.type = '2';
+		$notice.noticeTest(data, function(ret) {
+		$api.ui_openAlert('提示', '短信通知调试成功！');
+		}, function() {
+		$api.ui_openAlert('提示', '短信通知调试失败！');
+		})
+	}
+	//app通知测试
+	function noticeDebug_b() {
+		var data = {};
+		data.appId = $("#NoticeConfig").val();
+		data.tel = $("#tel_b").val()	;
+		data.type = '3';
+		$notice.noticeTest(data, function(ret) {
+		$api.ui_openAlert('提示', 'APP通知调试成功！');
+		}, function() {
+			$api.ui_openAlert('提示', 'APP通知调试失败！');
+		})
+	}
+
+	//保存通知配置
+	function saveNoticeConfig_shortMes() {
+		var appId = $("#NoticeConfig").val();
+		var verTemplateId = $("#verTemplateId_shortMes").val();
+		var verTemplate = $("#verTemplate_shortMes").val();
+		var mesTemplateId = $("#mesTemplateId_shortMes").val();
+		var mesTemplate = $("#mesTemplate_shortMes").val();
+		var signature = $("#appName_shortMes").val();
+		var ytxAppid = $("#appID_YTXshortMes").val();
+		var data = {};
+		data.appId = appId;
+		data.signature = signature;
+		data.verTemplateId = verTemplateId;
+		data.verTemplate = verTemplate;
+		data.mesTemplateId = mesTemplateId;
+		data.mesTemplate = mesTemplate;
+		data.ytxAppid = ytxAppid;
+		console.log(data);
+
+
+		$notice.selNoticeConfig(data, function(ret) {
+			var appId = ret.NoticeConfig.appId;
+			if (!$api.isNull(appId)) {
+				$notice.updNoticeConfig(data, function(ret) {
+					$("#device-openone").modal("hide");
+				}, function(e) {
+					alert("修改失败");
+					console.log(e);
+				})
+			} else {
+				$notice.addNoticeConfig(data, function(ret) {
+					return true;
+					$("#device-openone").modal("hide");
+				}, function() {
+					alert("添加失败");
+				})
+			}
+
+
+		}, function() {})
+
+
+	}
+
+
+	//保存App推送配置
+	function saveNoticeConfig_b() {
+		var appId = $("#NoticeConfig").val();
+		apiAppid = $("#apiAppid").val();
+		apiAppkey = $("#apiAppkey").val();
+		var mesTemplate_b = $("#mesTemplate_b").val();
+		var data = {};
+
+		data.appId = appId;
+		data.apiAppid = apiAppid;
+		data.apiAppid = apiAppid;
+		data.apiAppkey = apiAppkey;
+		data.mesTemplate = mesTemplate_b;
+		console.log(data);
+
+		$notice.selNoticeConfig(data, function(ret) {
+			var appId = ret.NoticeConfig.appId;
+			if (!$api.isNull(appId)) {
+				$notice.updNoticeConfig(data, function(ret) {
+					$("#device-openone").modal("hide");
+				}, function(e) {
+					alert("修改失败");
+					console.log(e);
+				})
+			} else {
+				$notice.addNoticeConfig(data, function(ret) {
+					return true;
+					$("#device-openone").modal("hide");
+				}, function() {
+					alert("添加失败");
+				})
+			}
+
+
+		}, function() {})
+
+
+	}
+
+
+
+
+	//保存语音配置
+	function saveNoticeConfig_c() {
+		var appId = $("#NoticeConfig").val();
+		voiceTelNo = $("#voiceTelNo").val();
+		voiceWav = $("#voiceWav").val();
+		voiceText = $("#voiceText").val();
+		var data = {};
+		data.appId = appId;
+		data.voiceTelNo = voiceTelNo;
+		data.voiceWav = voiceWav;
+		data.voiceText = voiceText;
+		$notice.selNoticeConfig(data, function(ret) {
+			var appId = ret.NoticeConfig.appId;
+			if (!$api.isNull(appId)) {
+				$notice.updNoticeConfig(data, function(ret) {
+					$("#device-openone").modal("hide");
+				}, function(e) {
+					alert("修改失败");
+					console.log(e);
+				})
+			} else {
+				$notice.addNoticeConfig(data, function(ret) {
+					return true;
+					$("#device-openone").modal("hide");
+				}, function() {
+					alert("添加失败");
+				})
+			}
+
+
+		}, function() {})
+
+	}
+
+	//保存推送配置
+	function saveNoticeConfig(data) {
+		$notice.selNoticeConfig(data, function(ret) {
+			var appId = ret.NoticeConfig.appId;
+			if (!$api.isNull(appId)) {
+				$notice.updNoticeConfig(data, function(ret) {
+					$("#device-openone").modal("hide");
+				}, function(e) {
+					alert("修改失败");
+					console.log(e);
+				})
+			} else {
+				$notice.addNoticeConfig(data, function(ret) {
+					return true;
+					$("#device-openone").modal("hide");
+				}, function() {
+					alert("添加失败");
+				})
+			}
+
+
+		}, function() {})
+	}
+	//删除推送配置
+	function noticeOpen() {
+		var noticeOpen = $("#noticeOpen").text();
+		var appId = $("#NoticeConfig").val();
+		var appName = $("#pushName").text();
+		var data = {};
+		if (noticeOpen == '启用') {
+			data.appId = appId;
+			data.noticeOpen = true;
+			$notice.updNoticeConfig(data, function(ret) {
+				$api.ui_openAlert('提示', '推送配置已启用');
+				$("#noticeOpen").text('禁用');
+			}, function() {
+				$api.ui_openAlert('提示', '推送配置启用失败');
+			})
+
+		} else {
+			data.appId = appId;
+			data.noticeOpen = false;
+			$api.ui_openAlert('推送配置提示', '请确认是否要禁用应用：' + appName + '的推送配置', function(tag) {
+				if (tag) {
+					$notice.updNoticeConfig(data, function(ret) {
+						$api.ui_openAlert('提示', '推送配置已禁用')
+						$("#noticeOpen").text('启用');
+
+					}, function() {
+						$api.ui_openAlert('提示', '禁用失败');
+					})
+
+
+				}
+			});
+		}
+		
+
+
+
+
+
+	}
+</script>
+
+
+<script type="text/javascript">
+	$(function() {
+		$api.Initialize();
+		initTable();
+		showMyTabContent();
+		var h = $(document).height() - 150;
+		h = h < 300 ? 300 : h;
+		$('#alert-dialog-modal-body').css('height', h + 'px');
+	});
+</script>
+</html>
+
+<!-- <button id="btn_detail" type="button" class="btn btn-primary"
+											v-on:click="del(item)">删除</button> -->
+<!-- <script type="text/javascript">
+				//应用删除
+				function del(item) {
+					var appId = item.appId;
+					var data = {};
+					data.appId = appId;
+					$pow.delApp(data, success, error);
+					function success() {
+						alert("删除成功");
+						window.location.reload();
+					}
+					;
+					function error() {
+						alert("删除失败");
+					}
+					;
+				}
+			</script> -->

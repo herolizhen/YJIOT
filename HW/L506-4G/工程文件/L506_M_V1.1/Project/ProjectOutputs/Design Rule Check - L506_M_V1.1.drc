@@ -1,0 +1,32 @@
+Protel Design System Design Rule Check
+PCB File : Q:\工作\工程\L506-4G模块\工程文件\L506_M_V1.1\Project\PCB\L506_M_V1.1.1.PcbDoc
+Date     : 2018/3/23
+Time     : 13:16:34
+
+Processing Rule : Hole Size Constraint (Min=1mil) (Max=100mil) (All)
+Rule Violations :0
+
+Processing Rule : Height Constraint (Min=0mil) (Max=1000mil) (Prefered=500mil) (All)
+Rule Violations :0
+
+Processing Rule : Width Constraint (Min=10mil) (Max=200mil) (Preferred=15mil) (All)
+Rule Violations :0
+
+Processing Rule : Clearance Constraint (Gap=6mil) (All),(All)
+Rule Violations :0
+
+Processing Rule : Broken-Net Constraint ( (All) )
+Rule Violations :0
+
+Processing Rule : Short-Circuit Constraint (Allowed=No) (All),(All)
+Rule Violations :0
+
+Processing Rule : Width Constraint (Min=15mil) (Max=15mil) (Preferred=15mil) (InDifferentialPair('NewDifferentialPair1'))
+Rule Violations :0
+
+Processing Rule : Matched Net Lengths(Tolerance=1000mil) (InDifferentialPair ('NewDifferentialPair1'))
+Rule Violations :0
+
+
+Violations Detected : 0
+Time Elapsed        : 00:00:00

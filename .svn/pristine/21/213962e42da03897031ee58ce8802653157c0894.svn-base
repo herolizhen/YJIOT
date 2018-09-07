@@ -1,0 +1,15 @@
+package com.yjyz.iot.security.entity;
+
+import com.yjyz.iot.device.entity.DeviceInfo;
+
+public class DeviceInfoQuery extends DeviceInfo {
+	private Boolean ownType;
+
+	public Boolean getOwnType() {
+		return ownType;
+	}
+
+	public void setOwnType(Boolean ownType) {
+		this.ownType = ownType;
+	}
+}

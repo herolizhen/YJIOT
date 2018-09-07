@@ -1,0 +1,59 @@
+C51 COMPILER V9.52.0.0   CTYPE                                                             08/24/2017 10:09:45 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE CTYPE
+OBJECT MODULE PLACED IN .\Objects\ctype.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\lib\ctype.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\USER\IIC;.\USER
+                    -\UART;.\USER\TM1618;.\USER\Sensor;.\USER;.\USER\PWM;.\USER\DC_MOTOR;.\USER\timer;.\USER\inc;.\USER\EXINT;.\USER\touch_ke
+                    -y;.\USER\SYS_RUN;.\USER\step_motor;.\USER\BUZZER;.\USER\UART;.\USER\common;.\USER\lib) DEBUG OBJECTEXTEND PRINT(.\Listin
+                    -gs\ctype.lst) TABS(2) OBJECT(.\Objects\ctype.obj)
+
+line level    source
+
+   1          /*
+   2           *  linux/lib/ctype.c
+   3           *
+   4           *  Copyright (C) 1991, 1992  Linus Torvalds
+   5           */
+   6          
+   7          #include "ctype.h"
+   8          
+   9          unsigned char _ctype[] = {
+  10          _C,_C,_C,_C,_C,_C,_C,_C,      /* 0-7 */
+  11          _C,_C|_S,_C|_S,_C|_S,_C|_S,_C|_S,_C,_C,   /* 8-15 */
+  12          _C,_C,_C,_C,_C,_C,_C,_C,      /* 16-23 */
+  13          _C,_C,_C,_C,_C,_C,_C,_C,      /* 24-31 */
+  14          _S|_SP,_P,_P,_P,_P,_P,_P,_P,      /* 32-39 */
+  15          _P,_P,_P,_P,_P,_P,_P,_P,      /* 40-47 */
+  16          _D,_D,_D,_D,_D,_D,_D,_D,      /* 48-55 */
+  17          _D,_D,_P,_P,_P,_P,_P,_P,      /* 56-63 */
+  18          _P,_U|_X,_U|_X,_U|_X,_U|_X,_U|_X,_U|_X,_U,  /* 64-71 */
+  19          _U,_U,_U,_U,_U,_U,_U,_U,      /* 72-79 */
+  20          _U,_U,_U,_U,_U,_U,_U,_U,      /* 80-87 */
+  21          _U,_U,_U,_P,_P,_P,_P,_P,      /* 88-95 */
+  22          _P,_L|_X,_L|_X,_L|_X,_L|_X,_L|_X,_L|_X,_L,  /* 96-103 */
+  23          _L,_L,_L,_L,_L,_L,_L,_L,      /* 104-111 */
+  24          _L,_L,_L,_L,_L,_L,_L,_L,      /* 112-119 */
+  25          _L,_L,_L,_P,_P,_P,_P,_C,      /* 120-127 */
+  26          0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,    /* 128-143 */
+  27          0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,    /* 144-159 */
+  28          _S|_SP,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,   /* 160-175 */
+  29          _P,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,_P,       /* 176-191 */
+  30          _U,_U,_U,_U,_U,_U,_U,_U,_U,_U,_U,_U,_U,_U,_U,_U,       /* 192-207 */
+  31          _U,_U,_U,_U,_U,_U,_U,_P,_U,_U,_U,_U,_U,_U,_U,_L,       /* 208-223 */
+  32          _L,_L,_L,_L,_L,_L,_L,_L,_L,_L,_L,_L,_L,_L,_L,_L,       /* 224-239 */
+  33          _L,_L,_L,_L,_L,_L,_L,_P,_L,_L,_L,_L,_L,_L,_L,_L};      /* 240-255 */
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     38    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =    256    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

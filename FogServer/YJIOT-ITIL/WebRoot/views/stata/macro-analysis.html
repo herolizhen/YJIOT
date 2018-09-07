@@ -1,0 +1,1984 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate" />
+<link href="../../compontents/bootstarp/css/bootstrap-UI.css.css"
+	rel="stylesheet" media="screen">
+<link
+	href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"
+	rel="stylesheet" />
+<script
+	src="https://cdn.staticfile.org/flat-ui/2.3.0/js/vendor/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/flat-ui/2.3.0/js/flat-ui.min.js"></script>
+<script src="../../compontents/echart/echarts.js"></script>
+<script src="../../compontents/iot/js/config.js?v=1.0.0"></script>
+<script src="../../compontents/iot/js/api.js?v=1.0.0"></script>
+<script src="../../compontents/iot/js/iot.js?v=1.0.0"></script>
+<script src="../../compontents/iot/js/stats.js?v=1.0.0"></script>
+<title>总体分析</title>
+<meta charset="utf-8" />
+<style type="text/css">
+textarea {
+	resize: none;
+	overflow: hidden;
+}
+body {
+	font-family: "华文细黑";
+	width: 100%;
+	height: auto;
+	background: #f7f7f7;
+	margin-left: 30px;
+	padding-right: 50px;
+}
+</style>
+</head>
+<body>
+	<!--总体概况  -->
+	<div class="row">
+		<h4 style="margin-left: 20px;margin-bottom: -15px">总体概况</h4>
+		<hr
+			style="height:1px;border:none;border-top:3px solid #028cfd;margin-bottom: 15px;margin-left: 20px;margin-right: 20px" />
+		<div>
+			<div class="col-md-4">
+				<div class="panel panel-default">
+					<div class="panel-heading">设备台账</div>
+					<div class="panel-body">
+						<div id="chart-Device" style="100%;height:300px;"></div>
+					</div>
+					<div class="panel-footer">设备生命周期各关键环节设备数量</div>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="panel panel-default">
+					<div class="panel-heading">终端用户</div>
+					<div class="panel-body">
+						<div id="chart-User" style="width:100%;height:300px;"></div>
+					</div>
+					<div class="panel-footer">
+						累计注册用户总数：<span id="reg_countSum"></span>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="panel panel-default">
+					<div class="panel-heading">资金回流</div>
+					<div class="panel-body">
+						<div id="chart-Funds" style="width:100%;height:300px;"></div>
+					</div>
+					<div class="panel-footer">
+						累计资金回流总额：￥<span id="freeSum"></span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--资金回流情况  -->
+	<div class="row">
+		<h4 style="margin-left: 20px;margin-bottom: -15px">资金回流情况</h4>
+		<hr
+			style="height:1px;border:none;border-top:3px solid #028cfd;margin-bottom: 15px;margin-left: 20px;margin-right: 20px" />
+		<div class="col-md-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">资金：周资金回流-商户</div>
+
+				<div class="panel-body">
+					<div id="money-WeeksBack" style="width: 100%;height:300px;"></div>
+				</div>
+				<div class="panel-footer">各商户最近7天资金回流情况对比</div>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">资金：周资金回流-日期</div>
+				<div class="panel-body">
+					<div id="money-WeeksBack-a" style="width: 100%;height:300px;"></div>
+				</div>
+				<div class="panel-footer">最近7天资金回流总额</div>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">资金:资金回流-周</div>
+				<div class="panel-body">
+					<div id="Money-MonthBack" style="width: 100%;height:300px;"></div>
+				</div>
+				<div class="panel-footer">最近三个月，周资金回流情况</div>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">运营：终端用户</div>
+				<div class="panel-body">
+					<div id="userIncreases" style="width: 100%;height:300px;"></div>
+				</div>
+				<div class="panel-footer">近3个月，每周的APP、微信、支付宝用户注册情况</div>
+			</div>
+		</div>
+
+		<div class="col-md-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">运营：设备使用频次</div>
+				<div class="panel-body">
+					<div id="fundTimesDay" style="width: 100%;height:300px;"></div>
+				</div>
+				<div class="panel-footer">按商户统计最近7天设备的使用次数</div>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">运营：缴费分布</div>
+				<div class="panel-body">
+					<div id="fundTimesWeek" style="width: 100%;height:300px;"></div>
+				</div>
+				<div class="panel-footer">最近三个月，周用户支付金额额度分析</div>
+			</div>
+		</div>
+
+	</div>
+	<!--运营情况  -->
+	<div class="row">
+		<h4 style="margin-left: 20px;margin-bottom: -15px">运营情况</h4>
+		<hr
+			style="height:1px;border:none;border-top:3px solid #028cfd;margin-bottom: 15px;margin-left: 20px;margin-right: 20px" />
+		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">设备部署情况</div>
+				<div class="panel-body">
+					<div id="devOnlineStatePar" style="width: 100%;height:400px;"></div>
+				</div>
+				<div class="panel-footer">各商户设备在线情况</div>
+			</div>
+		</div>
+		<div class="col-md-8">
+			<div class="panel panel-default">
+				<div class="panel-heading">设备部署情况</div>
+				<div class="panel-body">
+					<div id="devOnlineState" style="width: 100%;height:400px;"></div>
+				</div>
+				<div class="panel-footer">各商户设备在线情况</div>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">运营：人员-设备</div>
+				<div class="panel-body">
+					<div id="devSeller1" style="width: 100%;height:300px;"></div>
+				</div>
+				<div class="panel-footer">运营人员管理设备数量</div>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">运营：人员-资金</div>
+				<div class="panel-body">
+					<div id="fundSellerWeek" style="width: 100%;height:300px;"></div>
+				</div>
+				<div class="panel-footer">运营人员周资金回流情况</div>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">运营：最大出力前15台设备</div>
+				<div class="panel-body">
+					<div id="fundDevTop15" style="width: 100%;height:300px;"></div>
+				</div>
+				<div class="panel-footer">累计收费最高的前15台机器</div>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">运营：终端消费用户</div>
+				<div class="panel-body">
+					<div id="fundUserTop10" style="width: 100%;height:300px"></div>
+				</div>
+				<div class="panel-footer">支付费用最多的前10名用户</div>
+			</div>
+		</div>
+	</div>
+	<!--质检情况  -->
+	<div class="row">
+		<h4 style="margin-left: 20px;margin-bottom: -15px">质检情况</h4>
+		<hr
+			style="height:1px;border:none;border-top:3px solid #028cfd;margin-bottom: 15px;margin-left: 20px;margin-right: 20px" />
+		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">设备检测情况</div>
+				<div class="panel-body">
+					<div id="chart-devExamMain" style="100%;height:300px;"></div>
+				</div>
+				<div class="panel-footer">出厂前设备自动、人工检测项目的通过情况</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">设备检测：自动</div>
+				<div class="panel-body">
+					<div id="chart-devExamItemAuto" style="100%;height:300px;"></div>
+				</div>
+				<div class="panel-footer">出厂前设备自动检测各项目数据</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">设备检测：人工</div>
+				<div class="panel-body">
+					<div id="chart-devExamItemManu" style="100%;height:300px;"></div>
+				</div>
+				<div class="panel-footer">出厂前设备人工检测各项目数据</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script>
+	/* 共享机器总览 */
+	function devStateType() {
+		var data = {};
+		$stats.devStateType(data, function(ret) {
+
+			count--;
+			var option = {
+				tooltip : {
+					trigger : 'item',
+					formatter : "{a} <br/>{b}: {c} ({d}%)"
+				},
+				color : $cfg.color,
+				series : [
+					{
+						name : '设备状态',
+						type : 'pie',
+						center : [ '45%', '50%' ],
+						radius : [ 0, '60%' ],
+						label : {
+							normal : {
+								formatter : '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c} ',
+								backgroundColor : '#eee',
+								borderColor : '#aaa',
+								borderWidth : 1,
+								borderRadius : 4,
+								rich : {
+									a : {
+										color : '#999',
+										lineHeight : 22,
+										align : 'center'
+									},
+									hr : {
+										borderColor : '#aaa',
+										width : '100%',
+										borderWidth : 0.5,
+										height : 0
+									},
+									b : {
+										fontSize : 16,
+										lineHeight : 33
+									},
+									per : {
+										color : '#eee',
+										backgroundColor : '#334455',
+										padding : [ 2, 4 ],
+										borderRadius : 2
+									}
+								}
+							}
+						},
+						data : [
+							{
+								value : ret.data[0].activate_dev,
+								name : '激活'
+							},
+
+							{
+								value : ret.data[0].install_dev,
+								name : '部署'
+							}
+						]
+					}
+				]
+			};
+			var myChart = echarts.init(document.getElementById('chart-Device'), 'infographic');
+			myChart.setOption(option);
+			window.addEventListener('resize', function() {
+				myChart.resize();
+			})
+		}, function() {
+			count--;
+			monitor.push({
+				error : '共享机器总览加载异常；',
+				_func : devStateType
+			});
+		});
+	}
+
+	/* 用户注册情况 */
+	function User_Registration() {
+		var data = {};
+		$stats.userRegMonth(data, function(ret) {
+			var datas = []
+			var sum = 0;
+			for (i in ret.data) {
+				sum = sum + ret.data[i].reg_count
+				datas.push({
+					value : ret.data[i].reg_count,
+					name : ret.data[i].data
+				})
+			}
+			$("#reg_countSum").text(sum);
+			count--;
+			var option = {
+				tooltip : {
+					trigger : 'item',
+					formatter : "{a} <br/>{b}: {c} ({d}%)"
+				},
+				color : $cfg.color,
+				series : [
+					{
+						name : '用户注册情况',
+						type : 'pie',
+						center : [ '50%', '50%' ],
+						radius : [ 0, '60%' ],
+						label : {
+							normal : {
+								formatter : '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c} ',
+								backgroundColor : '#eee',
+								borderColor : '#aaa',
+								borderWidth : 1,
+								borderRadius : 4,
+								rich : {
+									a : {
+										color : '#999',
+										lineHeight : 22,
+										align : 'center'
+									},
+									hr : {
+										borderColor : '#aaa',
+										width : '100%',
+										borderWidth : 0.5,
+										height : 0
+									},
+									b : {
+										fontSize : 16,
+										lineHeight : 33
+									},
+									per : {
+										color : '#eee',
+										backgroundColor : '#334455',
+										padding : [ 2, 4 ],
+										borderRadius : 2
+									}
+								}
+							}
+						},
+						data : datas
+					}
+				]
+			};
+
+			var myChart = echarts.init(document.getElementById('chart-User'), 'infographic');
+			myChart.setOption(option);
+			window.addEventListener('resize', function() {
+				myChart.resize();
+			})
+		}, function() {
+			count--;
+			monitor.push({
+				error : ' 用户注册情况加载异常；',
+				_func : devStateType
+			});
+		})
+	}
+	/* 资金回流情况 */
+	function Money_Back() {
+		var data = {};
+		$stats.fundMonth(data, function(ret) {
+			count--;
+			var datas = [];
+			var sum = 0;
+			for (i in ret.data) {
+				sum = sum + ret.data[i].free;
+				datas.push({
+					value : ret.data[i].free,
+					name : ret.data[i].data
+				})
+			}
+			$("#freeSum").text(sum);
+			var option = {
+				tooltip : {
+					trigger : 'item',
+					formatter : "{a} <br/>{b}: {c} ({d}%)"
+				},
+				color : $cfg.color,
+				series : [
+					{
+						name : '资金回流情况',
+						type : 'pie',
+						center : [ '45%', '50%' ],
+						radius : [ 0, '60%' ],
+						label : {
+							normal : {
+								formatter : '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c} ',
+								backgroundColor : '#eee',
+								borderColor : '#aaa',
+								borderWidth : 1,
+								borderRadius : 4,
+								rich : {
+									a : {
+										color : '#999',
+										lineHeight : 22,
+										align : 'center'
+									},
+									hr : {
+										borderColor : '#aaa',
+										width : '100%',
+										borderWidth : 0.5,
+										height : 0
+									},
+									b : {
+										fontSize : 16,
+										lineHeight : 33
+									},
+									per : {
+										color : '#eee',
+										backgroundColor : '#334455',
+										padding : [ 2, 4 ],
+										borderRadius : 2
+									}
+								}
+							}
+						},
+						data : datas
+					}
+				]
+			};
+			var myChart = echarts.init(document.getElementById('chart-Funds'), 'infographic');
+			myChart.setOption(option);
+			window.addEventListener('resize', function() {
+				myChart.resize();
+			})
+		}, function() {
+			count--;
+			monitor.push({
+				error : '资金回流情况览加载异常；',
+				_func : devStateType
+			});
+		})
+
+	}
+</script>
+<script>
+	/* 资金周回流概况 */
+	function fundMerChantDay() {
+		var data = {};
+		$stats.fundMerChantDay(data, function(ret) {
+			count--;
+			if (ret.data.length <= 0) {
+				return;
+			}
+			var labels = $stats.createNames_fundMerChantDay(ret.data);
+			var dates = $stats.createDates_fundMerChantDay(ret.data);
+			var datasets = [];
+			$.each(dates, function(i, date) {
+				var datas = $stats.createFunds_fundMerChantDay(date, labels, ret.data);
+				datasets.push({
+					name : date,
+					type : 'bar',
+					stack : '总量',
+					data : datas,
+					itemStyle : {
+						normal : {
+							color : $cfg.createColor(i)
+						}
+					}
+				});
+			});
+			var option = {
+				tooltip : {
+					trigger : 'axis',
+					axisPointer : { // 坐标轴指示器，坐标轴触发有效
+						type : 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+					},
+					formatter : function(params) {
+					    // for text color
+						var sum = 0;
+						var res = '<div>';
+						res += '<strong>' + params[0].name + '消费（元）</strong>'
+						for (var i = 0, l = params.length; i < l; i++) {
+							sum = sum + params[i].value;
+							var spanColor = $cfg.createColor(i);
+							res += '<br/>' + '<span style="color:' + spanColor + ';font-size:20px;">●  </span>' + params[i].seriesName + ' : ' + params[i].value
+						}
+						sum = $api.roundNumber(sum, 2);
+						res += '<br/>' + '总计：' + sum + '元';
+						res += '</div>';
+						return res;
+					}
+				},
+				legend : {
+					type : 'scroll',
+					left : 'center',
+					bottom : 5,
+					top : 280,
+					data : dates
+				},
+				grid : {
+					left : 5,
+					right : 15,
+					top : 5,
+					bottom : 25,
+					containLabel : true
+				},
+				yAxis : [
+					{
+						type : 'category',
+						data: labels,
+						axisLabel: {
+						    interval:0,
+						    formatter: function (value) {
+						        return value.length > 3 ? value.substr(0, 3) : value;
+						    },
+						    splitArea: {
+						        show: true
+						    }
+						}
+					}
+				],
+				xAxis : [
+					{
+						type : 'value',
+						axisLabel : {
+							formatter : function(value) {
+								return value + "元";
+							},
+							splitArea : {
+								show : true
+							}
+						}
+					}
+				],
+				series : datasets
+			};
+			var myChart = echarts.init(document.getElementById('money-WeeksBack'));
+			myChart.setOption(option);
+			window.addEventListener('resize', function() {
+				myChart.resize();
+			})
+		}, function() {
+			count--;
+			monitor.push({
+				error : '资金回流情况览加载异常；',
+				_func : fundMerChantDay
+			});
+		});
+	}
+	/* 最近7天资金回流总额 */
+	function fundMerChantDay3() {
+		var data = {};
+		$stats.fundMerChantDay(data, function(ret) {
+			count--;
+			if (ret.data.length <= 0) {
+				return;
+			}
+			var labels = $stats.createNames_fundMerChantDay(ret.data);
+			var dates = $stats.createDates_fundMerChantDay(ret.data);
+			var phlabels = [];
+			for (i in dates) {
+				var s = dates[i].substr(5, 9);
+				phlabels.push(s);
+			}
+			datasets = [];
+			$.each(labels, function(i, lab) {
+				var datas = $stats.createFunds_fundDayMerChant(lab, dates, ret.data);
+				datasets.push({
+					name : lab,
+					type : 'bar',
+					stack : 'all',
+					data : datas,
+					itemStyle : {
+						normal : {
+							color : $cfg.createColor(i)
+						}
+					}
+				});
+			});
+			var option = {
+				tooltip : {
+					trigger : 'axis',
+					axisPointer : { // 坐标轴指示器，坐标轴触发有效
+						type : 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+					},
+					formatter : function(params) {
+						// for text color
+						var sum = 0;
+						var res = '<div>';
+						res += '<strong>' + params[0].name + '消费（元）</strong>'
+						for (var i = 0, l = params.length; i < l; i++) {
+							sum = sum + params[i].value;
+							var spanColor = $cfg.createColor(i);
+							res += '<br/>' + '<span style="color:' + spanColor + ';font-size:20px;">●  </span>' + params[i].seriesName + ' : ' + params[i].value
+						}
+						sum = $api.roundNumber(sum, 2);
+						res += '<br/>' + '总计：' + sum + '元';
+						res += '</div>';
+						return res;
+					}
+				},
+				legend : {
+					type : 'scroll',
+					top : 280,
+					data : labels
+				},
+				grid : {
+					left : 5,
+					right : 15,
+					top : 5,
+					bottom : 25,
+					containLabel : true
+				},
+				yAxis : [
+					{
+						data : phlabels
+					}
+				],
+				xAxis : [
+					{
+						type : 'category',
+						type : 'value',
+						axisLabel : {
+							formatter : function(value) {
+								return value + "元";
+							},
+							splitArea : {
+								show : true
+							}
+						}
+					}
+				],
+				series : datasets
+			};
+			var myChart = echarts.init(document.getElementById('money-WeeksBack-a'));
+			myChart.setOption(option);
+			window.addEventListener('resize', function() {
+				myChart.resize();
+			})
+		}, function() {
+			count--;
+			monitor.push({
+				error : ' 最近7天资金回流情况加载失败；',
+				_func : fundMerChantDay3
+			});
+		});
+	}
+	/* 月资金回流情况 */
+	function fundMonth() {
+		var data = {};
+		$stats.fundMerChantWeek(data, function(ret) {
+			count--;
+			if (ret.data.length <= 0) {
+				return;
+			}
+			var labels = $stats.createDates_fundMerChantWeek(ret.data);
+			var names = $stats.createNames_fundMerChantWeek(ret.data);
+			var datasets = [];
+			$.each(names, function(i, name) {
+				var datas = $stats.createFunds_fundMerChantWeek(name, labels, ret.data);
+				datasets.push({
+					name : name,
+					type : 'bar',
+					stack : 'all',
+					data : datas,
+					itemStyle : {
+						normal : {
+							color : $cfg.createColor(i)
+						}
+					},
+				});
+			});
+			var option = {
+				tooltip : {
+					show : true,
+					trigger : 'axis',
+					axisPointer : { // 坐标轴指示器，坐标轴触发有效
+						type : 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+					},
+					formatter : function(params) {
+						var sum = 0;
+						var res = '<div>';
+						res += '<strong>' + params[0].name + '消费（元）</strong>'
+						for (var i = 0, l = params.length; i < l; i++) {
+							sum = sum + params[i].value;
+							var spanColor = $cfg.createColor(i);
+							res += '<br/>' + '<span style="color:' + spanColor + ';font-size:20px;">●  </span>' + params[i].seriesName + ' : ' + params[i].value
+						}
+						sum = $api.roundNumber(sum, 2);
+						res += '<br/>' + '总计：' + sum + '元';
+						res += '</div>';
+						return res;
+					}
+				},
+				legend : {
+					type : 'scroll',
+					left : 'center',
+					bottom : 5,
+					top : 280,
+					data : names
+				},
+				grid : {
+					left : 5,
+					right : 15,
+					top : 5,
+					bottom : 25,
+					containLabel : true
+				},
+				yAxis : [
+					{
+						type : 'value',
+						axisLabel : {
+							formatter : function(value) {
+								return value + "元";
+							},
+							splitArea : {
+								show : true
+							}
+						}
+					}
+
+				],
+				xAxis : [
+					{
+						data : labels
+					}
+				],
+				series : datasets
+			}
+
+			var myChart = echarts.init(document.getElementById('Money-MonthBack'));
+			myChart.setOption(option);
+			window.addEventListener('resize', function() {
+				myChart.resize();
+			})
+		}, function() {
+			count--;
+			monitor.push({
+				error : '近三个月资金回流情况加载异常；',
+				_func : fundMonth
+			});
+		});
+	}
+	/* 周缴费频次情况 */
+	function fundTimesDay() {
+		var data = {};
+		$stats.fundTimesDay(data, function(ret) {
+			count--;
+			if (ret.data.length <= 0) {
+				return;
+			}
+			var labels = $stats.createDates_fundTimesDay(ret.data);
+			var prices = $stats.createPrices_fundTimesDay(ret.data);
+			var datasets = [];
+			$.each(prices, function(i, price) {
+				var datas = $stats.createCounts_fundTimesDay(price, labels, ret.data);
+				datasets.push({
+					name : price,
+					type : 'bar',
+					stack : 'all',
+					data : datas,
+					itemStyle : {
+						normal : {
+							color : $cfg.createColor(i)
+						}
+					}
+				});
+			});
+			var option = {
+				tooltip : {
+					trigger : 'axis',
+					axisPointer : { // 坐标轴指示器，坐标轴触发有效
+						type : 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+					},
+					formatter : function(params) {
+						var sum = 0;
+						var res = '<div>';
+						res += '<strong>' + params[0].name + '缴费（次）</strong>'
+						for (var i = 0, l = params.length; i < l; i++) {
+							sum = sum + params[i].value;
+							var spanColor = $cfg.createColor(i);
+							res += '<br/>' + '<span style="color:' + spanColor + ';font-size:20px;">●  </span>' + params[i].seriesName + ' : ' + params[i].value
+						}
+						sum = $api.roundNumber(sum, 2);
+						res += '<br/>' + '总计：' + sum + '次';
+						res += '</div>';
+						return res;
+					}
+				},
+				legend : {
+					type : 'scroll',
+					orient : 'vertical',
+					right : 10,
+					top : 35,
+					bottom : 5,
+					data : prices
+				},
+				grid : {
+					top : 5,
+					left : 5,
+					right : '20%',
+					bottom : 5,
+					containLabel : true
+				},
+				yAxis : [
+					{
+						type : 'category',
+						data : labels
+					}
+				],
+				xAxis : [
+					{
+						type : 'value',
+						axisLabel : {
+							formatter : function(value) {
+								return value + "次";
+							},
+							splitArea : {
+								show : true
+							}
+						}
+					}
+				],
+				series : datasets
+			};
+			var myChart = echarts.init(document.getElementById('fundTimesDay'));
+			myChart.setOption(option);
+			window.addEventListener('resize', function() {
+				myChart.resize();
+			})
+
+		}, function() {
+			count--;
+			monitor.push({
+				error : '近七天缴费频次统计加载异常；',
+				_func : fundTimesDay
+			});
+		});
+	}
+	/* 月缴费频次情况*/
+	function fundTimesWeek() {
+		var data = {};
+		$stats.fundTimesWeek(data, function(ret) {
+			count--;
+			if (ret.data.length <= 0) {
+				return;
+			}
+			var labels = $stats.createDates_fundTimesWeek(ret.data);
+			var prices = $stats.createPrices_fundTimesWeek(ret.data);
+			var datasets = [];
+			$.each(prices, function(i, price) {
+				var datas = $stats.createCounts_fundTimesWeek(price, labels, ret.data);
+				datasets.push({
+					name : price,
+					type : 'bar',
+					stack : 'all',
+					data : datas,
+					itemStyle : {
+						normal : {
+							color : $cfg.createColor(i)
+						}
+					}
+				});
+			});
+			var option = {
+				tooltip : {
+					trigger : 'axis',
+					axisPointer : { // 坐标轴指示器，坐标轴触发有效
+						type : 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+					},
+					formatter : function(params) {
+						var sum = 0;
+						var res = '<div>';
+						res += '<strong>' + params[0].name + '缴费（次）</strong>'
+						for (var i = 0, l = params.length; i < l; i++) {
+							sum = sum + params[i].value;
+							var spanColor = $cfg.createColor(i);
+							res += '<br/>' + '<span style="color:' + spanColor + ';font-size:20px;">●  </span>' + params[i].seriesName + ' : ' + params[i].value
+						}
+						sum = $api.roundNumber(sum, 2);
+						res += '<br/>' + '总计：' + sum + '次';
+						res += '</div>';
+						return res;
+					}
+				},
+				legend : {
+					type : 'scroll',
+					orient : 'vertical',
+					right : 10,
+					top : 35,
+					bottom : 5,
+					data : prices
+				},
+				grid : {
+					top : 5,
+					left : 5,
+					right : '20%',
+					bottom : 5,
+					containLabel : true
+				},
+				yAxis : [
+					{
+						data : prices,
+						type : 'category',
+						type : 'value',
+						axisLabel : {
+							formatter : function(value) {
+								return value + "次";
+							},
+							splitArea : {
+								show : true
+							}
+						}
+					}
+
+				],
+				xAxis : [
+					{
+						data : labels
+					}
+				],
+				series : datasets
+			};
+			var myChart = echarts.init(document.getElementById('fundTimesWeek'));
+			myChart.setOption(option);
+			window.addEventListener('resize', function() {
+				myChart.resize();
+			})
+		}, function() {
+			count--;
+			monitor.push({
+				error : '周缴费频次情况加载异常；',
+				_func : fundTimesWeek
+			});
+		});
+	}
+</script>
+<script>
+	/* 运营人员-设备数量 */
+	function devSeller() {
+		var data = {};
+		$stats.devSeller(data, function(ret) {
+			count--;
+			if (ret.data.length <= 0) {
+				return;
+			}
+			var data = $stats.createDevSeller(ret.data);
+			var labels = data.names;
+			var datas = data.counts;
+			var datasets = [];
+			datasets.push({
+				type : 'bar',
+				label : {
+					normal : {
+						show : true,
+						position : 'inside'
+					},
+				},
+				data : datas,
+				itemStyle : {
+					normal : {
+						color : $cfg.createColor(1),
+					}
+				},
+			});
+			var option = {
+				tooltip : {
+					trigger : 'axis',
+					axisPointer : { // 坐标轴指示器，坐标轴触发有效
+						type : 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+					}
+				},
+				legend : {
+					type : 'scroll',
+					bottom : 5,
+					data : labels
+				},
+
+				grid : {
+					left : 5,
+					right : 15,
+					top : 5,
+					bottom : 25,
+					containLabel : true
+				},
+				yAxis : [
+					{
+						type : 'category',
+						data : labels
+					}
+				],
+				xAxis : [
+					{
+						type : 'value',
+						axisLabel : {
+							formatter : function(value) {
+								return value + "台";
+							},
+							splitArea : {
+								show : true
+							}
+						}
+					}
+				],
+				series : datasets
+			};
+
+			var myChart = echarts.init(document.getElementById('devSeller1'));
+			myChart.setOption(option);
+			window.addEventListener('resize', function() {
+				myChart.resize();
+			})
+		}, function() {
+			count--;
+			monitor.push({
+				error : '运营人员-设备数量加载异常；',
+				_func : devSeller
+			});
+		});
+	}
+	/* 运营人员-资金回流 */
+	function fundSellerWeek() {
+		var data = {};
+		$stats.fundSellerWeek(data, function(ret) {
+			count--;
+			if (ret.data.length <= 0) {
+				return;
+			}
+			var labels = $stats.createDates_fundSellerWeek(ret.data);
+			var names = $stats.createNames_fundSellerWeek(ret.data);
+			var datasets = [];
+			$.each(names, function(i, name) {
+				var datas = $stats.createFree_fundSellerWeek(name, labels, ret.data);
+				datasets.push({
+					name : name,
+					type : 'line',
+					data : datas,
+					itemStyle : {
+						normal : {
+							color : $cfg.createColor(i)
+						}
+					}
+				});
+			});
+			var option = {
+				tooltip : {
+					trigger : 'axis',
+					formatter : function(params) {
+						var sum = 0;
+						var res = '<div>';
+						res += '<strong>' + params[0].name + '</strong>'
+						for (var i = 0, l = params.length; i < l; i++) {
+							sum = sum + params[i].value;
+							var spanColor = $cfg.createColor(i);
+							res += '<br/>' + '<span style="color:' + spanColor + ';font-size:20px;">●  </span>' + params[i].seriesName + ' : ' + params[i].value
+						}
+						sum = $api.roundNumber(sum, 2);
+						res += '<br/>' + '总计：' + sum + '元';
+						res += '</div>';
+						return res;
+					}
+				},
+				legend : {
+					type : 'scroll',
+					left : 'center',
+					top : 280,
+					bottom : 5,
+					data : names
+				},
+				grid : {
+					left : 5,
+					right : 10,
+					top : 5,
+					bottom : 25,
+					containLabel : true
+				},
+				xAxis : {
+					type : 'category',
+					boundaryGap : false,
+					data : labels
+				},
+				yAxis : {
+					type : 'value',
+					axisLabel : {
+						formatter : function(value) {
+							return value + "元";
+						},
+						splitArea : {
+							show : true
+						}
+					}
+				},
+				series : datasets
+			};
+			var myChart = echarts.init(document.getElementById('fundSellerWeek'));
+			myChart.setOption(option);
+			window.addEventListener('resize', function() {
+				myChart.resize();
+			})
+		}, function() {
+			count--;
+			monitor.push({
+				error : '运营人员-周资金回流加载异常；',
+				_func : fundSellerWeek
+			});
+		});
+	}
+	/* 设备部署在线率统计 */
+	function devOnlineStatePar() {
+		var data = {};
+		$stats.devOnlineState(data, function(ret) {
+			count--;
+			if (ret.data.length <= 0) {
+				return;
+			}
+			var dayoffs = 0;
+			var onlines = 0;
+			var longoffs = 0;
+			var weekoffs = 0;
+			var keys = $stats.createKeys_devOnlineState(ret.data);
+			for (i in ret.data) {
+				dayoffs = dayoffs + ret.data[i].dayoff;
+				onlines = onlines + ret.data[i].online;
+				longoffs = longoffs + ret.data[i].longoff;
+				weekoffs = weekoffs + ret.data[i].weekoff;
+			}
+			var option = {
+				tooltip : {
+					trigger : 'item',
+					formatter : "{a} <br/>{b}: {c} ({d}%)",
+				},
+				legend : {
+					type : 'scroll',
+					top : 380,
+					bottom : 5,
+					data : keys
+				},
+				color : $cfg.color,
+				grid : {
+					left : 25,
+					right : 10,
+					top : 5,
+					bottom : 25,
+					containLabel : true
+				},
+				series : [
+					{
+						name : '设备部署状态',
+						type : 'pie',
+						center : [ '48%', '50%' ],
+						radius : [ 0, '70%' ],
+						label : {
+							normal : {
+								position : 'inner',
+								//formatter : '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c} ',
+								formatter : ' {b|{b}}\n{c} ',
+								rich : {
+									b : {
+										color : '#eee',
+										fontSize : 16,
+										lineHeight : 33
+									},
+									per : {
+										color : '#eee',
+										backgroundColor : '#334455',
+										padding : [ 2, 4 ],
+										borderRadius : 2
+									}
+								}
+							}
+						},
+						data : [
+							{
+								value : dayoffs,
+								name : '离线一天'
+							},
+							{
+								value : onlines,
+								name : '在线'
+							},
+							{
+								value : longoffs,
+								name : '失联'
+							},
+
+							{
+								value : weekoffs,
+								name : '离线一周'
+							}
+						]
+					}
+				]
+			};
+			var myChart = echarts.init(document.getElementById('devOnlineStatePar'));
+			myChart.setOption(option);
+			window.addEventListener('resize', function() {
+				myChart.resize();
+			})
+		}, function() {
+			count--;
+			monitor.push({
+				error : '设备部署情况统计载异常；',
+				_func : devOnlineState
+			});
+		});
+	}
+	/* 设备部署情况统计 */
+	function devOnlineState() {
+		var data = {};
+		$stats.devOnlineState(data, function(ret) {
+			count--;
+			if (ret.data.length <= 0) {
+				return;
+			}
+			var labels = $stats.createNames_devOnlineState(ret.data);
+			var keys = $stats.createKeys_devOnlineState(ret.data);
+			var phlabels = [];
+			for (i in labels) {
+				var s = labels[i];
+				phlabels.push(s);
+			}
+			var datasets = [];
+			$.each(keys, function(i, key) {
+				var datas = $stats.createCounts_devOnlineState(key, labels, ret.data);
+				datasets.push({
+					name : key,
+					type : 'bar',
+					stack : 'all',
+					data : datas,
+					itemStyle : {
+						normal : {
+							color : $cfg.createColor(i)
+						}
+					}
+				});
+			});
+			var option = {
+				tooltip : {
+					trigger : 'axis',
+					axisPointer : { // 坐标轴指示器，坐标轴触发有效
+						type : 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+					},
+					formatter : function(params) {
+						var sum = 0;
+						var res = '<div>';
+						res += '<strong>' + params[0].name + '</strong>'
+						for (var i = 0, l = params.length; i < l; i++) {
+							sum = sum + params[i].value;
+							var spanColor = $cfg.createColor(i);
+							res += '<br/>' + '<span style="color:' + spanColor + ';font-size:20px;">●  </span>' + params[i].seriesName + ' : ' + params[i].value
+						}
+						sum = $api.roundNumber(sum, 2);
+						res += '<br/>' + '总计：' + sum + '台';
+						res += '</div>';
+						return res;
+					}
+				},
+				legend : {
+					type : 'scroll',
+					top : 380,
+					bottom : 5,
+					data : keys
+				},
+				grid : {
+					left : 25,
+					right : 10,
+					top : 5,
+					bottom : 25,
+					containLabel : true
+				},
+				yAxis : [
+					{
+						type : 'category',
+						type : 'value',
+						axisLabel : {
+							formatter : function(value) {
+								return value + "台";
+							},
+							splitArea : {
+								show : true
+							}
+						}
+					}
+
+				],
+				xAxis : [
+					{
+						data : phlabels,
+						axisLabel : {
+							interval : 0, //横轴信息全部显示
+							rotate : 40,
+							fontSize : '12',
+							  formatter: function (value) {
+							      return value.length > 3 ? value.substr(0, 3) : value;
+						    },
+						    splitArea: {
+						        show: true
+						    }
+						}
+					}
+				],
+				series : datasets
+			};
+			var myChart = echarts.init(document.getElementById('devOnlineState'));
+			myChart.setOption(option);
+			window.addEventListener('resize', function() {
+				myChart.resize();
+			})
+		}, function() {
+			count--;
+			monitor.push({
+				error : '设备部署情况统计载异常；',
+				_func : devOnlineState
+			});
+		});
+	}
+	/* 最大出力前15台机器 */
+	function fundDevTop15() {
+		var data = {};
+		$stats.fundDevTop15(data, function(ret) {
+			count--;
+			if (ret.data.length <= 0) {
+				return;
+			}
+			var labels = $stats.createNames_fundDevTop15(ret.data);
+			var keys = $stats.createKeys_fundDevTop15(ret.data);
+			var datasets = [];
+			$.each(keys, function(i, key) {
+				var datas = $stats.createCounts_fundDevTop15(key, labels, ret.data);
+				datasets.push({
+					name : key,
+					type : 'bar',
+					data : datas,
+					itemStyle : {
+						normal : {
+							color : $cfg.createColor(i)
+						}
+					}
+				});
+			});
+			var option = {
+				tooltip : {
+					trigger : 'axis',
+					axisPointer : { // 坐标轴指示器，坐标轴触发有效
+						type : 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+					}
+				},
+				legend : {
+					type : 'scroll',
+					left : 'center',
+					right : 5,
+					top : 280,
+					bottom : 5,
+					data : keys
+				},
+				grid : {
+					left : 5,
+					right : 5,
+					top : 5,
+					bottom : 25,
+					containLabel : true
+				},
+				yAxis : [
+					{
+						type : 'category',
+						type : 'value'
+					}
+
+				],
+				xAxis : [
+					{
+						data : labels,
+						axisLabel : {
+							interval : 0, //横轴信息全部显示
+							rotate : 40,
+							fontSize : '12',
+							  formatter: function (value) {
+							      return value.length > 3 ? value.substr(0, 3) : value;
+						    },
+						    splitArea: {
+						        show: true
+						    }
+						}
+					}
+				],
+				series : datasets
+			};
+			var myChart = echarts.init(document.getElementById('fundDevTop15'));
+			myChart.setOption(option);
+			window.addEventListener('resize', function() {
+				myChart.resize();
+			})
+		}, function() {
+			count--;
+			monitor.push({
+				error : '最大出力前15台机器载异常；',
+				_func : fundDevTop15
+			});
+		});
+	}
+	/* 最大处理前10名消费用户 */
+	function fundUserTop10() {
+		var data = {};
+		$stats.fundUserTop10(data, function(ret) {
+			count--;
+			if (ret.data.length <= 0) {
+				return;
+			}
+			var labels = $stats.createNames_fundUserTop10(ret.data);
+			var keys = $stats.createKeys_fundUserTop10(ret.data);
+			var datasets = [];
+			$.each(keys, function(i, key) {
+				var datas = $stats.createCounts_fundUserTop10(key, labels, ret.data);
+				datasets.push({
+					name : key,
+					type : 'bar',
+					data : datas,
+					itemStyle : {
+						normal : {
+							color : $cfg.createColor(i)
+						}
+					}
+				});
+			});
+			var option = {
+				tooltip : {
+					trigger : 'axis',
+					axisPointer : { // 坐标轴指示器，坐标轴触发有效
+						type : 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+					}
+				},
+				legend : {
+					type : 'scroll',
+					left : 'center',
+					top : 280,
+					bottom : 5,
+					data : keys
+				},
+				grid : {
+					top : 5,
+					left : 5,
+					right : 5,
+					bottom : 30,
+					containLabel : true
+				},
+				yAxis : [
+					{
+						type : 'category',
+						type : 'value'
+					}
+
+				],
+				xAxis : [
+					{
+						data : labels,
+						axisLabel : {
+							interval : 0, //横轴信息全部显示
+							rotate : 40,
+							fontSize : '12'
+						}
+					}
+				],
+				series : datasets
+			};
+			var myChart = echarts.init(document.getElementById('fundUserTop10'));
+			myChart.setOption(option);
+			window.addEventListener('resize', function() {
+				myChart.resize();
+			})
+		}, function() {
+			count--;
+			monitor.push({
+				error : '最大处理前10名消费用户载异常；',
+				_func : fundUserTop10
+			});
+		});
+	}
+	/* 周用户增加情况 */
+	function userIncreases() {
+		var data = {};
+		$stats.userRegTypeWeek(data, function(ret) {
+			count--;
+			if (ret.data.length <= 0) {
+				return;
+			}
+			var labels = $stats.createDates_userRegTypeWeek(ret.data);
+			var keys = $stats.createKeys_userRegTypeWeek(ret.data);
+			var datasets = [];
+			$.each(keys, function(i, key) {
+				var datas = $stats.createCounts_userRegTypeWeek(key, labels, ret.data);
+				datasets.push({
+					name : key,
+					type : 'line',
+					stack : 'all',
+					data : datas,
+					itemStyle : {
+						normal : {
+							color : $cfg.createColor(i)
+						}
+					}
+				});
+			});
+			var option = {
+				tooltip : {
+					trigger : 'axis',
+					axisPointer : { // 坐标轴指示器，坐标轴触发有效
+						type : 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+					},
+					formatter : function(params) {
+						var sum = 0;
+						var res = '<div>';
+						res += '<strong>' + params[0].name + '增加用户(人)</strong>'
+						for (var i = 0, l = params.length; i < l; i++) {
+							sum = sum + params[i].value;
+							var spanColor = $cfg.createColor(i);
+							res += '<br/>' + '<span style="color:' + spanColor + ';font-size:20px;">●  </span>' + params[i].seriesName + ' : ' + params[i].value
+						}
+						sum = $api.roundNumber(sum, 2);
+						res += '<br/>' + '总计：' + sum + '人';
+						res += '</div>';
+						return res;
+					}
+				},
+				legend : {
+					type : 'scroll',
+					left : 'center',
+					top : 270,
+					bottom : 5,
+					data : keys
+				},
+				grid : {
+					top : 5,
+					left : 5,
+					right : 5,
+					bottom : 30,
+					containLabel : true
+				},
+				yAxis : [
+					{
+						type : 'category',
+						type : 'value',
+						axisLabel : {
+							formatter : function(value) {
+								return value + "个";
+							},
+							splitArea : {
+								show : true
+							}
+						}
+					}
+
+				],
+				xAxis : [
+					{
+						data : labels
+					}
+				],
+				series : datasets
+			};
+			var myChart = echarts.init(document.getElementById('userIncreases'));
+			myChart.setOption(option);
+			window.addEventListener('resize', function() {
+				myChart.resize();
+			})
+		}, function() {
+			count--;
+			monitor.push({
+				error : '周用户增加情况载异常；',
+				_func : userIncreases
+			});
+		});
+	}
+</script>
+<script type="text/javascript">
+	function devExamMain() {
+		var data = {};
+		$stats.devExamMain(data, function(ret) {
+			count--;
+			var option = {
+				tooltip : {
+					trigger : 'item',
+					formatter : "{a} <br/>{b}: {c} ({d}%)"
+				},
+
+				legend : {
+					type : 'scroll',
+					left : 'left',
+					top : 280,
+					bottom : 5,
+					data : [ '通过', '未通过' ]
+				},
+				grid : {
+					top : 5,
+					left : 5,
+					right : 5,
+					bottom : 30,
+					containLabel : true
+				},
+				color : [ '#36c56b', '#ff0000' ],
+				series : [
+					{
+						name : '人工检测',
+						type : 'pie',
+						selectedMode : 'single',
+						radius : [ 30, 50 ],
+						itemStyle : {
+							normal : {
+								label : {
+									position : 'inner'
+								},
+								labelLine : {
+									show : false
+								}
+							}
+						},
+						data : [
+							{
+								value : ret.data[1].pass,
+								name : '通过'
+							},
+							{
+								value : ret.data[1].no_pass,
+								name : '未通过'
+							},
+						]
+					},
+					{
+						name : '自动检测',
+						type : 'pie',
+						radius : [ 100, 80 ],
+
+						label : {
+							normal : {
+								formatter : '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c} ',
+								backgroundColor : '#eee',
+								borderColor : '#aaa',
+								borderWidth : 1,
+								borderRadius : 4,
+								rich : {
+									a : {
+										color : '#999',
+										lineHeight : 22,
+										align : 'center'
+									},
+									hr : {
+										borderColor : '#aaa',
+										width : '100%',
+										borderWidth : 0.5,
+										height : 0
+									},
+									b : {
+										fontSize : 16,
+										lineHeight : 33
+									},
+									per : {
+										color : '#eee',
+										backgroundColor : '#334455',
+										padding : [ 2, 4 ],
+										borderRadius : 2
+									}
+								}
+							}
+						},
+
+						data : [
+							{
+								value : ret.data[0].pass,
+								name : '通过'
+							},
+							{
+								value : ret.data[0].no_pass,
+								name : '未通过'
+							},
+						]
+					}
+				]
+			};
+			var myChart = echarts.init(document.getElementById('chart-devExamMain'), 'infographic');
+			myChart.setOption(option);
+			window.addEventListener('resize', function() {
+				myChart.resize();
+			})
+		}, function() {
+			count--;
+			monitor.push({
+				error : '设备出厂质检情况加载异常',
+				_func : devExamMain
+			});
+		});
+	}
+	function devExamItemAuto() {
+		var autoExamItem = [];
+		var manuExamItem = [];
+		var data = {};
+		$stats.devExamItem(data, function(ret) {
+			count--;
+			if (ret.data.length <= 0) {
+				return;
+			}
+			autoExamItem = ret.data.slice(0, 4);
+			var labels = $stats.createNames_devExamItem(autoExamItem);
+			var keys = $stats.createKeys_devExamItem(autoExamItem);
+			var passDatas = [];
+			var nopassDatas = []
+			for (i in autoExamItem) {
+				passDatas.push(autoExamItem[i].pass);
+				nopassDatas.push(autoExamItem[i].nopass);
+			}
+			option = {
+				tooltip : {},
+
+				legend : {
+					type : 'scroll',
+					left : 'left',
+					top : 280,
+					bottom : 5,
+					data : keys
+				},
+				grid : {
+					top : 5,
+					left : 5,
+					right : 5,
+					bottom : 30,
+					containLabel : true
+				},
+				radar : {
+					// shape: 'circle',
+					name : {
+						textStyle : {
+							color : '#fff',
+							backgroundColor : '#999',
+							borderRadius : 3,
+							padding : [ 3, 5 ]
+						}
+					},
+					indicator : [
+						{
+							name : '舱门'
+						},
+						{
+							name : '电机'
+						},
+						{
+							name : '颗粒物'
+						},
+						{
+							name : 'uv灯'
+						},
+					]
+				},
+				series : [ {
+					type : 'radar',
+					// areaStyle: {normal: {}},
+					data : [
+
+						{
+							value : nopassDatas,
+							name : '未通过'
+						},
+						{
+							value : passDatas,
+							name : '通过'
+						},
+					],
+					color : [ '#ff0000', '#36c56b' ],
+				} ]
+			};
+			var myChart = echarts.init(document.getElementById('chart-devExamItemAuto'));
+			myChart.setOption(option);
+			window.addEventListener('resize', function() {
+				myChart.resize();
+			})
+		}, function() {})
+	}
+	function devExamItemManu() {
+		var manuExamItem = [];
+		var data = {};
+		$stats.devExamItem(data, function(ret) {
+			count--;
+			if (ret.data.length <= 0) {
+				return;
+			}
+			manuExamItem = ret.data.slice(4);
+
+			var labels = $stats.createNames_devExamItem(manuExamItem);
+			var keys = $stats.createKeys_devExamItem(manuExamItem);
+			var passDatas = [];
+			var nopassDatas = [];
+			var indicators = [];
+			for (i in manuExamItem) {
+				passDatas.push(manuExamItem[i].pass);
+				nopassDatas.push(manuExamItem[i].nopass);
+				indicators.push({
+					name : manuExamItem[i].item
+				})
+			}
+			option = {
+				tooltip : {},
+
+				legend : {
+					type : 'scroll',
+					left : 'left',
+					top : 280,
+					bottom : 5,
+					data : keys
+				},
+				grid : {
+					top : 5,
+					left : 5,
+					right : 5,
+					bottom : 30,
+					containLabel : true
+				},
+				radar : {
+					// shape: 'circle',
+					name : {
+						textStyle : {
+							color : '#fff',
+							backgroundColor : '#999',
+							borderRadius : 3,
+							padding : [ 3, 5 ]
+						}
+					},
+					indicator : indicators
+				},
+				series : [ {
+					type : 'radar',
+					// areaStyle: {normal: {}},
+					data : [
+
+						{
+							value : nopassDatas,
+							name : '未通过'
+						},
+						{
+							value : passDatas,
+							name : '通过'
+						},
+					],
+					color : [ '#ff0000', '#36c56b' ],
+				} ]
+			};
+			var myChart = echarts.init(document.getElementById('chart-devExamItemManu'));
+			myChart.setOption(option);
+			window.addEventListener('resize', function() {
+				myChart.resize();
+			})
+		}, function() {})
+	}
+</script>
+
+<script type="text/javascript">
+	var chartResponsive = true;
+	function onMobile() {
+		if ($cfg.isMobile) {
+			chartResponsive = false;
+			//总体概况
+			$('#chart-Device').prop('height', '200');
+			$('#chart-User').prop('height', '200');
+			$('#chart-Funds').prop('height', '200');
+			//资金回流情况
+			$('#money-WeeksBack').prop('height', '450');
+			$('#Money-MonthBack').prop('height', '650');
+			$('#fundTimesDay').prop('height', '350');
+			$('#fundTimesWeek').prop('height', '350');
+			//运营概况
+			$('#devSeller').prop('height', '300');
+			$('#fundSellerWeek').prop('height', '350');
+			$('#devOnlineState').prop('width', '1500');
+			$('#devOnlineState').prop('height', '350');
+			$('#fundDevTop15').prop('width', '800');
+			$('#fundDevTop15').prop('height', '350');
+			$('#fundUserTop10').prop('width', '800');
+			$('#fundUserTop10').prop('height', '350');
+			$('#userIncreases').prop('width', '650');
+		} else {
+			chartResponsive = true;
+		}
+	}
+</script>
+<script type="text/javascript">
+	var monitor = [];
+	var count = 14;
+	var time;
+	function onLoading() {
+		if (!$api.isNull(time)) {
+			window.clearInterval(time);
+			time = null;
+		}
+		$api.ui_openLoading('总体概况', '正在进行共享机器统计分析......');
+		monitor = [];
+		time = window.setInterval(function() {
+			if (count <= 0) {
+				$api.ui_closeLoading();
+				window.clearInterval(time);
+				time = null;
+				if (monitor.length > 0) {
+					var txt = '';
+					$.each(monitor, function(i, m) {
+						txt += '' + m.error + '\r\n';
+					});
+					txt += '是否重新加载？';
+					$api.ui_openAlert('总体概况警告', txt, function(tag) {
+						if (tag) {
+							var tmps = $api.clone(monitor);
+							count = tmps.length;
+							onLoading();
+							$.each(tmps, function(i, tmp) {
+								tmp._func();
+							});
+						}
+					});
+				}
+			}
+		}, 1500);
+	}
+
+	$(function() {
+		$api.Initialize();
+		onMobile();
+		onLoading();
+		/* 共享机器总览 */
+		devStateType();
+		/* 资金回流情况 */
+		Money_Back();
+		/* 用户注册情况 */
+		User_Registration();
+		/* 资金周回流概况 */
+		fundMerChantDay();
+		/* 周回流总资金 */
+		fundMerChantDay3();
+		/* 月资金回流情况 */
+		fundMonth();
+		/* 周缴费频次情况 */
+		fundTimesDay();
+		/* 月缴费频次情况*/
+		fundTimesWeek();
+		/*运营人员设备情况*/
+		devSeller();
+		/* 运营人员资金回流*/
+		fundSellerWeek();
+		/* 设备部署情况统计*/
+		devOnlineStatePar();
+		devOnlineState();
+		/*最大出力前20台 */
+		fundDevTop15();
+		/* 用户消费排名 */
+		fundUserTop10();
+		/* 日用户增长情况 */
+		userIncreases();
+		devExamMain();
+		devExamItemAuto();
+		devExamItemManu();
+
+	});
+</script>
+
+
+</html>

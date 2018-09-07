@@ -1,0 +1,19 @@
+{"deviceid":"xxxxx","cmd":"xx","type":"xxx","addr":xxx,"length":xx,"data1":xx}
+1.deviceid:设备id
+2.cmd:命令类型，值为rd或者wr
+3.type:操作对象类型，值为coil或者reg
+4.addr:读写的起始地址
+5.length:读写的个数
+6."data":从data1开始往后排,data2 data3...
+	 如果是写线圈则只需要data1,每1bit对应一个线圈；如果是写寄存器，则data的数量根据length而定，一个data对应一个寄存器
+
+
+
+
+AT:{"deviceid":"1ecc5b66-ff1e-4490-a700-7634dd842b64","cmd":"wr","type":"coil","addr":1,"length":1,"data1":1}\r\n
+
+AT:{"deviceid":"1ecc5b66-ff1e-4490-a700-7634dd842b64","cmd":"wr","type":"coil","addr":1,"length":10,"data1":496}\r\n
+
+AT:{"deviceid":"2ecc5b66-ff1e-4490-a700-7634dd842b64","cmd":"wr","type":"reg","addr":1,"length":1,"data1":1}\r\n
+
+AT:{"deviceid":"2ecc5b66-ff1e-4490-a700-7634dd842b64","cmd":"wr","type":"reg","addr":1,"length":3,"data1":1,"data2":2,"data3":3}\r\n

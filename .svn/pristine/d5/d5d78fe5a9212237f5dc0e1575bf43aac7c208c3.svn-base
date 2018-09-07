@@ -1,0 +1,217 @@
+C51 COMPILER V9.52.0.0   SENSOR                                                            12/21/2017 11:02:12 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE SENSOR
+OBJECT MODULE PLACED IN .\Objects\sensor.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\Sensor\sensor.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(..\project;.\
+                    -USER\BUZZER;.\USER\charge;.\USER\common;.\USER\DC_MOTOR;.\USER\EEPROM;.\USER\EXINT;.\USER\IIC;.\USER\inc;.\USER\ION;.\US
+                    -ER\M26;.\USER\PWM;.\USER\Sensor;.\USER\step_motor;.\USER\SYS_RUN;.\USER\timer;.\USER\TM1620;.\USER\touch_key;.\USER\UART
+                    -;.\USER\UV;.\USER\LVI) DEBUG OBJECTEXTEND PRINT(.\Listings\sensor.lst) TABS(2) OBJECT(.\Objects\sensor.obj)
+
+line level    source
+
+   1          #include <stdio.h>
+   2          #include "sensor.h"
+   3          #include "SOFT_IIC.h"
+   4          #include "global.h"
+   5          #include "debug_uart.h"
+   6          
+   7          
+   8          
+   9          #define SENSOR_IIC_DELAY_COUNT  2
+  10          
+  11          void sensor_i2c_delay(void)
+  12          {
+  13   1        int i = 0;
+  14   1        for(i = 0;i < SENSOR_IIC_DELAY_COUNT;i++);
+  15   1      }
+  16          
+  17          
+  18          void SENSOR_IIC_PinConifg(void)
+  19          {
+  20   1          SENSOR_IIC_PxM0 &= ~((1 << SENSOR_IIC_SDA_PORTBIT) | (1 << SENSOR_IIC_SCL_PORTBIT));
+  21   1          SENSOR_IIC_PxM1 &= ~((1 << SENSOR_IIC_SDA_PORTBIT) | (1 << SENSOR_IIC_SCL_PORTBIT));
+  22   1        
+  23   1          SENSOR_IIC_SCL_PIN = 1;
+  24   1          SENSOR_IIC_SDA_PIN = 1;
+  25   1        
+  26   1          //传感器电源控制管脚设置为推挽输出
+  27   1          SENSOR_POWER_PxM0 |= (1 << SENSOR_POWER_PORTBIT);
+  28   1          SENSOR_POWER_PxM1 &= ~(1 << SENSOR_POWER_PORTBIT);
+  29   1          SENSOR_POWER_PIN = 1;
+  30   1          
+  31   1        
+  32   1          
+  33   1      }
+  34          
+  35          void Sensor_Power_On(void)
+  36          {
+  37   1          SENSOR_POWER_PIN = 1;
+  38   1      }
+  39          
+  40          void Sensor_Power_Off(void)
+  41          {
+  42   1          SENSOR_POWER_PIN = 0;
+  43   1      }
+  44          
+  45          
+  46          
+  47          void Set_Sensor_SDA_Pin_Mode(unsigned char mode)
+  48          {
+  49   1          if(mode == PIN_INPUT)
+  50   1          {
+  51   2              //PIN设置为输入时，PxM0对应的位置0，PxM1对应的位置1
+  52   2              SENSOR_IIC_PxM0 &= ~(1 << SENSOR_IIC_SDA_PORTBIT);
+C51 COMPILER V9.52.0.0   SENSOR                                                            12/21/2017 11:02:12 PAGE 2   
+
+  53   2              SENSOR_IIC_PxM1 |= (1 << SENSOR_IIC_SDA_PORTBIT);
+  54   2          }
+  55   1          else if(mode == PIN_OUTPUT)
+  56   1          {      
+  57   2              SENSOR_IIC_PxM0 &= ~(1 << SENSOR_IIC_SDA_PORTBIT);
+  58   2              SENSOR_IIC_PxM1 &= ~(1 << SENSOR_IIC_SDA_PORTBIT);
+  59   2          }
+  60   1      }
+  61            
+  62          void Set_Sensor_SCL_Pin_Mode(unsigned char mode)
+  63          {
+  64   1          if(mode == PIN_INPUT)
+  65   1          {
+  66   2              //PIN设置为输入时，PxM0对应的位置0，PxM1对应的位置1
+  67   2              SENSOR_IIC_PxM0 &= ~(1 << SENSOR_IIC_SCL_PORTBIT);
+  68   2              SENSOR_IIC_PxM1 |= ((1 << SENSOR_IIC_SCL_PORTBIT));
+  69   2          }
+  70   1          else if(mode == PIN_OUTPUT)
+  71   1          {      
+  72   2              SENSOR_IIC_PxM0 &= ~(1 << SENSOR_IIC_SCL_PORTBIT);
+  73   2              SENSOR_IIC_PxM1 &= ~(1 << SENSOR_IIC_SCL_PORTBIT);     
+  74   2          }
+  75   1      
+  76   1      }
+  77          
+  78          
+  79          void Sensor_IIC_SDA_1(void)
+  80          {
+  81   1          SENSOR_IIC_SDA_PIN = 1;
+  82   1      }
+  83          
+  84          void Sensor_IIC_SDA_0(void)
+  85          {
+  86   1          SENSOR_IIC_SDA_PIN = 0;
+  87   1      }
+  88          
+  89          void Sensor_IIC_SCL_1(void)
+  90          {
+  91   1          SENSOR_IIC_SCL_PIN = 1;
+  92   1      }
+  93          void Sensor_IIC_SCL_0(void)
+  94          {
+  95   1          SENSOR_IIC_SCL_PIN = 0;
+  96   1      }
+  97          
+  98          
+  99          unsigned char Sensor_IIC_SDA_READ(void)
+ 100          {
+ 101   1          return (SENSOR_IIC_SDA_PIN ? 1 : 0);
+ 102   1      }
+ 103          
+ 104          /*
+ 105          HPD05传感器寄存器0x26存放的当前粉尘浓度的低8位，寄存器0x27存放的是当前粉尘浓度的高8位
+ 106          地址为0x9A 通讯波特率最大100kbps
+ 107          */
+ 108          unsigned int Read_PMSensor_Data(void)
+ 109          {
+ 110   1          static unsigned int last_pm_data = 0;
+ 111   1          unsigned char readaddr = HPD05_DATA_START_ADDR;
+ 112   1          unsigned char res = 1;
+ 113   1          unsigned int pm_data = 0;
+ 114   1        
+C51 COMPILER V9.52.0.0   SENSOR                                                            12/21/2017 11:02:12 PAGE 3   
+
+ 115   1          unsigned char readbuff[5] = {0};
+ 116   1          
+ 117   1          //unsigned char debug_buff[30] = {0};
+ 118   1      
+ 119   1          IIC_Operations.IIC_NUM = HPD05_IIC;
+ 120   1          IIC_Operations.Set_SDA_Pin_Mode = Set_Sensor_SDA_Pin_Mode;
+ 121   1          IIC_Operations.Set_SCL_Pin_Mode = Set_Sensor_SCL_Pin_Mode;
+ 122   1          IIC_Operations.i2c_delay = sensor_i2c_delay;
+ 123   1          IIC_Operations.SDA_1 = Sensor_IIC_SDA_1;
+ 124   1          IIC_Operations.SDA_0 = Sensor_IIC_SDA_0;
+ 125   1          IIC_Operations.SCL_1 = Sensor_IIC_SCL_1;
+ 126   1          IIC_Operations.SCL_0 = Sensor_IIC_SCL_0;
+ 127   1          IIC_Operations.I2C_SDA_READ = Sensor_IIC_SDA_READ;
+ 128   1        
+ 129   1          res = I2C_WriteBytes(HPD05_ADDRESS,&readaddr,1);
+ 130   1         
+ 131   1          if(res == 0)
+ 132   1          {
+ 133   2              res = I2C_ReadBytes(HPD05_ADDRESS,readbuff,5);     
+ 134   2          }
+ 135   1          
+ 136   1          
+ 137   1          if(readbuff[0] & 0x01)
+ 138   1          {
+ 139   2              pm_data = ((unsigned int)readbuff[1]) << 8 | readbuff[2]; 
+ 140   2              if(pm_data == 0)
+ 141   2              {
+ 142   3                  pm_data = last_pm_data;
+ 143   3              }
+ 144   2            
+ 145   2      //        mymemset(debug_buff,0,30);
+ 146   2      //        sprintf(debug_buff,"buff:%x %x,pm_data:%d\n",(unsigned int)readbuff[1],(unsigned int)readbuff[2]
+             -,(unsigned int)pm_data);
+ 147   2      //        DEBUG_Uart_Sendbytes(debug_buff,mystrlen(debug_buff));
+ 148   2            
+ 149   2            
+ 150   2      //        if(pm_data == 0)
+ 151   2      //        {
+ 152   2      //            pm_data = 2;
+ 153   2      //        }          
+ 154   2          }
+ 155   1          else
+ 156   1          {
+ 157   2              pm_data = last_pm_data;
+ 158   2          }
+ 159   1          
+ 160   1          last_pm_data = pm_data;
+ 161   1          
+ 162   1          /*
+ 163   1          if(pm_data <= 5)
+ 164   1          {
+ 165   1              pm_data = 5;
+ 166   1          } 
+ 167   1          else if(pm_data <= 10)
+ 168   1          {
+ 169   1              pm_data = 10;
+ 170   1          }
+ 171   1          else if(pm_data <= 15)
+ 172   1          {
+ 173   1              pm_data = 15;
+ 174   1          } 
+ 175   1          else if(pm_data <= 20)
+C51 COMPILER V9.52.0.0   SENSOR                                                            12/21/2017 11:02:12 PAGE 4   
+
+ 176   1          {
+ 177   1              pm_data = 20;
+ 178   1          }
+ 179   1          */
+ 180   1          
+ 181   1          return pm_data;
+ 182   1      
+ 183   1      }
+ 184          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    338    ----
+   CONSTANT SIZE    =      5    ----
+   XDATA SIZE       =      2       8
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

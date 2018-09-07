@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project>
+  <fileVersion>2</fileVersion>
+  <fileChecksum>1370580339</fileChecksum>
+  <configuration>
+    <name>Lib_WAC_CM3</name>
+    <outputs>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\json_c\json_debug.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\include\common.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\security\SHAUtils\sha.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\system.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\include\mico_rtos.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\json_c\printbuf.h</file>
+      <file>$PROJ_DIR$\Lib_WAC_CM3\Obj\wac.pbd</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\json_c\bits.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\json_c\json_util.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\include\mico_socket.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xmtx.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdarg.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\json_c\linkhash.h</file>
+      <file>$PROJ_DIR$\..\..\src\MFiSAPServer.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\CheckSumUtils.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\json_c\json_object.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\security\Curve25519\curve25519-donna.h</file>
+      <file>$PROJ_DIR$\..\..\src\MFi-SAP.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\json_c\arraylist.h</file>
+      <file>$PROJ_DIR$\Lib_WAC_CM3\Obj\MFiSAPServer.o</file>
+      <file>$TOOLKIT_DIR$\inc\c\wchar.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\locale.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdbool.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Threads.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\include\MiCODrivers\MiCODriverMFiAuth.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xlocale.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdio.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xlocale_lconv.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\ctype.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\include\debug.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\ysizet.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\include\mico_wlan.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\include\mico_errno.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Config_Full.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stddef.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xtls.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\board\MK3165\platform.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xlocalelist.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\platform\EWARM\platform_toolchain.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\ycheck.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Defaults.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\command_console\mico_cli.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\yvals.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\include\MiCODrivers\MiCODriverRng.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xencoding_limits.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Product_string.h</file>
+      <file>$PROJ_DIR$\Lib_WAC_CM3\List\MFi-SAP.i</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\HTTPUtils.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\URLUtils.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdlib.h</file>
+      <file>$PROJ_DIR$\..\..\src\WACLogging.h</file>
+      <file>$PROJ_DIR$\Lib_WAC_CM3\Obj\WAC.pbi</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdint.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\StringUtils.h</file>
+      <file>$PROJ_DIR$\..\..\src\MFi_WAC.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\SecurityUtils.h</file>
+      <file>$PROJ_DIR$\Lib_WAC_CM3\Obj\MFi-SAP.o</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\SocketUtils.h</file>
+      <file>$PROJ_DIR$\..\..\src\WACTLV.h</file>
+      <file>$PROJ_DIR$\Lib_WAC_CM3\List\WAC.i</file>
+      <file>$PROJ_DIR$\Lib_WAC_CM3\Obj\MFi-SAP.pbi</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\TimeUtils.h</file>
+      <file>$PROJ_DIR$\..\..\Lib_MFi_WAC.Cortex-M3.IAR.release.a</file>
+      <file>$PROJ_DIR$\Lib_WAC_CM3\Obj\WAC.o</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\drivers\MiCOKit_EXT\micokit_ext_def.h</file>
+      <file>$PROJ_DIR$\Lib_WAC_CM3\List\MFiSAPServer.i</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\include\mico_system.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\TLVUtils.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\board\MK3165\platform_config.h</file>
+      <file>$PROJ_DIR$\Lib_WAC_CM3\Obj\MFiSAPServer.pbi</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\json_c\json.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\string.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\platform\Cortex-M3\platform_assert.h</file>
+      <file>$PROJ_DIR$\..\..\src\MFi-SAP.c</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Product.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\AESUtils.h</file>
+      <file>$PROJ_DIR$\..\..\src\WAC.c</file>
+      <file>$PROJ_DIR$\..\..\src\MFiSAPServer.c</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\include\mico_security.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\json_c\json_tokener.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\ystdio.h</file>
+    </outputs>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>IARCHIVE</name>
+          <file> 62</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\src\MFi-SAP.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 46 56</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 60</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 54 4 1 52 39 42 40 33 74 44 23 22 49 30 26 80 71 45 28 25 35 10 20 21 27 37 38 34 66 3 31 68 41 70 7 0 12 18 8 15 5 79 36 64 17 29 72 50 13 58 47 9 32 48 67 57 24</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 39 34 67 66 42 54 52 30 13 26 45 27 0 29 1 50 57 24 22 28 40 25 21 49 70 4 68 15 64 48 36 17 58 47 71 38 44 23 33 74 80 3 18 5 35 20 37 10 41 31 7 12 8 79 72 9 32</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\src\WAC.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 59 63</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 51</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 17 1 52 39 42 40 33 74 44 23 22 49 30 26 80 71 45 28 25 35 10 20 21 27 37 38 34 29 4 72 54 66 3 31 68 41 70 7 0 12 18 8 15 5 79 36 64 58 50 24 43 53</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 42 34 49 79 39 24 74 36 31 29 58 53 71 38 44 23 33 80 1 12 15 54 50 43 52 22 26 28 40 30 45 25 21 27 4 41 7 8 64 17 35 20 37 10 72 66 3 70 68 0 18 5 11</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\src\MFiSAPServer.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 65 19</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 69</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 13 1 52 39 42 40 33 74 44 23 22 49 30 26 80 71 45 28 25 35 10 20 21 27 37 38 34 29 4 72 75 55 78 16 2 14 43 24 36 64 61</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 42 20 26 30 29 52 74 39 10 34 1 75 43 2 22 28 44 23 33 80 35 37 72 36 64 13 16 24 61 49 71 38 40 45 25 21 27 4 14 55 78</file>
+        </tool>
+      </inputs>
+    </file>
+  </configuration>
+  <configuration>
+    <name>Lib_WAC_CM4F</name>
+    <outputs>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\json_c\json_debug.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\include\common.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\security\SHAUtils\sha.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\system.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\include\mico_rtos.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\json_c\printbuf.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\json_c\bits.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\json_c\json_util.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\include\mico_socket.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xmtx.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdarg.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\json_c\linkhash.h</file>
+      <file>$PROJ_DIR$\..\..\src\MFiSAPServer.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\CheckSumUtils.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\json_c\json_object.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\security\Curve25519\curve25519-donna.h</file>
+      <file>$PROJ_DIR$\..\..\src\MFi-SAP.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\json_c\arraylist.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\wchar.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\locale.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdbool.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Threads.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\include\MiCODrivers\MiCODriverMFiAuth.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xlocale.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdio.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xlocale_lconv.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\ctype.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\include\debug.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\ysizet.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\include\mico_wlan.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\include\mico_errno.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Config_Full.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stddef.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xtls.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\board\MK3165\platform.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xlocalelist.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\platform\EWARM\platform_toolchain.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\ycheck.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Defaults.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\command_console\mico_cli.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\yvals.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\include\MiCODrivers\MiCODriverRng.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\xencoding_limits.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Product_string.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\HTTPUtils.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\URLUtils.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdlib.h</file>
+      <file>$PROJ_DIR$\..\..\src\WACLogging.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\stdint.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\StringUtils.h</file>
+      <file>$PROJ_DIR$\..\..\src\MFi_WAC.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\SecurityUtils.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\SocketUtils.h</file>
+      <file>$PROJ_DIR$\..\..\src\WACTLV.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\TimeUtils.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\drivers\MiCOKit_EXT\micokit_ext_def.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\include\mico_system.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\TLVUtils.h</file>
+      <file>$PROJ_DIR$\Lib_WAC_CM4F\Obj\wac.pbd</file>
+      <file>$PROJ_DIR$\Lib_WAC_CM4F\Obj\WAC.pbi</file>
+      <file>$PROJ_DIR$\Lib_WAC_CM4F\List\MFi-SAP.i</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\platform\Cortex-M4F\platform_assert.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\board\MK3165\platform_config.h</file>
+      <file>$PROJ_DIR$\Lib_WAC_CM4F\Obj\MFiSAPServer.o</file>
+      <file>$PROJ_DIR$\Lib_WAC_CM4F\Obj\WAC.o</file>
+      <file>$PROJ_DIR$\..\..\Lib_MFi_WAC.Cortex-M4F.IAR.release.a</file>
+      <file>$PROJ_DIR$\Lib_WAC_CM4F\Obj\MFiSAPServer.pbi</file>
+      <file>$PROJ_DIR$\Lib_WAC_CM4F\List\MFiSAPServer.i</file>
+      <file>$PROJ_DIR$\Lib_WAC_CM4F\Obj\MFi-SAP.o</file>
+      <file>$PROJ_DIR$\Lib_WAC_CM4F\Obj\MFi-SAP.pbi</file>
+      <file>$PROJ_DIR$\Lib_WAC_CM4F\List\WAC.i</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\json_c\json.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\string.h</file>
+      <file>$PROJ_DIR$\..\..\src\MFi-SAP.c</file>
+      <file>$TOOLKIT_DIR$\inc\c\DLib_Product.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\AESUtils.h</file>
+      <file>$PROJ_DIR$\..\..\src\WAC.c</file>
+      <file>$PROJ_DIR$\..\..\src\MFiSAPServer.c</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\include\mico_security.h</file>
+      <file>$PROJ_DIR$\..\..\..\..\..\..\libraries\utilities\json_c\json_tokener.h</file>
+      <file>$TOOLKIT_DIR$\inc\c\ystdio.h</file>
+    </outputs>
+    <file>
+      <name>[ROOT_NODE]</name>
+      <outputs>
+        <tool>
+          <name>IARCHIVE</name>
+          <file> 65</file>
+        </tool>
+      </outputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\src\MFi-SAP.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 60 68</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 69</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 50 4 1 48 37 40 38 31 74 42 21 20 46 28 24 80 72 43 26 23 33 9 18 19 25 35 36 32 56 3 29 62 39 71 6 0 11 17 7 14 5 79 34 55 16 27 61 47 12 53 44 8 30 45 57 52 22</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 37 32 57 56 40 50 48 28 12 24 43 25 0 27 1 47 52 22 20 26 38 23 19 46 71 4 62 14 55 45 34 16 53 44 72 36 42 21 31 74 80 3 17 5 33 18 35 9 39 29 6 11 7 79 61 8 30</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\src\WAC.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 70 64</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 59</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 16 1 48 37 40 38 31 74 42 21 20 46 28 24 80 72 43 26 23 33 9 18 19 25 35 36 32 27 4 61 50 56 3 29 62 39 71 6 0 11 17 7 14 5 79 34 55 53 47 22 41 49</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 40 32 46 79 37 22 74 34 29 27 53 49 72 36 42 21 31 80 1 11 14 50 47 41 48 20 24 26 38 28 43 23 19 25 4 39 6 7 55 16 33 18 35 9 61 56 3 71 62 0 17 5 10</file>
+        </tool>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\src\MFiSAPServer.c</name>
+      <outputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 67 63</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 66</file>
+        </tool>
+      </outputs>
+      <inputs>
+        <tool>
+          <name>ICCARM</name>
+          <file> 12 1 48 37 40 38 31 74 42 21 20 46 28 24 80 72 43 26 23 33 9 18 19 25 35 36 32 27 4 61 75 51 78 15 2 13 41 22 34 55 54</file>
+        </tool>
+        <tool>
+          <name>BICOMP</name>
+          <file> 40 18 24 28 27 48 74 37 9 32 1 75 41 2 20 26 42 21 31 80 33 35 61 34 55 12 15 22 54 46 72 36 38 43 23 19 25 4 13 51 78</file>
+        </tool>
+      </inputs>
+    </file>
+  </configuration>
+</project>
+
+

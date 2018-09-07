@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.ota.dao.OTAFileInfoMapper">
+	<resultMap id="BaseResultMap" type="com.yjyz.iot.ota.entity.OTAFileInfo">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="ota_id" jdbcType="VARCHAR" property="otaId" />
+		<result column="description" jdbcType="VARCHAR" property="description" />
+		<result column="upgrade" jdbcType="VARCHAR" property="upgrade" />
+		<result column="firmware" jdbcType="VARCHAR" property="firmware" />
+		<result column="md5" jdbcType="VARCHAR" property="md5" />
+		<result column="fileurl" jdbcType="VARCHAR" property="fileurl" />
+		<result column="size" jdbcType="VARCHAR" property="size" />
+		<result column="upload_time" jdbcType="TIMESTAMP" property="uploadTime" />
+		<result column="status" jdbcType="VARCHAR" property="status" />
+		<result column="effect_time" jdbcType="TIMESTAMP" property="effectTime" />
+		<result column="version" jdbcType="INTEGER" property="version" />
+		<result column="product_id" jdbcType="VARCHAR" property="productId" />
+		<result column="modulename" jdbcType="VARCHAR" property="modulename" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, ota_id, description, upgrade, firmware, md5, fileurl,
+		size,
+		upload_time, status,
+		effect_time, version, product_id, modulename
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_ota_file_info
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="selectByOTACheck" parameterType="com.yjyz.iot.ota.entity.OTAFileInfo"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_ota_file_info
+		where product_id = #{productId,jdbcType=VARCHAR}
+		and
+		modulename = #{modulename,jdbcType=VARCHAR} and
+		effect_time >
+		sysdate()
+		<!-- and substring_index(firmware,'@',-1) > substring_index(#{firmware,jdbcType=VARCHAR} 
+			,'@',-1) -->
+	</select>
+	<select id="selectByProductId" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_ota_file_info
+		where product_id = #{productId,jdbcType=VARCHAR}
+	</select>
+	<select id="getOTAFileInofMaxId" resultType="java.lang.Integer">
+		select
+		max(id)
+		from
+		t_ota_file_info
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		t_ota_file_info
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.yjyz.iot.ota.entity.OTAFileInfo">
+		insert into t_ota_file_info
+		(id, ota_id, description,
+		upgrade, firmware, md5,
+		fileurl, size,
+		upload_time,
+		status, effect_time, version,
+		product_id, modulename)
+		values (#{id,jdbcType=INTEGER}, #{otaId,jdbcType=VARCHAR},
+		#{description,jdbcType=VARCHAR},
+		#{upgrade,jdbcType=VARCHAR},
+		#{firmware,jdbcType=VARCHAR}, #{md5,jdbcType=VARCHAR},
+		#{fileurl,jdbcType=VARCHAR}, #{size,jdbcType=VARCHAR},
+		#{uploadTime,jdbcType=TIMESTAMP},
+		#{status,jdbcType=VARCHAR},
+		#{effectTime,jdbcType=TIMESTAMP}, #{version,jdbcType=INTEGER},
+		#{productId,jdbcType=VARCHAR}, #{modulename,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.yjyz.iot.ota.entity.OTAFileInfo">
+		insert into t_ota_file_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="otaId != null">
+				ota_id,
+			</if>
+			<if test="description != null">
+				description,
+			</if>
+			<if test="upgrade != null">
+				upgrade,
+			</if>
+			<if test="firmware != null">
+				firmware,
+			</if>
+			<if test="md5 != null">
+				md5,
+			</if>
+			<if test="fileurl != null">
+				fileurl,
+			</if>
+			<if test="size != null">
+				size,
+			</if>
+			<if test="uploadTime != null">
+				upload_time,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="effectTime != null">
+				effect_time,
+			</if>
+			<if test="version != null">
+				version,
+			</if>
+			<if test="productId != null">
+				product_id,
+			</if>
+			<if test="modulename != null">
+				modulename,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="otaId != null">
+				#{otaId,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				#{description,jdbcType=VARCHAR},
+			</if>
+			<if test="upgrade != null">
+				#{upgrade,jdbcType=VARCHAR},
+			</if>
+			<if test="firmware != null">
+				#{firmware,jdbcType=VARCHAR},
+			</if>
+			<if test="md5 != null">
+				#{md5,jdbcType=VARCHAR},
+			</if>
+			<if test="fileurl != null">
+				#{fileurl,jdbcType=VARCHAR},
+			</if>
+			<if test="size != null">
+				#{size,jdbcType=VARCHAR},
+			</if>
+			<if test="uploadTime != null">
+				#{uploadTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="effectTime != null">
+				#{effectTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="version != null">
+				#{version,jdbcType=INTEGER},
+			</if>
+			<if test="productId != null">
+				#{productId,jdbcType=VARCHAR},
+			</if>
+			<if test="modulename != null">
+				#{modulename,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yjyz.iot.ota.entity.OTAFileInfo">
+		update t_ota_file_info
+		<set>
+			<if test="otaId != null">
+				ota_id = #{otaId,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				description = #{description,jdbcType=VARCHAR},
+			</if>
+			<if test="upgrade != null">
+				upgrade = #{upgrade,jdbcType=VARCHAR},
+			</if>
+			<if test="firmware != null">
+				firmware = #{firmware,jdbcType=VARCHAR},
+			</if>
+			<if test="md5 != null">
+				md5 = #{md5,jdbcType=VARCHAR},
+			</if>
+			<if test="fileurl != null">
+				fileurl = #{fileurl,jdbcType=VARCHAR},
+			</if>
+			<if test="size != null">
+				size = #{size,jdbcType=VARCHAR},
+			</if>
+			<if test="uploadTime != null">
+				upload_time = #{uploadTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=VARCHAR},
+			</if>
+			<if test="effectTime != null">
+				effect_time = #{effectTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="version != null">
+				version = #{version,jdbcType=INTEGER},
+			</if>
+			<if test="productId != null">
+				product_id = #{productId,jdbcType=VARCHAR},
+			</if>
+			<if test="modulename != null">
+				modulename = #{modulename,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yjyz.iot.ota.entity.OTAFileInfo">
+		update
+		t_ota_file_info
+		set ota_id = #{otaId,jdbcType=VARCHAR},
+		description =
+		#{description,jdbcType=VARCHAR},
+		upgrade = #{upgrade,jdbcType=VARCHAR},
+		firmware = #{firmware,jdbcType=VARCHAR},
+		md5 = #{md5,jdbcType=VARCHAR},
+		fileurl = #{fileurl,jdbcType=VARCHAR},
+		size = #{size,jdbcType=VARCHAR},
+		upload_time = #{uploadTime,jdbcType=TIMESTAMP},
+		status =
+		#{status,jdbcType=VARCHAR},
+		effect_time =
+		#{effectTime,jdbcType=TIMESTAMP},
+		version =
+		#{version,jdbcType=INTEGER},
+		product_id =
+		#{productId,jdbcType=VARCHAR},
+		modulename =
+		#{modulename,jdbcType=VARCHAR}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>

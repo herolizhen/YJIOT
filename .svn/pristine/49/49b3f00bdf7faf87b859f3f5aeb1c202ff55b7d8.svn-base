@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.security.dao.PowRoleResourceMapper">
+	<resultMap id="BaseResultMap"
+		type="com.yjyz.iot.security.entity.PowRoleResourceKey">
+		<id column="role_id" jdbcType="VARCHAR" property="roleId" />
+		<id column="res_id" jdbcType="VARCHAR" property="resId" />
+	</resultMap>
+
+	<resultMap id="ResourcetResultMap" type="com.yjyz.iot.security.entity.PowResource">
+		<id column="res_id" jdbcType="VARCHAR" property="resId" />
+		<result column="res_name" jdbcType="VARCHAR" property="resName" />
+		<result column="res_detail" jdbcType="VARCHAR" property="resDetail" />
+		<result column="app_id" jdbcType="VARCHAR" property="appId" />
+		<result column="res_type" jdbcType="VARCHAR" property="resType" />
+	</resultMap>
+
+	<resultMap id="RoleResultMap" type="com.yjyz.iot.security.entity.PowRole">
+		<id column="role_id" jdbcType="VARCHAR" property="roleId" />
+		<id column="app_id" jdbcType="VARCHAR" property="appId" />
+		<result column="role_name" jdbcType="VARCHAR" property="roleName" />
+	</resultMap>
+
+	<delete id="deleteByPrimaryKey" parameterType="com.yjyz.iot.security.entity.PowRoleResourceKey">
+		delete from
+		t_pow_role_resource
+		where role_id = #{roleId,jdbcType=VARCHAR}
+		and
+		res_id = #{resId,jdbcType=VARCHAR}
+	</delete>
+
+	<select id="selectRoleResource" parameterType="com.yjyz.iot.security.entity.PowRoleResourceKey"
+		resultMap="ResourcetResultMap">
+		select
+		pr.*
+		from t_pow_role_resource
+		prr,t_pow_resource pr
+		where prr.res_id = pr.res_id and
+		prr.role_id =
+		#{roleId,jdbcType=VARCHAR}
+	</select>
+
+	<select id="selectResourceRole" parameterType="com.yjyz.iot.security.entity.PowRoleResourceKey"
+		resultMap="RoleResultMap">
+		select
+		pr.*
+		from t_pow_role_resource
+		prr,t_pow_role pr
+		where
+		prr.role_id = pr.role_id and
+		prr.res_id = #{resId,jdbcType=VARCHAR}
+	</select>
+
+	<insert id="insert" parameterType="com.yjyz.iot.security.entity.PowRoleResourceKey">
+		insert into
+		t_pow_role_resource (role_id, res_id)
+		values
+		(#{roleId,jdbcType=VARCHAR}, #{resId,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.yjyz.iot.security.entity.PowRoleResourceKey">
+		insert into t_pow_role_resource
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="roleId != null">
+				role_id,
+			</if>
+			<if test="resId != null">
+				res_id,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="roleId != null">
+				#{roleId,jdbcType=VARCHAR},
+			</if>
+			<if test="resId != null">
+				#{resId,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+</mapper>

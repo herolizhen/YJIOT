@@ -1,0 +1,139 @@
+A51 MACRO ASSEMBLER  INITROM                                                              12/28/2017 13:25:35 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.02b
+OBJECT MODULE PLACED IN .\Objects\InitROM.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE ..\User\InitROM.asm SET(SMALL) DEBUG PRINT(.\Listings\InitROM.lst) OBJE
+                      CT(.\Objects\InitROM.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ;;
+                       2     ;;  InitROM.asm
+                       3     ;;
+                       4                     PUBLIC CO_TKEN0
+                       5                     PUBLIC CO_TKEN1
+                       6                     PUBLIC CO_TKEN2
+                       7                     PUBLIC CO_TKC1
+                       8                     PUBLIC CO_TKC2
+                       9                     PUBLIC CO_MODE
+                      10                                     PUBLIC CO_MARK
+                      11                     PUBLIC CO_DEBOUNCE
+                      12                     PUBLIC CO_RELEASE
+                      13                     PUBLIC CO_SENSITIVITY
+                      14                                     PUBLIC CO_OFFSET
+                      15                     PUBLIC _Touch_InitROM
+                      16     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                      17     
+                      18     
+----                  19         CSEG    AT  1F80H
+1F80                  20     _Touch_InitROM:
+                      21     
+----                  22         CSEG    AT  1F88H
+1F88                  23     CO_TKEN0:
+1F88 02               24         DB    0x02
+                      25     
+----                  26         CSEG    AT  1F89H
+1F89                  27     CO_TKEN1:
+1F89 07               28         DB    0x07  
+                      29     
+----                  30         CSEG    AT  1F8AH
+1F8A                  31     CO_TKEN2:
+1F8A 00               32         DB    0x00
+                      33     
+----                  34         CSEG    AT  1F8BH
+1F8B                  35     CO_TKC1:
+1F8B 00               36         DB    0x00
+                      37     
+----                  38         CSEG    AT  1F8CH
+1F8C                  39     CO_TKC2:
+1F8C 87               40         DB    0x87
+                      41     
+----                  42         CSEG    AT  1F8DH
+1F8D                  43     CO_MODE:
+1F8D 00               44         DB    0x00
+----                  45         CSEG    AT  1F8EH
+1F8E                  46     CO_MARK:        
+1F8E 55AA             47         DW    0x55AA
+                      48     
+----                  49         CSEG    AT  1F90H
+1F90                  50     CO_DEBOUNCE:
+1F90 14141414         51         DB    0x14,0x14,0x14,0x14,0x14,0x14,0x14,0x14
+1F94 14141414                
+1F98 14141414         52         DB    0x14,0x14,0x14,0x14,0x14,0x14,0x14,0x14
+1F9C 14141414                
+1FA0 14141414         53         DB    0x14,0x14,0x14,0x14,0x14,0x14,0x14,0x14
+1FA4 14141414                
+                      54     
+A51 MACRO ASSEMBLER  INITROM                                                              12/28/2017 13:25:35 PAGE     2
+
+----                  55         CSEG    AT  1FB0H
+1FB0                  56     CO_RELEASE:
+1FB0 00000000         57         DB    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+1FB4 00000000                
+1FB8 00000000         58         DB    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+1FBC 00000000                
+1FC0 00000000         59         DB    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+1FC4 00000000                
+                      60     
+----                  61         CSEG    AT  1FD0H
+1FD0                  62     CO_SENSITIVITY:
+1FD0 0C0E0C0C         63         DB    0x0C,0x0E,0x0C,0x0C,0x0C,0x0C,0x0C,0x0C
+1FD4 0C0C0C0C                
+1FD8 0E0E0E0C         64         DB    0x0E,0x0E,0x0E,0x0C,0x0C,0x0C,0x0C,0x0C
+1FDC 0C0C0C0C                
+1FE0 0C0C0C0C         65         DB    0x0C,0x0C,0x0C,0x0C,0x0C,0x0C,0x0C,0x0C
+1FE4 0C0C0C0C                
+----                  66             CSEG   AT   1F00H
+1F00                  67     CO_OFFSET:
+1F00 FFFF             68             DW        0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF
+1F02 FFFF                    
+1F04 FFFF                    
+1F06 FFFF                    
+1F08 FFFF                    
+1F0A FFFF                    
+1F0C FFFF             69             DW        0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF
+1F0E FFFF                    
+1F10 FFFF                    
+1F12 FFFF                    
+1F14 FFFF                    
+1F16 FFFF                    
+1F18 FFFF             70         DW    0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF
+1F1A FFFF                    
+1F1C FFFF                    
+1F1E FFFF                    
+1F20 FFFF                    
+1F22 FFFF                    
+1F24 FFFF             71         DW    0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF
+1F26 FFFF                    
+1F28 FFFF                    
+1F2A FFFF                    
+1F2C FFFF                    
+1F2E FFFF                    
+                      72             END
+A51 MACRO ASSEMBLER  INITROM                                                              12/28/2017 13:25:35 PAGE     3
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+CO_DEBOUNCE. . . .  C ADDR   1F90H   A   
+CO_MARK. . . . . .  C ADDR   1F8EH   A   
+CO_MODE. . . . . .  C ADDR   1F8DH   A   
+CO_OFFSET. . . . .  C ADDR   1F00H   A   
+CO_RELEASE . . . .  C ADDR   1FB0H   A   
+CO_SENSITIVITY . .  C ADDR   1FD0H   A   
+CO_TKC1. . . . . .  C ADDR   1F8BH   A   
+CO_TKC2. . . . . .  C ADDR   1F8CH   A   
+CO_TKEN0 . . . . .  C ADDR   1F88H   A   
+CO_TKEN1 . . . . .  C ADDR   1F89H   A   
+CO_TKEN2 . . . . .  C ADDR   1F8AH   A   
+_TOUCH_INITROM . .  C ADDR   1F80H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)

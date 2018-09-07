@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<workspace>
+  <project>
+    <path>$WS_DIR$\demo\EWARM\demo.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\EP600_S\EWARM\EP600_S.ewp</path>
+  </project>
+  <batchBuild/>
+</workspace>
+
+

@@ -1,0 +1,28 @@
+Protel Design System Design Rule Check
+PCB File : Q:\工作\工程\M26\工程文件\M26_M_V2.0\Project\PCB\M26_M_V2.0.1.PcbDoc
+Date     : 2017/11/3
+Time     : 11:27:18
+
+Processing Rule : Short-Circuit Constraint (Allowed=No) (All),(All)
+Rule Violations :0
+
+Processing Rule : Broken-Net Constraint ( (All) )
+   Violation between Net GND is broken into 31 sub-nets. Routed To 26.83%
+     Subnet : J2-4     C14-2    C13-1    R32-1    U2-3     R25-2         Subnet : J2-7          Subnet : R4-2     Q1-2          Subnet : R31-2    Q10-2         Subnet : D1-2          Subnet : J1-0          Subnet : R21-2         Subnet : Q6-2          Subnet : R22-2    Q7-2          Subnet : C1-1     C8-1          Subnet : C2-1          Subnet : C3-1          Subnet : J3-8          Subnet : C12-2         Subnet : U1-27         Subnet : U1-34         Subnet : J3-4          Subnet : J1-0          Subnet : J3-2          Subnet : U1-41         Subnet : C5-1     C7-1     C6-1          Subnet : U1-36         Subnet : U1-40         Subnet : U1-37         Subnet : U2-6          Subnet : D2-1          Subnet : C4-2          Subnet : J4-2          Subnet : C10-2         Subnet : J4-2          Subnet : C11-2         Orphaned copper starting from : Via (483mil,2233.575mil) Top Layer to Bottom Layer      Orphaned copper starting from : Via (483mil,2391.055mil) Top Layer to Bottom Layer      Orphaned copper starting from : Via (483mil,2312.315mil) Top Layer to Bottom Layer      Orphaned copper starting from : Via (569mil,2233.575mil) Top Layer to Bottom Layer      Orphaned copper starting from : Via (569mil,2391.055mil) Top Layer to Bottom Layer      Orphaned copper starting from : Via (569mil,2312.315mil) Top Layer to Bottom Layer 
+Rule Violations :1
+
+Processing Rule : Clearance Constraint (Gap=5.905mil) (All),(All)
+Rule Violations :0
+
+Processing Rule : Width Constraint (Min=8mil) (Max=100mil) (Preferred=10mil) (All)
+Rule Violations :0
+
+Processing Rule : Height Constraint (Min=0mil) (Max=1000mil) (Prefered=500mil) (All)
+Rule Violations :0
+
+Processing Rule : Hole Size Constraint (Min=1mil) (Max=100mil) (All)
+Rule Violations :0
+
+
+Violations Detected : 1
+Time Elapsed        : 00:00:00

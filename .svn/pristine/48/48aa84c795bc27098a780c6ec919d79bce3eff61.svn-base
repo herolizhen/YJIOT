@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.device.dao.DevExamMainMapper">
+  <resultMap id="BaseResultMap" type="com.yjyz.iot.device.entity.DevExamMain">
+    <id column="exam_ID" jdbcType="VARCHAR" property="examId" />
+    <result column="device_id" jdbcType="VARCHAR" property="deviceId" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
+    <result column="stop_time" jdbcType="TIMESTAMP" property="stopTime" />
+    <result column="op_user" jdbcType="VARCHAR" property="opUser" />
+    <result column="is_pass" jdbcType="BIT" property="isPass" />
+    <result column="memo" jdbcType="VARCHAR" property="memo" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    exam_ID, device_id, type, start_time, stop_time, op_user, is_pass, memo
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_dev_exam_main
+    where exam_ID = #{examId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_dev_exam_main
+    where exam_ID = #{examId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yjyz.iot.device.entity.DevExamMain">
+    insert into t_dev_exam_main (exam_ID, device_id, type, 
+      start_time, stop_time, op_user, 
+      is_pass, memo)
+    values (#{examId,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
+      #{startTime,jdbcType=TIMESTAMP}, #{stopTime,jdbcType=TIMESTAMP}, #{opUser,jdbcType=VARCHAR}, 
+      #{isPass,jdbcType=BIT}, #{memo,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yjyz.iot.device.entity.DevExamMain">
+    insert into t_dev_exam_main
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="examId != null">
+        exam_ID,
+      </if>
+      <if test="deviceId != null">
+        device_id,
+      </if>
+      <if test="type != null">
+        type,
+      </if>
+      <if test="startTime != null">
+        start_time,
+      </if>
+      <if test="stopTime != null">
+        stop_time,
+      </if>
+      <if test="opUser != null">
+        op_user,
+      </if>
+      <if test="isPass != null">
+        is_pass,
+      </if>
+      <if test="memo != null">
+        memo,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="examId != null">
+        #{examId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null">
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null">
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="stopTime != null">
+        #{stopTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="opUser != null">
+        #{opUser,jdbcType=VARCHAR},
+      </if>
+      <if test="isPass != null">
+        #{isPass,jdbcType=BIT},
+      </if>
+      <if test="memo != null">
+        #{memo,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yjyz.iot.device.entity.DevExamMain">
+    update t_dev_exam_main
+    <set>
+      <if test="deviceId != null">
+        device_id = #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null">
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="stopTime != null">
+        stop_time = #{stopTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="opUser != null">
+        op_user = #{opUser,jdbcType=VARCHAR},
+      </if>
+      <if test="isPass != null">
+        is_pass = #{isPass,jdbcType=BIT},
+      </if>
+      <if test="memo != null">
+        memo = #{memo,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where exam_ID = #{examId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yjyz.iot.device.entity.DevExamMain">
+    update t_dev_exam_main
+    set device_id = #{deviceId,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      stop_time = #{stopTime,jdbcType=TIMESTAMP},
+      op_user = #{opUser,jdbcType=VARCHAR},
+      is_pass = #{isPass,jdbcType=BIT},
+      memo = #{memo,jdbcType=VARCHAR}
+    where exam_ID = #{examId,jdbcType=VARCHAR}
+  </update>
+</mapper>

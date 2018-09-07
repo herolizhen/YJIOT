@@ -1,0 +1,611 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>商户维护</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate" />
+<link href="../../compontents/bootstarp/css/bootstrap-UI.css.css"
+	rel="stylesheet" media="screen">
+<link
+	href="../../compontents/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css"
+	rel="stylesheet" media="screen">
+
+<link
+	href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"
+	rel="stylesheet" />
+<link href="../../compontents/iot/css/table.css" rel="stylesheet" />
+<script
+	src="https://cdn.staticfile.org/flat-ui/2.3.0/js/vendor/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/flat-ui/2.3.0/js/flat-ui.min.js"></script>
+<script src="../../compontents/bootstarp/js/bootstrap-table.js"></script>
+<script
+	src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript"
+	src="../../compontents/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"
+	charset="UTF-8"></script>
+<script src="../../compontents/iot/js/api.js"></script>
+</head>
+<style type="text/css">
+body {
+	font-family: "华文细黑";
+	width: 100%;
+	height: auto;
+	background: #f7f7f7;
+	margin-left: 30px;
+	padding-right: 50px;
+}
+</style>
+<body>
+
+	<!-- 商户添加 -->
+	<div class="modal fade myModal" id="myModal" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div id="modalDialog" class="modal-dialog " style="">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">商户添加</h4>
+				</div>
+				<div class="modal-body" style="width: 600px">
+					<form id="userform">
+						<div class="col-md-12">
+
+							<div class="col-md-6">
+								<div class="input-group">
+									<span class="input-group-addon">商户编码</span> <input type="text"
+										id="merchantCode" class="form-control" readonly="readonly"
+										style="width:168px;height:40px">
+								</div>
+
+								<br>
+								<div class="input-group">
+									<span class="input-group-addon">信用代码</span> <input type="text"
+										id="creditId" class="form-control"
+										style="width:168px;height:40px">
+								</div>
+								<br>
+								<div class="input-group">
+									<span class="input-group-addon">&nbsp;&nbsp;&nbsp;法&nbsp;人&nbsp;&nbsp;&nbsp;</span>
+									<input type="text" id="legalName" class="form-control"
+										style="width:168px;height:40px">
+								</div>
+								<br>
+								<div class="input-group">
+									<span class="input-group-addon">营业范围</span> <input type="text"
+										id="businessScope" class="form-control"
+										style="width:168px;height:40px">
+								</div>
+								<br>
+								<div class="input-group">
+									<span class="input-group-addon">&nbsp;&nbsp;&nbsp;经&nbsp;度&nbsp;&nbsp;&nbsp;</span>
+									<input type="text" id="longitude" class="form-control"
+										style="width:168px;height:40px">
+								</div>
+								<br>
+								<div class="input-group">
+									<span class="input-group-addon">&nbsp;负&nbsp;责&nbsp;人</span> <input
+										type="text" id="bussLeader" class="form-control"
+										style="width:168px;height:40px">
+								</div>
+
+							</div>
+
+							<div class="input-group">
+								<span class="input-group-addon">&nbsp;&nbsp;&nbsp;名&nbsp;称&nbsp;&nbsp;&nbsp;</span>
+								<input type="text" id="name" class="form-control"
+									style="width:178px;height:40px">
+							</div>
+							<br>
+							<div class="input-group">
+
+								<span class="input-group-addon" style="height: 40px;">注册日期</span>
+								<div class="controls input-append date form_datetime"
+									data-date="2018-01-01" data-date-format="yyyy-mm-dd"
+									data-link-field="dtp_input1"
+									style="height: 10px;max-height: 10px;">
+									<input name="foundDate " id="foundDate" type="text"
+										style="width:178px;height:40px" value="" readonly> <span
+										class="add-on"><i class="icon-remove"></i></span> <span
+										class="add-on"><i class="icon-th"></i></span>
+								</div>
+							</div>
+							<br>
+							<div class="input-group">
+								<span class="input-group-addon">&nbsp;&nbsp;&nbsp;地&nbsp;址&nbsp;&nbsp;&nbsp;
+								</span><input type="text" id="address" class="form-control"
+									style="width:178px;height:40px">
+							</div>
+							<br>
+							<div class="input-group">
+								<span class="input-group-addon">&nbsp;&nbsp;&nbsp;套&nbsp;餐&nbsp;&nbsp;&nbsp;
+								</span><select style="width:178px;height:40px" id="chargeType"
+									class="form-control">
+									<option>请选择套餐</option>
+								</select>
+							</div>
+							<br>
+							<div class="input-group">
+								<span class="input-group-addon">&nbsp;&nbsp;&nbsp;纬&nbsp;度&nbsp;&nbsp;&nbsp;</span>
+								<input type="text" id="latitude" class="form-control"
+									style="width:178px;height:40px">
+							</div>
+						</div>
+
+					</form>
+					<div style=" clear:both"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消
+					</button>
+					<button type="button" class="btn btn-primary" onclick="addCharge()">确认</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /商户添加 -->
+
+	<!-- 商户修改 -->
+	<div class="modal fade myModal" id="myModalUpd" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div id="modalDialog" class="modal-dialog " style="">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">商户信息维护</h4>
+				</div>
+				<div class="modal-body">
+					<form id="userform">
+						<div class="col-md-12">
+
+							<div class="col-md-6">
+								<div class="input-group">
+									<span class="input-group-addon">商户编码</span> <input type="text"
+										id="merchantCodeUpd" class="form-control"
+										style="width:168px;height:40px;" readonly="readonly">
+								</div>
+
+								<br>
+								<div class="input-group">
+									<span class="input-group-addon">信用代码</span> <input type="text"
+										id="creditIdUpd" class="form-control"
+										style="width:168px;height:40px">
+								</div>
+								<br>
+								<div class="input-group">
+									<span class="input-group-addon">&nbsp;&nbsp;&nbsp;法&nbsp;人&nbsp;&nbsp;&nbsp;</span>
+									<input type="text" id="legalNameUpd" class="form-control"
+										style="width:168px;height:40px">
+								</div>
+								<br>
+								<div class="input-group">
+									<span class="input-group-addon">营业范围</span> <input type="text"
+										id="businessScopeUpd" class="form-control"
+										style="width:168px;height:40px">
+								</div>
+								<br>
+								<div class="input-group">
+									<span class="input-group-addon">&nbsp;&nbsp;&nbsp;经&nbsp;度&nbsp;&nbsp;&nbsp;</span>
+									<input type="text" id="longitudeUpd" class="form-control"
+										style="width:168px;height:40px">
+								</div>
+								<br>
+								<div class="input-group">
+									<span class="input-group-addon">&nbsp;负&nbsp;责&nbsp;人</span> <input
+										type="text" id="bussLeaderUpd" class="form-control"
+										style="width:168px;height:40px">
+								</div>
+
+							</div>
+
+							<div class="input-group">
+								<span class="input-group-addon">&nbsp;&nbsp;&nbsp;名&nbsp;称&nbsp;&nbsp;&nbsp;</span>
+								<input type="text" id="nameUpd" class="form-control"
+									style="width:178px;height:40px">
+							</div>
+							<br>
+							<div class="input-group">
+
+								<span class="input-group-addon" style="height: 40px;">注册日期</span>
+								<div class="controls input-append date form_datetime"
+									data-date="2018-01-01" data-date-format="yyyy-mm-dd"
+									data-link-field="dtp_input1"
+									style="height: 10px;max-height: 10px;">
+									<input name="foundDateUpd" id="foundDateUpd" type="text"
+										style="width:178px;height:40px" value="" readonly> <span
+										class="add-on"><i class="icon-remove"></i></span> <span
+										class="add-on"><i class="icon-th"></i></span>
+								</div>
+							</div>
+							<br>
+							<div class="input-group">
+								<span class="input-group-addon">&nbsp;&nbsp;&nbsp;地&nbsp;址&nbsp;&nbsp;&nbsp;
+								</span><input type="text" id="addressUpd" class="form-control"
+									style="width:178px;height:40px">
+							</div>
+							<br>
+							<div class="input-group">
+								<span class="input-group-addon">&nbsp;&nbsp;&nbsp;套&nbsp;餐&nbsp;&nbsp;&nbsp;
+								</span><select style="width:178px;height:40px" id="chargeTypeUpd"
+									class="form-control">
+									<option>请选择套餐</option>
+								</select>
+							</div>
+							<br>
+							<div class="input-group">
+								<span class="input-group-addon">&nbsp;&nbsp;&nbsp;纬&nbsp;度&nbsp;&nbsp;&nbsp;</span>
+								<input type="text" id="latitudeUpd" class="form-control"
+									style="width:178px;height:40px">
+							</div>
+						</div>
+
+					</form>
+					<div style=" clear:both"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消
+					</button>
+					<button type="button" class="btn btn-primary saveChargeUpd">确认</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /商户添加 -->
+
+	<!--商户列表 -->
+	<div>
+		<h4 style="margin-left: 15px;margin-bottom: -15px;margin-top: 2px">商户列表</h4>
+		<hr
+			style="height:1px;border:none;border-top:3px solid #028cfd;margin-bottom: 15px;" />
+		<button class="btn btn-primary btn-sm" data-toggle="modal"
+			onclick="clearFrom()" data-target="#myModal"
+			style="float:left; margin-right: 50px; margin-bottom: 1px">商户添加</button>
+
+		<table id="tableData"></table>
+	</div>
+	<!--//商户列表 -->
+
+</body>
+<script type="text/javascript">
+	$('.form_datetime').datetimepicker({
+		language : 'cn',
+		minView : "month", //选择日期后，不会再跳转去选择时分秒 
+		format : 'yyyy-mm-dd',
+		weekStart : 1,
+		todayBtn : 1,
+		autoclose : 1,
+		todayHighlight : 1,
+		startView : 2,
+		forceParse : 0,
+		showMeridian : 1
+	});
+</script>
+<script type="text/javascript">
+	//清空表单
+	function clearFrom() {
+		$(':input', '#userform')
+			.not(':button, :submit, :reset, :hidden')
+			.val('')
+			.removeAttr('checked')
+			.removeAttr('selected');
+	}
+</script>
+<script type="text/javascript">
+	//时间转化
+	function js_strto_time(str_time) {
+		var timestamp2 = Date.parse(new Date(str_time));
+		return strtotime = timestamp2 = timestamp2 / 1000;
+	}
+	function js_date_time(unixtime) {
+		var timestr = new Date(parseInt(unixtime) * 1000);
+		var datetime = timestr.toLocaleString().replace(/年|月/g, "-").replace(/日/g, " ");
+		return datetime;
+	}
+	//数组去重
+	function unique(array) {
+		var n = []; //一个新的临时数组 
+		//遍历当前数组 
+		for (var i = 0; i < array.length; i++) {
+			//如果当前数组的第i已经保存进了临时数组，那么跳过， 
+			//否则把当前项push到临时数组里面 
+			if (n.indexOf(array[i]) == -1) n.push(array[i]);
+		}
+		return n;
+	}
+</script>
+<script>
+	var appId = $api.getCurrApp();
+	//初始化商户信息
+	function initTable() {
+		$api.ui_openLoading('提示', '商户信息加载中，请耐心等待......');
+		window.setTimeout(function() {
+			$api.ui_closeLoading();
+		}, 500);
+		var data = {}
+		$dict.selMerchantAll(data,
+			function(ret) {
+				var list = ret.merchantList;
+				for (i in list) {
+					//时间戳转换
+					var time = list[i].foundDate; //获取时间戳 
+					var timestamp = time / 1000;
+					//直接用 new Date(时间戳) 格式转化获得当前时间
+					var timestamp = new Date(parseInt(timestamp) * 1000);
+					//再利用拼接正则等手段转化为yyyy-MM-dd hh:mm:ss 格式
+					beijing_datetime = timestamp.toLocaleDateString().replace(/\//g, "-");
+					list[i].foundDate =beijing_datetime;
+				}
+				var obj = list;
+				//bootstrap-Table获取数据
+				$table = $('#tableData').bootstrapTable({
+					data : obj, //最终的JSON数据放在这里
+					height : $(window).height() - 100,
+					striped : true,
+					pagination : true,
+					pageNumber : 1,
+					pageSize : 10,
+					pageList : [ 5, 10, 20, 50, 100 ],
+					search : true,
+					sidePagination : "client",
+					minimunCountColumns : 2,
+					columns : [
+						{
+							title : '序号',
+							formatter : function(value, row, index) {
+								return index + 1;
+							}
+						},
+						{
+							field : 'name',
+							title : '商户名称',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'address',
+							title : '地址',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'legalName',
+							title : '法人',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'foundDate',
+							title : '注册日期',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'creditId',
+							title : '工商信息号',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'businessScope',
+							title : '营业范围',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'chargeType',
+							title : '套餐类型',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'bussLeader',
+							title : '市场负责人',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'operate',
+							title : '操作',
+							align : 'center',
+							formatter : function(value, row, index) {
+								var a = '<button type="button" class="btn btn-danger  btn-sm" style="margin-right:15px;"   onclick="delMerchant(\'' + row.merchantCode + '\',\'' + row.name + '\')">删除</a> ';
+								var b = '<button type="button" class="btn btn-warning  btn-sm" style="margin-right:15px;" data-toggle="modal" data-target="#myModalUpd" onclick="updMerchant(\'' + row.merchantCode + '\',\'' + row.name + '\',\'' + row.longitude + '\',\'' + row.latitude + '\',\'' + row.address + '\',\'' + row.legalName + '\',\'' + row.foundDate + '\',\'' + row.creditId + '\',\'' + row.businessScope + '\',\'' + row.chargeType + '\',\'' + row.bussLeader + '\')">修改</button>';
+								return a + b;
+							}
+						} ],
+					formatNoMatches : function() {
+						return "没有相关的匹配结果";
+					},
+					formatLoadingMessage : function() {
+						return "";
+					}
+				});
+			},
+			function() {
+				$api.ui_openAlert('查询提示', '缴费定义信息加载失败');
+			});
+
+	}
+	/*  刷新缴费定义信息 */
+	function refreshTableData() {
+		var data = {};
+		$dict.selMerchantAll(data,
+			function(ret) {
+				var list = ret.merchantList;
+		 		for (i in list) {
+		 			var time = list[i].foundDate; //获取时间戳 
+					var timestamp = time / 1000;
+					//直接用 new Date(时间戳) 格式转化获得当前时间
+					var timestamp = new Date(parseInt(timestamp) * 1000);
+					//再利用拼接正则等手段转化为yyyy-MM-dd hh:mm:ss 格式
+					beijing_datetime = timestamp.toLocaleDateString().replace(/\//g, "-");
+					list[i].foundDate =beijing_datetime;
+				} 
+				var data = list;
+				$("#tableData").bootstrapTable('load', data);
+			},
+			function() {
+				$api.ui_openAlert('查询提示', '商户信息更新失败');
+			});
+
+	}
+</script>
+<script>
+	function selChargeAll() {
+		var data = {}
+		$dict.selChargeAll(data, function(ret) {
+			$("#chargeType").empty();
+			$("#chargeTypeUpd").empty();
+			var ret = ret.chargeList;
+			var chargeTypes = []
+			for (i in ret) {
+				chargeTypes.push(ret[i].chargeType)
+			}
+			chargeTypes = unique(chargeTypes);
+			for (i in chargeTypes) {
+				$("#chargeType").append("<option class='' value=" + chargeTypes[i] + ">" + chargeTypes[i] + "</option>");
+				$("#chargeTypeUpd").append("<option class='' value=" + chargeTypes[i] + ">" + chargeTypes[i] + "</option>");
+			}
+		}, function() {})
+
+	}
+</script>
+<script>
+	/* 商户添加 */
+	function addCharge() {
+	
+		var merchantCode = $api.getUUID();
+		var name = $("#name").val();
+		var longitude = $("#longitude").val();
+		var latitude = $("#latitude").val();
+		var address = $("#address").val();
+		var legalName = $("#legalName").val();
+		var foundDate = js_strto_time($("#foundDate").val()) + '000';
+		var creditId = $("#creditId").val();
+		var businessScope = $("#businessScope").val();
+		var chargeType = $("#chargeType").val();
+		var bussLeader = $("#bussLeader").val();
+		var data = {};
+		data.name = name;
+		data.longitude = longitude;
+		data.latitude = latitude;
+		data.address = address;
+		data.legalName = legalName;
+		data.foundDate = foundDate;
+		data.creditId = creditId;
+		data.businessScope = businessScope;
+		data.bussLeader = bussLeader;
+		data.chargeType = chargeType;
+		data.merchantCode = merchantCode;
+		console.log(data)
+		$dict.addMerchant(data, success, error);
+		function success() {
+			refreshTableData();
+			$("#myModal").modal("hide");
+			clearFrom();
+		}
+		;
+		function error() {
+			$api.ui_openAlert('提示', '商户信息添加失败!');
+			clearFrom();
+		}
+		;
+	}
+</script>
+<script>
+/* 修改商户信息 */
+ function updMerchant(merchantCode, name, longitude, latitude, address, legalName, foundDate, creditId, businessScope, chargeType, bussLeader) {
+	$("#merchantCodeUpd").val(merchantCode);
+	$("#nameUpd").val(name);
+	$("#longitudeUpd").val(longitude);
+	$("#latitudeUpd").val(latitude);
+	$("#addressUpd").val(address);
+	$("#legalNameUpd").val(legalName);
+	$("#creditIdUpd").val(creditId);
+	$("#businessScopeUpd").val(businessScope);
+	$("#bussLeaderUpd").val(bussLeader);
+	$("#foundDateUpd").val(foundDate);
+	$("#chargeTypeUpd").val(chargeType);
+		var brand =chargeType;
+			if (brand != "") {
+				var s = document.getElementById("chargeTypeUpd"); //获取select对象  
+				var ops = s.options;
+				for (var i = 0; i < ops.length; i++) {
+					var tempValue = ops[i].value;
+					if (tempValue == brand) {
+						ops[i].selected = true; //如果后台的值与下拉列表的某一个value相等，就设置此项为选中项  
+						break;
+					}
+				}
+			}
+	$(".saveChargeUpd").click(function() {
+			var data = {};
+			data.merchantCode = $("#merchantCodeUpd").val();
+			data.name = $("#nameUpd").val();
+			data.longitude = $("#longitudeUpd").val();
+			data.latitude = $("#latitudeUpd").val();
+			data.address = $("#addressUpd").val();
+			data.legalName = $("#legalNameUpd").val();
+			data.creditId = $("#creditIdUpd").val();
+			data.businessScope = $("#businessScopeUpd").val();
+			data.bussLeader = $("#bussLeaderUpd").val();
+			data.chargeType = $("#chargeTypeUpd").val();
+			data.foundDate = $("#foundDateUpd").val();
+			$dict.updMerchant(data, success, error);
+			
+			function success(ret) {
+				refreshTableData();
+				$("#myModalUpd").modal("hide");
+			}
+			;
+			function error() {
+				$api.ui_openAlert('修改提示', '请检查缴费定义信息');
+			}
+			;
+		})
+}
+
+</script>
+<script>
+	/* 删除商户 */
+	function delMerchant(merchantCode, name) {
+		$api.ui_openAlert('商户删除', '请确认是否要删除商户：' + name, function(tag) {
+			if (tag) {
+				var data = {};
+				data.merchantCode = merchantCode;
+				$dict.delMerchant(data, success, error);
+				function success() {
+					refreshTableData();
+					$api.ui_closeLoading();
+				}
+				;
+				function error() {
+					$api.ui_openAlert('删除提示', '删除失败请检查商户信息');
+				}
+				;
+
+			}
+		});
+	}
+</script>
+<script>
+	$(function() {
+		$api.Initialize();
+		initTable();
+		selChargeAll();
+	});
+</script>
+
+
+
+</html>
+
+
+

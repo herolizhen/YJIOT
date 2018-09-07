@@ -1,0 +1,23 @@
+package com.yjyz.iot.share.servcie;
+
+import com.yjyz.iot.device.entity.DevAccount;
+import com.yjyz.iot.device.entity.DeviceInfo;
+import com.yjyz.iot.ota.entity.OTAFileInfo;
+import com.yjyz.iot.ota.entity.OTAUpdateLog;
+import com.yjyz.iot.share.dto.ActivateDto;
+
+public interface IMX3165Service {
+	DeviceInfo activate(ActivateDto dto) throws Exception;
+
+	DeviceInfo getDeviceByID(String deviceId) throws Exception;
+
+	int updateDeviceInfo(DeviceInfo devInfo) throws Exception;
+
+	OTAFileInfo selectByOTACheck(OTAFileInfo otaCheck) throws Exception;
+
+	int saveOTAUpdateLog(OTAUpdateLog log) throws Exception;
+
+	int updateDevAccount(DevAccount record) throws Exception;
+
+	boolean chipsConfirm(String orderNo) throws Exception;
+}

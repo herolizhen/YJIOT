@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>角色管理</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate" />
+<link href="../../compontents/bootstarp/css/bootstrap-UI.css.css"
+	rel="stylesheet" media="screen">
+<link href="../../compontents/iot/css/table.css" rel="stylesheet" />
+<link
+	href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"
+	rel="stylesheet" />
+<script
+	src="https://cdn.staticfile.org/flat-ui/2.3.0/js/vendor/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/flat-ui/2.3.0/js/flat-ui.min.js"></script>
+<script src="https://cdn.staticfile.org/vue/2.2.6/vue.min.js"></script>
+<script src="../../compontents/bootstarp/js/bootstrap-table.js"></script>
+<script
+	src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="../../compontents/iot/js/api.js"></script>
+</head>
+<style type="text/css">
+body {
+	font-family: "华文细黑";
+	width: 100%;
+	height: auto;
+	background: #f7f7f7;
+	margin-left: 30px;
+	padding-right: 50px;
+}
+</style>
+
+<body>
+	<!-- 角色添加（addRole） -->
+	<div class="modal fade myModal" id="myModal" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog" style="width: 300px">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">角色添加</h4>
+				</div>
+				<div class="modal-body">
+					<form id="userform">
+						<div class="input-group">
+							<span class="input-group-addon">角色名称</span> <input type="text"
+								id="roleName" class="form-control" placeholder="请输入角色名称"
+								style="width:178px;height:40px">
+						</div>
+					</form>
+					<div style=" clear:both"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭
+					</button>
+					<button type="button" class="btn btn-primary" onclick="addRole()">添加</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.addSysUser -->
+
+	<!-- 角色修改（updRole） -->
+	<div class="modal fade myModal" id="myModalUpd" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog" style="width: 300px">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabelUpd">角色信息维护</h4>
+				</div>
+				<div class="modal-body">
+					<input type="hidden" id="roleIdUpd">
+					<div class="input-group">
+						<span class="input-group-addon">角色名</span> <input type="text"
+							id="roleNameUpd" class="form-control" placeholder="请输入昵称"
+							style="width:178px;height:40px">
+					</div>
+					<div style=" clear:both"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭
+					</button>
+					<button type="button" class="btn btn-primary" onclick="updRole()">确认</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.updSysUser -->
+
+	<!-- 授权角色资源（roleResource） -->
+	<div class="modal fade myModal" id="roleResource" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" onclick="">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">
+						角色&nbsp;:&nbsp;<span id="span_name1"></span>
+					</h4>
+				</div>
+				<div class="modal-body" style="max-height: 350;">
+					<div class="row-md-12" style="margin-left: 50px;">
+						<div class="col-md-12">
+							<div style="width:450px;">
+								<div class="col-md-5">
+									<div class="centent">
+										<h4>已有资源</h4>
+										<select multiple="multiple" id="selectUpd" class="ddl"
+											style="height: 240px; width: 170px;">
+										</select>
+									</div>
+								</div>
+								<div class="col-md-2">
+
+									<div style="float:left ; margin-top: 100px;">
+										<button type="button" id="add"
+											class="btn btn-primary addRoleResource">&lt;&lt;</button>
+										<button type="button" id="remove"
+											class="btn btn-primary delRoleResource"
+											style="margin-top: 10px">&gt;&gt;</button>
+									</div>
+								</div>
+								<div class="col-md-5">
+									<div class="centent" style="float:right">
+										<h4>可用资源</h4>
+										<!--	id="selGroup"  -->
+										<select multiple="multiple" id="selectInfo" class="ddl"
+											style="height: 240px; width: 170px;">
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div style=" clear:both"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭
+					</button>
+					<button type="button" class="btn btn-primary"
+						onclick="saveRoleResource()">确认</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.roleResource -->
+
+	<!--角色列表 -->
+
+	<div>
+		<h4 style="margin-left: 15px;margin-bottom: -15px;margin-top: 2px">角色列表</h4>
+		<hr
+			style="height:1px;border:none;border-top:3px solid #028cfd;margin-bottom: 15px;" />
+		<div class="input-group col-md-2"
+			style="float: left;margin-bottom: 5px">
+					<button class="btn btn-primary btn-sm" data-toggle="modal"
+			data-target="#myModal" style="float: left;margin-bottom: 5px">角色添加</button>
+		</div>
+
+
+
+		<table id="tableData"></table>
+	</div>
+
+</body>
+<script type="text/javascript">
+	//初始化 角色信息
+	var appId = $api.getCurrApp();
+	var user = $api.getToken();
+	function initTable() {
+		$api.ui_openLoading('提示', '角色信息加载中，请耐心等待......');
+		window.setTimeout(function() {
+			$api.ui_closeLoading();
+		}, 500);
+		var data = {
+			"appId" : appId
+		}
+		$pow.selRoleByApp(data, success, error);
+		function success(ret) {
+		
+			var obj = ret.roleList;
+			$table = $('#tableData').bootstrapTable({
+				data : obj, //最终的JSON数据放在这里
+				height : $(window).height() - 100,
+				striped : true,
+				pagination : true,
+				pageNumber : 1,
+				pageSize : 10,
+				pageList : [ 5, 10, 20, 50, 100 ],
+				search : true,
+				showRefresh : true,
+				sidePagination : "client",
+				showColumns : true,
+				minimunCountColumns : 2,
+				columns : [
+					{
+						title : '序号',
+						formatter : function(value, row, index) {
+							return index + 1;
+						}
+					},
+					{
+						field : 'roleName',
+						title : '角色',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : 'operate',
+						title : '操作',
+						align : 'center',
+						formatter : function(value, row, index) {
+							var a = '<button type="button" class="btn btn-danger  btn-sm" style="margin-right:15px;"   onclick="delRole(\'' + row.roleName + '\',\'' + row.roleId + '\')">删除</a> ';
+							var b = '<button type="button" class="btn btn-warning  btn-sm" style="margin-right:15px;" data-toggle="modal" data-target="#myModalUpd" onclick="toupdRole(\'' + row.roleId + '\',\'' + row.roleName + '\')">修改</button>';
+							var c = '<button type="button" class="btn btn-success  btn-sm" style="margin-right:15px;" data-toggle="modal" data-target="#roleResource" onclick="roleResource(\'' + row.roleId + '\',\'' + row.roleName + '\')">资源绑定</button>';
+							return a + b + c;
+						}
+					} ],
+				formatNoMatches : function() {
+					return "没有相关的匹配结果";
+				},
+				formatLoadingMessage : function() {
+					return "";
+				}
+			});
+		}
+		function error() {
+		}
+
+	}
+	function refreshTableData() {
+		var data = {
+			"appId" : appId
+		}
+		$pow.selRoleByApp(data, success, error);
+		function success(ret) {
+			var data = ret.roleList;
+			$("#tableData").bootstrapTable('load', data);
+		}
+		function error() {
+		}
+
+	}
+</script>
+
+<script type="text/javascript">
+	function clearFrom() {
+		$(':input', '#userform')
+			.not(':button, :submit, :reset, :hidden')
+			.val('')
+			.removeAttr('checked')
+			.removeAttr('selected');
+
+	}
+</script>
+<script type="text/javascript">
+	//角色添加
+	function addRole() {
+		var roleName = $("#roleName").val();
+		var data = {};
+		data.appId = appId;
+		data.roleName = roleName;
+		$pow.addRole(data, success, error);
+		function success() {
+			refreshTableData() ;
+			$("#myModal").modal("hide");
+			clearFrom();
+		}
+		;
+		function error() {
+			$api.ui_openAlert('添加提示', '角色信息添加失败!');
+			clearFrom();
+		}
+		;
+	}
+</script>
+<script type="text/javascript">
+	//删除角色
+	function delRole(roleName, roleId) {
+		if (roleId == '6666' || roleId == '8888') {
+			$api.ui_openAlert('删除提示', '删除失败!该角色为系统默角色,请核实后重新操作...');
+		} else {
+			$api.ui_openAlert('角色删除', '请确认是否要删除角色：' + roleName, function(tag) {
+				if (tag) {
+					var data = {};
+					data.appId = appId;
+					data.roleId = roleId;
+					$pow.delRole(data, success, error);
+					function success() {
+						refreshTableData() ;
+						$api.ui_closeLoading();
+					}
+					;
+					function error() {
+						$api.ui_openAlert('删除提示', '删除失败!');
+					}
+					;
+
+				}
+			});
+		}
+	}
+</script>
+<script type="text/javascript">
+	//角色修改
+	function toupdRole(roleId, roleName) {
+		$("#roleIdUpd").val(roleId);
+		$("#roleNameUpd").val(roleName);
+	}
+	function updRole() {
+		var data = {};
+		data.appId = appId;
+		data.roleId = $("#roleIdUpd").val();
+		data.roleName = $("#roleNameUpd").val();
+		$pow.updRole(data, success, error);
+		function success() {
+			refreshTableData() ;
+			$("#myModalUpd").modal("hide");
+		}
+		;
+		function error() {
+			$api.ui_openAlert('修改提示', '角色信息修改失败!');
+		}
+		;
+	}
+</script>
+<script type="text/javascript">
+	var str_selectUpd;
+	var roleID;
+	function roleResource(roleId, roleName) {
+		//角色授权
+		roleID = roleId;
+		var roleName = roleName;
+		$("#span_name1").text(roleName);
+		var roleId = roleId;
+		var data = {};
+		data.appId = appId;
+		$("#selectInfo").empty();
+		$("#selectUpd").empty();
+		$pow.selResourceByApp(data, function(ret) {
+			//初始化资源清单
+			$("#selectInfo").empty();
+			ret = ret.resourceList;
+			for (i in ret) {
+				$("#selectInfo").append("<option class='' value=" + ret[i].resId + ">" + ret[i].resName + "</option>");
+			}
+		}, function() {
+			$api.ui_openAlert('授权提示', '可用资源列表加载失败!');
+		})
+		//回显角色已有资源
+		var odata = {};
+		odata.roleId = roleId;
+		$("#div_roleName").val(roleName);
+		$pow.selRoleResource(odata, function(ret) {
+			$("#selectUpd").empty();
+			var data = ret.resourceList;
+			if (!$api.isNull(data)) {
+				for (i in data) {
+					$("#selectUpd").append("<option class='' value=" + data[i].resId + ">" + data[i].resName + "</option>");
+				}
+			}
+
+			$("#selectUpd option").map(function() {
+				//已有角色资源
+				str_selectUpd = $("#selectUpd option").map(function() {
+					return $(this).val();
+				}).get().join(",");
+			})
+		}, function() {})
+
+
+		//添加角色资源
+		$(document).on("click", ".addRoleResource", function() {
+			var rid = $('#selectInfo option:selected').val();
+			var str = $("#selectUpd option").map(function() {
+				return $(this).val();
+			}).get().join(",")
+			var strs = new Array();
+			strs = str.split(",");
+			var flag = true;
+			for (i = 0; i < strs.length; i++) {
+				if (rid == strs[i]) {
+					flag = true;
+					break;
+				} else {
+					flag = false;
+				}
+			}
+			;
+			if (flag) {
+				$('#selectInfo option:selected').remove();
+			} else {
+				$('#selectInfo option:selected').appendTo('#selectUpd');
+			}
+			;
+
+		})
+
+		//删除角色资源
+		$(document).on("click", ".delRoleResource", function() {
+			var rid = $('#selectUpd option:selected').val();
+			var str = $("#selectInfo option").map(function() {
+				return $(this).val();
+			}).get().join(",")
+			var strs = new Array();
+			strs = str.split(",");
+			var flag = true;
+			for (i = 0; i < strs.length; i++) {
+				if (rid == strs[i]) {
+					flag = true;
+					break;
+				} else {
+					flag = false;
+				}
+			}
+			;
+			if (flag) {
+				$('#selectUpd option:selected').remove();
+			} else {
+				$('#selectUpd option:selected').appendTo('#selectInfo');
+			}
+			;
+
+		})
+	}
+
+	function delResource() {
+		strs1 = str_selectUpd.split(",");
+		for (var i = 0; i < strs1.length; i++) {
+			var rid1 = strs1[i];
+			var data1 = {};
+			data1.roleId = roleID;
+			data1.resId = rid1;
+			$pow.delRoleResource(data1, function() {}, function() {});
+		}
+	}
+	function addResource() {
+		var str_select = $("#selectUpd option").map(function() {
+			return $(this).val();
+		}).get().join(",")
+		if (str_select != null || str_select != '') {
+			var strs = new Array();
+			strs = str_select.split(",");
+			for (i = 0; i < strs.length; i++) {
+				var rid = strs[i];
+				var data = {};
+				data.roleId = roleID;
+				data.resId = rid;
+				$pow.addRoleResource(data, function() {}, function() {});
+			}
+		}
+	}
+
+	//保存角色资源  提交更改
+	function saveRoleResource() {
+		$api.ui_openLoading('提示', '授权中，请耐心等待......');
+		window.setTimeout(function() {
+			$api.ui_closeLoading();
+			$("#roleResource").modal("hide");
+		}, 500);
+		if (str_selectUpd != null) {
+			delResource();
+			addResource();
+		} else {
+			addResource();
+		}
+	}
+</script>
+
+<script type="text/javascript">
+	$(function() {
+		$api.Initialize();
+		initTable();
+	});
+</script>
+</html>

@@ -1,0 +1,190 @@
+C51 COMPILER V9.52.0.0   EEPROM                                                            01/11/2018 14:24:03 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE EEPROM
+OBJECT MODULE PLACED IN .\Objects\EEPROM.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\EEPROM\EEPROM.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(..\project;.\
+                    -USER\BUZZER;.\USER\charge;.\USER\common;.\USER\DC_MOTOR;.\USER\EEPROM;.\USER\EXINT;.\USER\IIC;.\USER\inc;.\USER\ION;.\US
+                    -ER\M26;.\USER\PWM;.\USER\Sensor;.\USER\step_motor;.\USER\SYS_RUN;.\USER\timer;.\USER\TM1620;.\USER\touch_key;.\USER\UART
+                    -;.\USER\UV;.\USER\LVI) DEBUG OBJECTEXTEND PRINT(.\Listings\EEPROM.lst) TABS(2) OBJECT(.\Objects\EEPROM.obj)
+
+line level    source
+
+   1          #include <stdio.h>
+   2          #include <string.h>
+   3          #include "OB39R32T1.h"
+   4          #include <absacc.h>    /* Include Macro Definitions */
+   5          #include "EEPROM.h"
+   6          #include "global.h"
+   7          #include "common.h"
+   8          #include "debug_uart.h"
+   9          
+  10          
+  11          
+  12          /*ISPFC.ISPF[2:0]*/
+  13          #define d_Command_Byte_Program  0
+  14          #define d_Command_Page_Erase    2
+  15          #define d_EEPROM_Start_Addr     0x7C
+  16          
+  17          //====================================================================
+  18          //#define d_DATALEN   64              // idata limit:1~128
+  19          //unsigned char idata buf[d_DATALEN]; // idata limit:1~128
+  20          
+  21          void Software_Reset(void)
+  22          {
+  23   1          EA    = 0;
+  24   1          TAKEY = 0x55;
+  25   1          TAKEY = 0xAA;
+  26   1          TAKEY = 0x5A;
+  27   1          SWRES = 0xFF;
+  28   1      }
+  29          
+  30          void Check_ISPFAH(void)
+  31          {
+  32   1          if (ISPFAH < d_EEPROM_Start_Addr)
+  33   1              Software_Reset();
+  34   1      }
+  35          
+  36          void EEPROM_Enable(void)
+  37          {
+  38   1          EA     = 0;
+  39   1          TAKEY  = 0x55;
+  40   1          TAKEY  = 0xAA;
+  41   1          TAKEY  = 0x5A;
+  42   1          IFCON |= 0x01;    // ISPE=1, Enable ISP function
+  43   1          EA     = 1;
+  44   1      }
+  45          
+  46          void EEPROM_Disable(void)
+  47          {
+  48   1          EA     = 0;
+  49   1          TAKEY  = 0x55;
+  50   1          TAKEY  = 0xAA;
+  51   1          TAKEY  = 0x5A;
+  52   1          IFCON &= 0xFE;    // ISPE=0, Disable  ISP function
+C51 COMPILER V9.52.0.0   EEPROM                                                            01/11/2018 14:24:03 PAGE 2   
+
+  53   1          EA     = 1;
+  54   1      }
+  55          
+  56          void EEPROM_Byte_Program(unsigned int Addr, unsigned char Data)
+  57          {
+  58   1          EEPROM_Enable();
+  59   1          ISPFD  = Data;
+  60   1          ISPFAH = (Addr/256);
+  61   1          ISPFAL = (Addr%256);
+  62   1          if (ISPFAH >= d_EEPROM_Start_Addr)
+  63   1              ISPFC = d_Command_Byte_Program;
+  64   1          else
+  65   1              //Software_Reset();
+  66   1              goto exit;
+  67   1          
+  68   1      exit:
+  69   1          EEPROM_Disable();
+  70   1      }
+  71          
+  72          void EEPROM_Page_Erase(unsigned int Addr)    //erase 1K byte
+  73          {
+  74   1          EEPROM_Enable();
+  75   1          ISPFAH = (Addr/256);
+  76   1          ISPFAL = (Addr%256);
+  77   1          if (ISPFAH >= d_EEPROM_Start_Addr)
+  78   1              ISPFC = d_Command_Page_Erase;
+  79   1          else
+  80   1              //Software_Reset();
+  81   1              goto exit;
+  82   1          
+  83   1      exit:
+  84   1          EEPROM_Disable();
+  85   1      }
+  86          
+  87          void EEPROM_Sector_Program(unsigned int Addr_start, unsigned int Addr_end, unsigned char Data)
+  88          {
+  89   1          unsigned int i;
+  90   1          for (i = Addr_start; i <= Addr_end; i++)
+  91   1          {
+  92   2              EEPROM_Byte_Program(i, Data);
+  93   2          }
+  94   1      }
+  95          
+  96          unsigned char EEPROM_Byte_Read(unsigned int Addr)
+  97          {
+  98   1          return CBYTE[Addr];    //The range of valid index values for this macro is 0-255
+  99   1      }
+ 100          
+ 101          
+ 102          void EEPROM_Read_Bytes(unsigned char *buff,unsigned int Addr,unsigned char length)
+ 103          {
+ 104   1          unsigned char i = 0;
+ 105   1          if(buff == NULL)
+ 106   1          {
+ 107   2              return;
+ 108   2          }
+ 109   1          
+ 110   1          if(Addr < EEPROM_START_ADDR || Addr > EEPROM_END_ADDR)
+ 111   1          {
+ 112   2              return;
+ 113   2          }
+ 114   1          
+C51 COMPILER V9.52.0.0   EEPROM                                                            01/11/2018 14:24:03 PAGE 3   
+
+ 115   1      //    mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 116   1      //    sprintf(m26_cmd_info.sendtring,"EEPROM_Read_Bytes step0\r\n");
+ 117   1      //    DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,strlen(m26_cmd_info.sendtring));
+ 118   1          
+ 119   1          for(i = 0;i < length;i ++)
+ 120   1          {
+ 121   2              buff[i] = EEPROM_Byte_Read(Addr + i);
+ 122   2          }
+ 123   1      }
+ 124          
+ 125          
+ 126          void EEPROM_Write_Bytes(unsigned char *buff,unsigned int Addr,unsigned char length)
+ 127          {
+ 128   1          unsigned char i = 0;
+ 129   1          unsigned int eeprom_addr = 0;
+ 130   1          if(buff == NULL)
+ 131   1          {
+ 132   2      //        mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 133   2      //        sprintf(m26_cmd_info.sendtring,"EEPROM_Write_Bytes step0\r\n");
+ 134   2      //        DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,strlen(m26_cmd_info.sendtring));
+ 135   2              return;
+ 136   2          }
+ 137   1          
+ 138   1          if(Addr < EEPROM_START_ADDR || Addr > EEPROM_END_ADDR)
+ 139   1          {
+ 140   2      //        mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 141   2      //        sprintf(m26_cmd_info.sendtring,"EEPROM_Write_Bytes step2\r\n");
+ 142   2      //        DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,strlen(m26_cmd_info.sendtring));
+ 143   2              return;
+ 144   2          }
+ 145   1          
+ 146   1      //    mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 147   1      //    sprintf(m26_cmd_info.sendtring,"write addr:%x,length:%d\r\n",(unsigned int)Addr,(unsigned int)length
+             -);
+ 148   1      //    DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,strlen(m26_cmd_info.sendtring));
+ 149   1          
+ 150   1          eeprom_addr = Addr;
+ 151   1          
+ 152   1          for(i = 0;i < length;i++)
+ 153   1          {
+ 154   2              EEPROM_Byte_Program((eeprom_addr + i),buff[i]);
+ 155   2          }
+ 156   1      }
+ 157          
+ 158          
+ 159          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    412    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----      20
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

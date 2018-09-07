@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>用户问题反馈</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate" />
+<link href="../../compontents/bootstarp/css/bootstrap-UI.css.css"
+	rel="stylesheet" media="screen">
+<link
+	href="../../compontents/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css"
+	rel="stylesheet" media="screen">
+
+<link
+	href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"
+	rel="stylesheet" />
+<link href="../../compontents/iot/css/table.css" rel="stylesheet" />
+<script
+	src="https://cdn.staticfile.org/flat-ui/2.3.0/js/vendor/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/flat-ui/2.3.0/js/flat-ui.min.js"></script>
+<script src="../../compontents/bootstarp/js/bootstrap-table.js"></script>
+<script src="../../compontents/bootstarp/js/tableExport.js"></script>
+<script
+	src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript"
+	src="../../compontents/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js"
+	charset="UTF-8"></script>
+<script src="../../compontents/iot/js/api.js"></script>
+<style type="text/css">
+textarea {
+	resize: none;
+	overflow: hidden;
+}
+
+body {
+	font-family: "华文细黑";
+	width: 100%;
+	height: auto;
+	background: #f7f7f7;
+	margin-left: 30px;
+	padding-right: 50px;
+}
+</style>
+</head>
+<body>
+
+	<div>
+		<h4 style="margin-left: 15px;margin-bottom: -15px;margin-top: 2px">用户问题反馈</h4>
+		<hr
+			style="height:1px;border:none;border-top:3px solid #028cfd;margin-bottom: 15px" />
+		<div style=""></div>
+
+		<table id="tableData">
+		</table>
+
+
+	</div>
+</body>
+
+<script>
+	//初始化信息
+	function initTable() {
+		$api.ui_openLoading('提示', '消费信息加载中，请耐心等待......');
+		window.setTimeout(function() {
+			$api.ui_closeLoading();
+		}, 500);
+
+		var data = {};
+		$query.qnrQuery(data, function(ret) {
+			var obj = ret.data;
+			for (i in obj) {
+				obj[i]['提交时间'] = $api.fromUnixtime(obj[i]['提交时间'])
+				if (obj[i]['问题状态'] == 1) {
+					obj[i]['问题状态'] = "已处理";
+				} else {
+					obj[i]['问题状态'] = "待处理";
+				}
+
+
+			}
+			$("#tableData").bootstrapTable('load', data);
+			//bootstrap-Table获取数据
+
+			$table = $('#tableData').bootstrapTable({
+				data : obj, //最终的JSON数据放在这里
+				height : $(window).height() - 100,
+
+				striped : true,
+				pagination : true,
+				pageNumber : 1,
+				pageSize : 10,
+				pageList : [ 10, 50, 100, 1000 ],
+				search : true,
+				sidePagination : "client",
+				minimunCountColumns : 2,
+				clickToSelect : true,
+				showExport : true, //是否显示导出  
+				exportDataType : "basic",
+
+				columns : [
+					{
+						title : '编号',
+						formatter : function(value, row, index) {
+							return index + 1;
+						}
+					},
+
+					{
+						field : '产品名称',
+						title : '产品名称',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : '产品型号',
+						title : '产品型号',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : '设备地点',
+						title : '设备地点',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : '提交时间',
+						title : '提交时间',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : '用户昵称',
+						title : '用户昵称',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : '电话',
+						title : '电话',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : '所在城市',
+						title : '所在城市',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : '主题',
+						title : '主题',
+						align : 'center',
+						sortable : true
+					},
+
+					{
+						field : '反馈内容',
+						title : '反馈内容',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : '问题状态',
+						title : '问题状态',
+						align : 'center',
+						sortable : true
+					}, {
+						field : 'operate',
+						title : '操作',
+						align : 'center',
+						formatter : function(value, row, index) {
+							
+							var b = "";
+							if (row['问题状态'] == "待处理") {
+								b = '<button type="button" class="btn btn-success  btn-sm" style="margin-right:15px;"	 onclick="saveProdQnr	(\'' + row.qnr_id + '\')">确认</button>';
+							}else{
+							//	b = '已处理';
+							
+							}
+							return b;
+						}
+					}
+
+				],
+				formatNoMatches : function() {
+					return "没有相关的匹配结果";
+				},
+				formatLoadingMessage : function() {
+					return "";
+				},
+			});
+		},
+			function() {
+				$api.ui_openAlert('查询提示', '消费信息加载失败');
+			});
+
+
+	}
+
+	function refreshTableData() {
+		var data = '';
+		$query.qnrQuery(data, success, error);
+		function success(ret) {
+			var obj = ret.data;
+			for (i in obj) {
+				obj[i]['提交时间'] = $api.fromUnixtime(obj[i]['提交时间'])
+				if (obj[i]['问题状态'] == 1) {
+					obj[i]['问题状态'] = "已处理";
+				} else {
+					obj[i]['问题状态'] = "待处理";
+				}
+
+
+			}
+			$("#tableData").bootstrapTable('load', obj);
+		}
+		function error() {
+			$api.ui_openAlert('提示', '产品信息更新失败');
+		}
+
+	}
+</script>
+
+<script>
+
+	/*  查询产品信息 */
+	function selProdByApp() {
+		var data = {};
+		$pow.selProdByApp(data, success, error);
+		function success(ret) {
+			var list = ret.prodList;
+			console.log(list)
+			for (i in list) {
+				$("#qnrId").append('<option value=' + list[i].productId + '>' + list[i].name + '</option>')
+			}
+		}
+		function error() {
+		}
+	}
+</script>
+<script>
+	/* 问题确认 */
+	function saveProdQnr(qnr_id) {
+		var data = {};
+		data.qnrId = qnr_id;
+		data.status = 1;
+		$pow.saveProdQnr(data, success, error);
+		function success() {
+			refreshTableData();
+		}
+		;
+		function error() {
+		}
+		;
+	}
+</script>
+
+
+<script>
+	$(function() {
+		$api.Initialize();
+		initTable();
+		selProdByApp();
+	});
+</script>
+</html>
+
+
+

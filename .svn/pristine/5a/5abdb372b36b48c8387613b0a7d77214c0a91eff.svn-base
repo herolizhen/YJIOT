@@ -1,0 +1,54 @@
+<html>
+<body>
+<pre>
+<h1>礦ision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: μVision V5.23.0.0
+Copyright (C) 2017 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: 111 Microsoft, Microsoft, LIC=3UUDY-IUZZ3-EY5VT-RXUQH-5RI7S-2JXY5
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Professional  Version: 5.23
+Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 4 (build 422)
+Assembler:       Armasm.exe V5.06 update 4 (build 422)
+Linker/Locator:  ArmLink.exe V5.06 update 4 (build 422)
+Library Manager: ArmAr.exe V5.06 update 4 (build 422)
+Hex Converter:   FromElf.exe V5.06 update 4 (build 422)
+CPU DLL:         SARMCM3.DLL V5.23
+Dialog DLL:      DCM.DLL V1.15.0.0
+Target DLL:      Segger\JL2CM3.dll V2.99.23.0
+Dialog DLL:      TCM.DLL V1.27.0.0
+ 
+<h2>Project:</h2>
+E:\工作\stm32开发\stm32f103c8t6-sim7600\stm32f103c8t6-sim7600-https\stm32f103-ucosii.uvprojx
+Project File Date:  06/21/2018
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 4 (build 422)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
+Build target 'stm32f103c8t6'
+compiling sim7600.c...
+.\user\user_debug.h(25): warning:  #1-D: last line of file ends without a newline
+                          
+user\user_sim7600\sim7600.c(416): warning:  #550-D: variable "pos_end"  was set but never used
+      char *pos,*pos_end = NULL;
+user\user_sim7600\sim7600.c(419): warning:  #177-D: variable "ordnum_cmp_result"  was declared but never referenced
+      unsigned char ordnum_cmp_result = 0;
+user\user_sim7600\sim7600.c(3016): warning:  #177-D: variable "mqtt_status"  was declared but never referenced
+      uint8_t mqtt_status = 0;
+user\user_sim7600\sim7600.c(77): warning:  #550-D: variable "is_send_get_mqtt_status_cmd"  was set but never used
+  static uint8_t is_send_get_mqtt_status_cmd = 0;
+user\user_sim7600\sim7600.c: 5 warnings, 0 errors
+linking...
+Program Size: Code=38620 RO-data=988 RW-data=224 ZI-data=19704  
+".\Objects\stm32f103-ucosii.axf" - 0 Error(s), 5 Warning(s).
+
+<h2>Collection of Component include folders:</h2>
+  .\RTE\_stm32f103c8t6
+  C:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include
+
+<h2>Collection of Component Files used:</h2>
+Build Time Elapsed:  00:00:02
+</pre>
+</body>
+</html>

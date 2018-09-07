@@ -1,0 +1,302 @@
+﻿@using YJIOT.ShareAirAPP.ViewModel
+@using YJIOT.ShareAirAPP.Models
+@model ShareProcessViewModel
+<div class="app-content">
+    <div class="weui-cells__title">共享设备MAC</div>
+    <div class="weui-cells weui-cells_form">
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">设备MAC</label></div>
+            <div class="weui-cell__bd">
+                <input class="weui-input" type="text" id="MAC" placeholder="请输入设备MAC"
+                       onkeyup="this.value=this.value.toUpperCase()" />
+            </div>
+            <div class="weui-cell__ft">
+                <button onclick="showEquipmentInfo()" class="weui-vcode-btn">获取设备信息</button>
+            </div>
+        </div>
+    </div>
+    <!-- 设备信息 -->
+    <div id="devinfo" class="weui-cells" style="display:none;">
+        <div class="weui-cells__title">设备信息</div>
+        <input type="text" style="display:none;" id="deviceId" /> 
+        <input type="text" style="display:none;" id="devicePw" />
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <p>部署单位</p>
+            </div>
+            <div class="weui-cell__ft" id="owner_name"></div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <p>部属位置</p>
+            </div>
+            <div class="weui-cell__ft" id="position"></div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <p>经纬度</p>
+            </div>
+            <div class="weui-cell__ft" id="tude"></div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <p>管理人员</p>
+            </div>
+            <div class="weui-cell__ft" id="manager"></div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <p>联系电话</p>
+            </div>
+            <div class="weui-cell__ft" id=tel></div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <p>设备状态</p>
+            </div>
+            <div class="weui-cell__ft" id="status"></div>
+        </div>
+        <div class="weui-cell button_sp_area">
+            <a onclick="EquipmentMonitoring()" class="weui-btn weui-btn_primary">设备监测</a>
+            <a onclick="EquipmentOpen()" class="weui-btn weui-btn_primary">设备开盖</a>
+        </div>
+    </div>
+    <!-- 设备监测 -->
+    <div id="devmonitor" class="weui-cells" style="display:none;">
+        <div class="weui-cells__title">设备实时监测数据</div>
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <p>消息队列</p>
+            </div>
+            <div class="weui-cell__ft" id="mes"></div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <p>PM2.5</p>
+            </div>
+            <div class="weui-cell__ft" id="P"></div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <p>开机开关</p>
+            </div>
+            <div class="weui-cell__ft" id="SMD"></div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <p>自动开关</p>
+            </div>
+            <div class="weui-cell__ft" id="SM"></div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <p>UV开关</p>
+            </div>
+            <div class="weui-cell__ft" id="UV"></div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <p>NI开关</p>
+            </div>
+            <div class="weui-cell__ft" id="NI"></div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <p>设备类型</p>
+            </div>
+            <div class="weui-cell__ft" id="TYPE"></div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <p>风机档位</p>
+            </div>
+            <div class="weui-cell__ft" id="FA"></div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__bd">
+                <p>设备筹码</p>
+            </div>
+            <div class="weui-cell__ft" id="CHIPS"></div>
+        </div>
+    </div>
+</div>
+@section Style{
+}
+@section Script{
+    <script type="text/javascript" src="https://www.broofa.com/Tools/Math.uuid.js"></script>
+    <script type="text/javascript">
+        var token = '@MvcHtmlString.Create(Model.IotToken)';
+        var openid='@MvcHtmlString.Create(Model.OpenID)';
+        var deviceMac = '';
+        var deviceId = '';
+        var devicePw = '';
+        var options = @MvcHtmlString.Create(Model.jsonAttach);
+    </script>
+    <script type="text/javascript">
+        //设备信息按钮点击事件
+        function showEquipmentInfo() {
+            deviceMac = $("#MAC").val();
+            if ($app.isNull(deviceMac)) {
+                $.toptip("请输入设备的MAC", 5000, 'error');
+                return;
+            }
+
+            if (!$app.isNull(deviceMac)) {
+                $iot.mqttClientDisconnect();
+                $.showLoading();
+                $('#devmonitor').hide();
+                var data = {};
+                data.deviceMac = deviceMac;
+                $.ajax({
+                    url: 'https://io.bjyjyz.com/YJIOT/client/getDevInfoByMac',
+                    type: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": token
+                    },
+                    ContentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    data:JSON.stringify(data),
+                    success: function (result) {
+                        if (!$app.isNull(result) && !$app.isNull(result.meta) && result.meta.code == 0) {
+                            $.hideLoading();
+                            $('#devinfo').show();
+                            var dev = result.data.devInfo;
+                            var devStatus = result.data.devStatus;
+                            var devAccount = result.data.devAccount;
+
+                            var owner_name = devAccount.ownerName; //部属单位
+                            var position = devAccount.position; //部署位置
+                            var longitude = devAccount.longitude; //经度
+                            var latitude = devAccount.latitude; //纬度
+                            var manager = devAccount.manager; //管理人员
+                            var tel = devAccount.tel; //联系电话
+                            var status = devAccount.isOnline==1?'在线':'离线'; //设备状态
+
+                            //回显设备信息
+                            deviceId = dev.deviceId;
+                            deviceMac = dev.deviceMac;
+                            devicePw=dev.devicePw;
+                            options.userName=deviceId;
+                            options.password=devicePw;
+                            $('#owner_name').text(owner_name);
+                            $('#position').text(position);
+                            $('#tude').text("经度：" + longitude + "维度：" + latitude);
+                            $('#manager').text(manager);
+                            $('#tel').text(tel);
+                            $('#status').text(status);
+                        } else {
+                            $.hideLoading();
+                            $.toptip("信息查询失败，请重试", 5000, 'error');
+                            $('#devinfo').hide();
+                        }
+                    },
+                    error: function (err) {
+                        $.hideLoading();
+                        $.toptip("信息查询失败，请重试", 5000, 'error');
+                        $('#devinfo').hide();
+                    }
+                });
+            } else {
+                $.hideLoading();
+                $.toptip("信息查询失败deviceMac不能为空", 'error');
+            }
+        }
+        //开盖
+        function EquipmentOpen(){
+            $iot.Host = 'https://io.bjyjyz.com';
+            $iot.Token = token;
+            $iot.DeviceId = deviceId;
+            $iot.OpenId = openid;
+            $.showLoading();
+            var cmd={};
+            cmd.DR=1;
+            $iot.sendCommand(cmd,function(){
+                $.hideLoading();
+                $.toptip('操作成功，请注意监测数据',3000, 'success');
+            },function(){
+                $.hideLoading();
+                $.toptip('操作失败，请重试',3000, 'error');
+                ismessaage=true;
+            },function(){
+                $.hideLoading();
+                $.toptip('操作失败，请重试',3000, 'error');
+                ismessaage=true;
+            },function(_token){
+                token=_token;
+            });
+        }
+        //点击设备监测按钮事件
+        function EquipmentMonitoring(){
+            options.clientid= Math.uuid(32);//deviceId.replace(/-/g,"");
+            options.topic='d2c.'+deviceId+'.status';
+            $.showLoading();
+            $iot.mqttClientDisconnect();
+            $iot.mqttClientConnect(options,function(data){
+                $.hideLoading();
+                $('#devmonitor').show();
+                var P = data['P'] //PM2.5
+                var Z = data['CHIPS']
+                var O = data['O']
+                var J = data['J']
+                var SMD = data['SMD'] //开机开关
+                var SM = data['SM'] //自动开关
+                var UV = data['UV'] //UV开关
+                var FA = data['FA'] //风机档位
+                var NI = data['NI'] //NI开关
+                var TYPE = data['TYPE'] //设备类型
+                var CHIPS = data['CHIPS'] //设备筹码
+                //消息队列
+                document.getElementById("mes").innerHTML = JSON.stringify(data);
+                //PM2.5
+                document.getElementById("P").innerHTML = data['P'];
+
+                //开机开关
+                if (1 == SMD)
+                    document.getElementById("SMD").innerHTML = "开";
+                else
+                    document.getElementById("SMD").innerHTML = "关";
+                //自动开关
+                if (1 == SM)
+                    document.getElementById("SM").innerHTML = "开";
+                else
+                    document.getElementById("SM").innerHTML = "关";
+
+                //UV开关
+                if (1 == UV)
+                    document.getElementById("UV").innerHTML = "开";
+                else
+                    document.getElementById("UV").innerHTML = "关";
+
+                //UV开关
+                if (1 == NI)
+                    document.getElementById("NI").innerHTML = "开";
+                else
+                    document.getElementById("NI").innerHTML = "关";
+
+                // 类型
+                if (0 == TYPE)
+                    document.getElementById("TYPE").innerHTML = "家用";
+                else if (1 == TYPE)
+                    document.getElementById("TYPE").innerHTML = "共享机";
+
+                //FA风挡开关
+                if (0 == FA) {
+                    document.getElementById("FA").innerHTML = "关";
+                } else if (1 == FA) {
+                    document.getElementById("FA").innerHTML = "一档";
+                } else if (2 == FA) {
+                    document.getElementById("FA").innerHTML = "二档";
+                } else if (3 == FA) {
+                    document.getElementById("FA").innerHTML = "三档";
+                }
+                document.getElementById("CHIPS").innerHTML = data['CHIPS'] + "分钟";
+            },function(err){
+                $.hideLoading();
+                $iot.mqttClientDisconnect();
+                $.toptip('连接设备监测失败，请重试',5000, 'error');
+                $('#devmonitor').hide();
+            });
+        }
+    </script>
+}

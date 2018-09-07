@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.security.dao.PowSysUserMapper">
+	<resultMap id="BaseResultMap" type="com.yjyz.iot.security.entity.PowSysUser">
+		<id column="appid" jdbcType="VARCHAR" property="appid" />
+		<id column="username" jdbcType="VARCHAR" property="username" />
+		<result column="password" jdbcType="VARCHAR" property="password" />
+		<result column="realname" jdbcType="VARCHAR" property="realname" />
+		<result column="nickname" jdbcType="VARCHAR" property="nickname" />
+		<result column="sex" jdbcType="VARCHAR" property="sex" />
+		<result column="address" jdbcType="VARCHAR" property="address" />
+		<result column="company" jdbcType="VARCHAR" property="company" />
+		<result column="job" jdbcType="VARCHAR" property="job" />
+		<result column="createtime" jdbcType="TIMESTAMP" property="createtime" />
+		<result column="status" jdbcType="VARCHAR" property="status" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		appid, username, password, realname, nickname, sex, address, company, job,
+		createtime,
+		status
+	</sql>
+	<select id="selectByAppId" parameterType="com.yjyz.iot.security.entity.PowSysUserKey"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_pow_sys_user
+		where appid = #{appid,jdbcType=VARCHAR}
+	</select>
+	<select id="selectByPrimaryKey" parameterType="com.yjyz.iot.security.entity.PowSysUserKey"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_pow_sys_user
+		where appid = #{appid,jdbcType=VARCHAR}
+		and username = #{username,jdbcType=VARCHAR}
+	</select>
+
+	<select id="selectResourceByUser" parameterType="com.yjyz.iot.security.entity.PowSysUserKey"
+		resultType="com.yjyz.iot.security.entity.PowResource">
+		select pr.*
+		from t_pow_sys_user psu,t_pow_user_role pur,t_pow_role_resource
+		prr,t_pow_resource pr
+		where psu.username = pur.username and
+		pur.role_id = prr.role_id and
+		prr.res_id = pr.res_id
+		and username = #{username,jdbcType=VARCHAR}
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="com.yjyz.iot.security.entity.PowSysUserKey">
+		delete from t_pow_sys_user
+		where appid = #{appid,jdbcType=VARCHAR}
+		and username = #{username,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.yjyz.iot.security.entity.PowSysUser">
+		insert into t_pow_sys_user (appid, username, password,
+		realname, nickname, sex,
+		address, company, job,
+		createtime, status)
+		values (#{appid,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR},
+		#{password,jdbcType=VARCHAR},
+		#{realname,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR}, #{sex,jdbcType=VARCHAR},
+		#{address,jdbcType=VARCHAR}, #{company,jdbcType=VARCHAR},
+		#{job,jdbcType=VARCHAR},
+		#{createtime,jdbcType=TIMESTAMP}, #{status,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.yjyz.iot.security.entity.PowSysUser">
+		insert into t_pow_sys_user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="appid != null">
+				appid,
+			</if>
+			<if test="username != null">
+				username,
+			</if>
+			<if test="password != null">
+				password,
+			</if>
+			<if test="realname != null">
+				realname,
+			</if>
+			<if test="nickname != null">
+				nickname,
+			</if>
+			<if test="sex != null">
+				sex,
+			</if>
+			<if test="address != null">
+				address,
+			</if>
+			<if test="company != null">
+				company,
+			</if>
+			<if test="job != null">
+				job,
+			</if>
+			<if test="createtime != null">
+				createtime,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="appid != null">
+				#{appid,jdbcType=VARCHAR},
+			</if>
+			<if test="username != null">
+				#{username,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null">
+				#{password,jdbcType=VARCHAR},
+			</if>
+			<if test="realname != null">
+				#{realname,jdbcType=VARCHAR},
+			</if>
+			<if test="nickname != null">
+				#{nickname,jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				#{sex,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				#{address,jdbcType=VARCHAR},
+			</if>
+			<if test="company != null">
+				#{company,jdbcType=VARCHAR},
+			</if>
+			<if test="job != null">
+				#{job,jdbcType=VARCHAR},
+			</if>
+			<if test="createtime != null">
+				#{createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yjyz.iot.security.entity.PowSysUser">
+		update t_pow_sys_user
+		<set>
+			<if test="password != null">
+				password = #{password,jdbcType=VARCHAR},
+			</if>
+			<if test="realname != null">
+				realname = #{realname,jdbcType=VARCHAR},
+			</if>
+			<if test="nickname != null">
+				nickname = #{nickname,jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				sex = #{sex,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				address = #{address,jdbcType=VARCHAR},
+			</if>
+			<if test="company != null">
+				company = #{company,jdbcType=VARCHAR},
+			</if>
+			<if test="job != null">
+				job = #{job,jdbcType=VARCHAR},
+			</if>
+			<if test="createtime != null">
+				createtime = #{createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where appid = #{appid,jdbcType=VARCHAR}
+		and username = #{username,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yjyz.iot.security.entity.PowSysUser">
+		update t_pow_sys_user
+		set password = #{password,jdbcType=VARCHAR},
+		realname = #{realname,jdbcType=VARCHAR},
+		nickname = #{nickname,jdbcType=VARCHAR},
+		sex = #{sex,jdbcType=VARCHAR},
+		address = #{address,jdbcType=VARCHAR},
+		company = #{company,jdbcType=VARCHAR},
+		job = #{job,jdbcType=VARCHAR},
+		createtime = #{createtime,jdbcType=TIMESTAMP},
+		status = #{status,jdbcType=VARCHAR}
+		where appid = #{appid,jdbcType=VARCHAR}
+		and username = #{username,jdbcType=VARCHAR}
+	</update>
+</mapper>

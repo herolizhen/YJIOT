@@ -1,0 +1,8 @@
+=====================================================================
+Jlink driver is only used for Windows Hosts
+=====================================================================
+
+Zadig is meant to install a libusb compatible driver, for a device that does not yet have such a driver installed.
+Openocd needs libusb compatible driver to operate Jlink, you should replace the default Jlink driver fron Segger.
+
+Official Zadig usage: https://github.com/pbatard/libwdi/wiki/Zadig

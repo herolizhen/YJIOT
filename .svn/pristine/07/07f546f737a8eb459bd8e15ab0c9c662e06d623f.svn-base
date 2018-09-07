@@ -1,0 +1,5 @@
+package com.yjyz.iot.push;
+
+public interface ISendPush {
+	public PushResult DevMessage(String appName, String apiAppId, String apiAppKey, String tel, String devName);
+}

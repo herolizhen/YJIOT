@@ -1,0 +1,301 @@
+C51 COMPILER V9.52.0.0   IIC                                                               08/19/2017 15:25:38 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE IIC
+OBJECT MODULE PLACED IN .\Objects\IIC.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\IIC\IIC.c OPTIMIZE(8,SPEED) BROWSE INCDIR(.\USER\IIC;.\USER\UART;.\
+                    -USER\TM1618;.\USER\Sensor;.\USER;.\USER\PWM;.\USER\DC_MOTOR;.\USER\timer;.\USER\inc) DEBUG OBJECTEXTEND PRINT(.\Listings
+                    -\IIC.lst) TABS(2) OBJECT(.\Objects\IIC.obj)
+
+line level    source
+
+   1          #include "OB39R16A6.h"
+   2          #include "IIC.h"
+   3          
+   4          //===============================
+   5          //IIC DEFINITIONs
+   6          //===============================
+   7          
+   8          #define d_BR32          0x00
+   9          #define d_BR64          0x01
+  10          #define d_BR128         0x02
+  11          #define d_BR256         0x03
+  12          #define d_BR512         0x04
+  13          #define d_BR1024        0x05
+  14          #define d_BR2048        0x06
+  15          #define d_BR4096        0x07
+  16          #define d_IIC_BR        d_BR128     // user modify
+  17          
+  18          #define d_MASTER        0x40
+  19          #define d_SLAVE         0x00
+  20          #define d_MODE_SEL      d_MASTER    // use master mode
+  21          #define d_IIC_EN        0x80
+  22          #define d_NACK          1
+  23          #define d_ACK           0
+  24          #define d_WRITE         0
+  25          #define d_READ          1
+  26          
+  27          #define d_BB_DIS        0x00
+  28          #define d_BB_EN         0x08
+  29          #define d_BUS_BUSY      d_BB_EN
+  30          #define d_AR_DIS        0x00
+  31          #define d_AR_EN         0x10
+  32          #define d_ARBITRATION   d_AR_EN
+  33          
+  34          #define d_CMD_RW        0x40
+  35          #define d_CMD_Start     0x80
+  36          #define d_CMD_Stop      0xC0
+  37          
+  38          //===============================================================
+  39          //OWNED SUBROUTINES
+  40          //===============================================================
+  41          
+  42          unsigned char IIC_TxBuf[16] = {0x00,0x10,0x20,0x30,0x40,0x50,0x60,0x70,0x80,0x90,0xA0,0xB0,0xC0,0xD0,0xE0,
+             -0xF0};//For example 
+  43          
+  44          void Delay(unsigned int NTime)
+  45          {
+  46   1          unsigned int i, j;
+  47   1          for (i = 0; i < NTime; i++)
+  48   1          {
+  49   2              for (j = 0; j < 100; j++)
+  50   2              {
+  51   3                  ;
+  52   3              }
+C51 COMPILER V9.52.0.0   IIC                                                               08/19/2017 15:25:38 PAGE 2   
+
+  53   2          }
+  54   1      }
+  55          
+  56          void IIC_interrupt(void) interrupt d_IIC_Vector
+  57          {
+  58   1          if(TXIF)
+  59   1          {
+  60   2              TXIF = 0;                   // Clear interrupt flag
+  61   2          }
+  62   1          if(RXIF)
+  63   1          {
+  64   2              RXIF = 0;                   // Clear interrupt flag
+  65   2          }
+  66   1          if(MPIF)
+  67   1          {
+  68   2              MPIF = 0;                   // Clear interrupt flag
+  69   2          }
+  70   1      }
+  71          
+  72          void IIC_Init_master(void)
+  73          {
+  74   1          IICA1   = d_DEVICE_ID;
+  75   1          IICS    = 0x00;                 // Clear IIC all status
+  76   1          IEN0   |= 0x80;                 // Enable interrupt All
+  77   1          IEN1   |= 0x20;                 // Enable interrupt IIC
+  78   1          IICCTL  = d_IIC_EN | d_MODE_SEL | d_ARBITRATION | d_BUS_BUSY | d_IIC_BR;
+  79   1      }
+  80          
+  81          void IIC_Disable(void)
+  82          {
+  83   1          IICCTL   = 0x00;                // Disable IIC all function
+  84   1          IEN1    &= 0xDF;                // Disable interrupt IIC
+  85   1          IICS     = 0x00;                // Clear IIC all status
+  86   1      }
+  87          
+  88          //===============================================================
+  89          //This function will send out the Start or Re-Start pulse and CONTROL byte.
+  90          //===============================================================
+  91          bit IIC_SendStart(unsigned char ControlByte)
+  92          {
+  93   1          IICA1  = ControlByte;           // MAS = 0
+  94   1              
+  95   1          IICEBT = d_CMD_Start;           // generate a start condition
+  96   1          while(IICEBT != 0x00)
+  97   1          {
+  98   2              ;
+  99   2          }
+ 100   1          return RXAK;
+ 101   1      }
+ 102          
+ 103          //===============================================================
+ 104          //This function will send out the Stop pulse
+ 105          //===============================================================
+ 106          void IIC_SendStop(void)
+ 107          {
+ 108   1          IICEBT = d_CMD_Stop;            // generate a stop condition
+ 109   1          while(IICEBT != 0x00)           // waiting data recive finish
+ 110   1          {
+ 111   2              ;
+ 112   2          }
+ 113   1      }
+ 114          //===============================================================
+C51 COMPILER V9.52.0.0   IIC                                                               08/19/2017 15:25:38 PAGE 3   
+
+ 115          //This function will wait and receive one byte, then feedback ACK or NACK.
+ 116          //===============================================================
+ 117          unsigned char IIC_ReceiveByte(bit ACKStatus)
+ 118          {
+ 119   1          unsigned char temp;
+ 120   1          TXAK    = ACKStatus;            // Feedback ACK/d_NACK to slave
+ 121   1          IICEBT  = d_CMD_RW;             // Ready for receive
+ 122   1      
+ 123   1          while(IICEBT != 0x00)           // waiting data recive finish
+ 124   1          {
+ 125   2              ;
+ 126   2          }
+ 127   1          temp = IICRWD;
+ 128   1          Delay(100);                     // finetune by user
+ 129   1          return(temp);
+ 130   1      }
+ 131          
+ 132          void IIC_TransmitByte(unsigned char TxData)
+ 133          {
+ 134   1          IICRWD = TxData;                // load data
+ 135   1          IICEBT = d_CMD_RW;              // trans. data
+ 136   1          while(IICEBT != 0x00)           // waiting data trans. finish
+ 137   1          {
+ 138   2              ;
+ 139   2          }
+ 140   1          Delay(100);                     // finetune by user
+ 141   1      }
+ 142          
+ 143          void IIC_Page_Write( unsigned char Crtl_byte, unsigned char Addr, unsigned char LEN)
+ 144          {
+ 145   1          unsigned char counter;
+ 146   1      
+ 147   1          IIC_SendStart(Crtl_byte | d_WRITE);                 // -- Send CONTROL byte --
+ 148   1      
+ 149   1          if (RXAK == d_ACK)
+ 150   1          {
+ 151   2              IIC_TransmitByte( Addr );                       // -- Send ADDRESS --
+ 152   2                                
+ 153   2              for (counter = 0; counter < LEN; counter++)     // -- Write N bytes --
+ 154   2              {
+ 155   3                  if (RXAK == d_ACK)
+ 156   3                  {
+ 157   4                      IIC_TransmitByte(IIC_TxBuf[counter]);   // -- Transmit one byte --
+ 158   4                  }
+ 159   3              }
+ 160   2          }
+ 161   1          IIC_SendStop();                 // -- Send STOP -- MStart= 0
+ 162   1      }
+ 163          
+ 164          
+ 165          void IIC_Random_Read(unsigned char Crtl_byte, unsigned char Addr, unsigned char LEN)
+ 166          {
+ 167   1          unsigned char counter;
+ 168   1          unsigned char Temp[16];
+ 169   1          
+ 170   1          IIC_SendStart(Crtl_byte | d_WRITE);             // -- Send CONTROL byte --
+ 171   1          if (RXAK == d_ACK)
+ 172   1          {
+ 173   2              IIC_TransmitByte(Addr);                     // -- Send ADDRESS --
+ 174   2          
+ 175   2              if (RXAK == d_ACK)
+ 176   2              {
+C51 COMPILER V9.52.0.0   IIC                                                               08/19/2017 15:25:38 PAGE 4   
+
+ 177   3                  IIC_SendStart(Crtl_byte | d_READ);      // -- Send CONTROL byte --
+ 178   3                  for (counter = 0; counter < LEN; counter++)         // -- Read N byte --
+ 179   3                  {
+ 180   4                      if (RXAK == d_ACK)
+ 181   4                      {
+ 182   5                          if (counter < (LEN-1))
+ 183   5                          {
+ 184   6                              Temp[counter] = IIC_ReceiveByte(d_ACK); // Receive one byte
+ 185   6                          }
+ 186   5                          else
+ 187   5                          {
+ 188   6                              Temp[counter] = IIC_ReceiveByte(d_NACK);// Receive last byte
+ 189   6                          }
+ 190   5                      }
+ 191   4                  }
+ 192   3              }
+ 193   2          }
+ 194   1          IIC_SendStop();     // -- Send STOP -- MStart= 0 
+ 195   1      }
+ 196          
+ 197          void Check_Arbitration(void)    // multi-master use
+ 198          {
+ 199   1          // arbitration lost, set by H/W
+ 200   1          // clear by S/W
+ 201   1          while(LAIF)
+ 202   1          {
+ 203   2              LAIF = 0;
+ 204   2          }
+ 205   1      }
+ 206          
+ 207          void Check_Busy(void)    // multi-master use
+ 208          {
+ 209   1          // Bus busy, BB set by H/W
+ 210   1          // Bus ready, BB clear by H/W or S/W
+ 211   1          while(BB)
+ 212   1          {
+ 213   2              ;
+ 214   2          }
+ 215   1      }
+ 216          
+ 217          void IIC_Current_Address_Read(unsigned char Crtl_byte)
+ 218          {
+ 219   1          unsigned char Temp;
+ 220   1      
+ 221   1          IIC_SendStart(Crtl_byte | d_READ);      // -- Send CONTROL byte --
+ 222   1          if (RXAK == d_ACK)
+ 223   1          {
+ 224   2              Temp = IIC_ReceiveByte(d_NACK);     // Receive one byte
+ 225   2          }
+ 226   1      
+ 227   1          IIC_SendStop();                         // -- Send STOP -- MStart= 0
+ 228   1      }
+ 229          
+ 230          void IIC_Byte_Write(unsigned char Crtl_byte,unsigned char Addr, unsigned char Data)
+ 231          {
+ 232   1          IIC_SendStart(Crtl_byte | d_WRITE);     // -- Send CONTROL byte --
+ 233   1      
+ 234   1          if (RXAK == d_ACK)
+ 235   1          {
+ 236   2              IIC_TransmitByte(Addr);             // -- Send ADDRESS --
+ 237   2              if (RXAK == d_ACK)
+ 238   2              {
+C51 COMPILER V9.52.0.0   IIC                                                               08/19/2017 15:25:38 PAGE 5   
+
+ 239   3                  IIC_TransmitByte(Data);         // -- Transmit one byte --
+ 240   3              }
+ 241   2          }
+ 242   1          IIC_SendStop();                         // -- Send STOP -- MStart = 0
+ 243   1      }
+ 244          
+ 245          void Sequential_Read(unsigned char Crtl_byte, unsigned char LEN)
+ 246          {
+ 247   1          unsigned char Temp[16];
+ 248   1          unsigned char counter;
+ 249   1      
+ 250   1          IIC_SendStart(Crtl_byte | d_READ);      // -- Send CONTROL byte --
+ 251   1          for(counter=0; counter<LEN; counter++)  // -- Read N byte --
+ 252   1          {
+ 253   2              if(RXAK==d_ACK)
+ 254   2              {
+ 255   3                  if(counter<(LEN-1))
+ 256   3                  {
+ 257   4                      Temp[counter] = IIC_ReceiveByte(d_ACK); // Receive one byte
+ 258   4                  }
+ 259   3                  else
+ 260   3                  {
+ 261   4                      Temp[counter] = IIC_ReceiveByte(d_NACK);// Receive last byte
+ 262   4                  }
+ 263   3              }
+ 264   2          }
+ 265   1          IIC_SendStop();         // -- Send STOP -- MStart= 0
+ 266   1      }
+ 267          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    353    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     16      38
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----       1
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

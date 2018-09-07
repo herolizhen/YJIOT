@@ -1,0 +1,32 @@
+.table {
+	width: 100%;
+	border-collapse: collapse;
+	border: 1px solid #bcbdc0;
+	font-family: verdana, arial, sans-serif;
+	margin-top: 15px;
+}
+
+.table th {
+	border: 1px solid #bcbdc0;
+	background: #ffffff;
+	padding: 3px;
+	font-size: 12px;
+	vertical-align: middle;
+	text-align: center;
+}
+
+.table td {
+	border: 1px solid #bcbdc0;
+	background: #ffffff;
+	padding: 3px;
+	font-size: 10px;
+	font-family: 新宋体;
+	text-align: center;
+	}
+.fixed-table-pagination .pagination-info{
+    display:none!important;
+}
+.pagination{
+    margin:0!important;
+    padding:0!important;
+}

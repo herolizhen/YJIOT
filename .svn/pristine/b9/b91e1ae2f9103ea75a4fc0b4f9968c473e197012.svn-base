@@ -1,0 +1,131 @@
+	<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>亿享云登录界面</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<link rel="stylesheet" href="css/bootstrap.css">
+<link
+	href="https://cdn.staticfile.org/flat-ui/2.3.0/css/flat-ui.min.css"
+	rel="stylesheet" />
+<link href="iconfont/style.css" type="text/css" rel="stylesheet">
+<script src="../../compontents/jquery/js/jquery.min.js"></script>
+<script src="../../compontents/iot/js/config.js?v=1.0.0"></script>
+<script src="../../compontents/iot/js/api.js?v=1.0.0"></script>
+<script src="../../compontents/iot/js/iot.js?v=1.0.0"></script>
+<script src="../../compontents/iot/js/power.js?v=1.0.0"></script>
+<style>
+	body{width: 100%; height:auto; background-size: 100%;color:#fff; background:url(images/login-bg.svg) no-repeat;font-family:"微软雅黑"; font-size:14px;}
+/* 	.logo{margin-top:10px;	 no-repeat;height: 50px}
+ */	.form-group{position:relative;}
+	.login_countent{background:#ffffff; border-radius:20px 20px 20px 20px ;border:5px solid #ffffff; height: 400px;width: 350px;margin-left: 25px;}
+	.login_btn{display:block; background:#3872f6; color:#fff; font-size:15px; width:100%; line-height:50px; border-radius:3px; border:none; }
+	.login_input{width:100%; border:1px solid #bdc3c7; border-radius:3px; line-height:40px; padding:2px 5px 2px 30px; background:#bdc3c7;}
+	.icon_font{position:absolute; bottom:15px; left:10px; font-size:18px; color:#3872f6;}
+	.font16{font-size:16px;}
+	.mg-t20{margin-top:20px;}
+	@media (min-width:200px){.pd-xs-20{padding:20px;}}
+	@media (min-width:768px){.pd-sm-50{padding:50px;}}
+	#grad {
+	  background: -webkit-linear-gradient(#4990c1, #52a3d2, #6186a3); /* Safari 5.1 - 6.0 */
+	  background: -o-linear-gradient(#4990c1, #52a3d2, #6186a3); /* Opera 11.1 - 12.0 */
+	  background: -moz-linear-gradient(#4990c1, #52a3d2, #6186a3); /* Firefox 3.6 - 15 */
+	  background: linear-gradient(#4990c1, #52a3d2, #6186a3); /* 标准的语法 */
+	}
+</style>
+
+</head>
+
+<body onkeydown="keyLogin();">
+<div style="margin-top: 15%">
+	<div class="row">
+		<div class="col-md-8"></div>
+		    <div class="col-sm-8 col-md-3 center-auto pd-sm-50 pd-xs-20 login_countent" >
+             <div class="logo" ><h3 style="color: #028cfd;margin-left: 50px;margin-top: 10px">亿享云</h3></div>
+                <form>
+                    <div class="form-group mg-t20">
+                        <i class="icon-user icon_font"></i>
+                        <input type="usernmane" class="login_input"  id="login-name"  placeholder="请输入用户名" />
+                    </div>
+                    <div class="form-group mg-t20">
+                        <i class="icon-lock icon_font"></i>
+                        <input  type="password" class="login_input" id="login-pass"  placeholder="请输入密码" />
+                    </div>
+                    <button type="button" class="login_btn"  onclick="onLogin()">登 录</button>
+               </form>
+        </div>
+	</div>
+</div>
+<div style="text-align:center;">
+</div>      
+</body>
+<script type="text/javascript">
+function keyLogin(){
+ if (event.keyCode==13)  //回车键的键值为13
+  onLogin(); //调用登录按钮的登录事件
+}
+</script>
+
+<script>           
+	function onLogin() {
+		var username = $('#login-name').val();
+		var password = $('#login-pass').val();
+		var data = {
+			"username" : username,
+			"password" : password
+		};
+	
+		$pow.login(data, success, error);
+		function success(ret) {
+			var username = data.username;
+			var appList = ret.appList;
+			$api.saveToken(username, '');
+			$api.saveCurrApp(appList[0].appId);
+			$api.saveApps(appList);
+			//initToken();
+			window.location.href = '../main.html';
+		}
+		function error() {
+		alert('温馨提示账号过密码有误!请核实...');
+		//openAlert('温馨提示', '账号过密码有误!请核实...');
+		}
+		;
+
+	}
+	
+</script>
+<script>
+	function initToken() {
+	var user = $api.getToken();
+	var APPID = $api.getCurrApp();
+		var data = {};
+		data.userName = user.username;
+		data.appId = APPID;
+		$pow.getToken(data, function(ret) {
+			$api.saveToken(user.username, ret.token);
+			var data = {};
+			data.username = user.username;
+			$pow.selSysUser(data, function(ret) {
+				if(ret.sysUser.status==0){
+				alert('温馨提示该用户已停用！请联系管理员开通');
+				}else{
+					window.location.href = '../main.html';
+				}
+			},
+				function(e) {
+					alert('温馨提示当前用户状态查询有误');
+				})
+		},
+			function() {
+					alert('温馨提示token失效');
+			});
+	}
+
+</script>
+
+<!--[if IE 6]>
+<script src="js/DD_belatedPNG.js" type="text/javascript"></script>
+<script>DD_belatedPNG.fix('.png')</script>
+<![endif]-->
+
+</html>

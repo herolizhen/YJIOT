@@ -1,0 +1,12 @@
+.\objects\user_flash.o: user\flash\user_flash.c
+.\objects\user_flash.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\user_flash.o: user\flash\user_flash.h
+.\objects\user_flash.o: .\FWlib\inc\stm32f10x_flash.h
+.\objects\user_flash.o: .\CMSIS\stm32f10x.h
+.\objects\user_flash.o: .\CMSIS\core_cm3.h
+.\objects\user_flash.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\user_flash.o: .\CMSIS\system_stm32f10x.h
+.\objects\user_flash.o: .\user\stm32f10x_conf.h
+.\objects\user_flash.o: .\FWlib\inc\stm32f10x_gpio.h
+.\objects\user_flash.o: .\CMSIS\stm32f10x.h
+.\objects\user_flash.o: .\FWlib\inc\stm32f10x_rcc.h

@@ -1,0 +1,1046 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>产品管理</title>
+
+<meta name="keywords" content="keyword1,keyword2,keyword3">
+<meta name="description" content="this is my page">
+<meta name="content-type" content="text/html; charset=UTF-8">
+<link href="../../compontents/iot/css/table.css" rel="stylesheet" />
+
+<link href="../../compontents/bootstarp/css/bootstrap-UI.css.css"
+	rel="stylesheet" media="screen">
+<link href="../../compontents/laydate/theme/default/laydate.css"
+	rel="stylesheet" media="screen">
+<link
+	href="../../compontents/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css"
+	rel="stylesheet" media="screen">
+<link href="../../compontents/iot/css/table.css" rel="stylesheet"
+	media="screen">
+<script
+	src="https://cdn.staticfile.org/flat-ui/2.3.0/js/vendor/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/flat-ui/2.3.0/js/flat-ui.min.js"></script>
+<script src="../../compontents/bootstarp/js/bootstrap-table.js"></script>
+
+<script type="text/javascript"
+	src="../../compontents/laydate/laydate.js" charset="UTF-8"></script>
+<script src="../../compontents/iot/js/api.js"></script>
+
+<style type="text/css">
+textarea {
+	resize: none;
+	overflow: hidden;
+}
+</style>
+<style type="text/css">
+body {
+	/* font-family: "华文细黑"; */
+	font-family: Arial, Verdana, Sans-serif;
+	width: 100%;
+	height: auto;
+	background: #f7f7f7;
+	margin-left: 30px;
+	padding-right: 50px;
+}
+
+.span_font {
+	font-size: 16px;
+	font-family: Arial, Verdana, Sans-serif;
+}
+</style>
+</head>
+
+<body>
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="#">产品列表</a></li>
+
+	</ul>
+	<!-- 通知消息 -->
+	<div class="modal fade myModal" id="Notice" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel" aria-hidden="true">
+		<div id="modalDialog" class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">
+						<span id="pName"></span>-通知配置<input type="hidden"
+							id="Notice_productId">
+					</h4>
+
+				</div>
+				<div class="modal-body">
+
+					<ul id="myTab" class="nav nav-tabs">
+						<li class="active"><a href="#tab_a" data-toggle="tab">
+								推送控制 </a></li>
+						<li><a href="#tab_b" data-toggle="tab" onclick="opentab_b()">推送配置</a></li>
+					</ul>
+					<div id="myTabContent" class="tab-content">
+						<div class="tab-pane fade in active" id="tab_a">
+							<div style="height: 10px"></div>
+							<table class="table"
+								style=" 	 border-width: 0px; padding: 0px; margin: 0px; border-spacing: 0px; border-collapse: collapse;font-size: 24px">
+
+								<tr>
+									<td style="width:100px;vertical-align:middle"><span
+										class="span_font">短信推送</span></td>
+									<td style="text-align:left;vertical-align:middle"><span
+										class="span_font"><label class="btn btn-default">
+												<input type="checkbox" id="smsOpen" name="cks">
+										</label> 是否开启</span></td>
+
+								</tr>
+								<tr>
+									<td style="width:120px;vertical-align:middle"><span
+										class="span_font">通知推送</span></td>
+									<td style="text-align:left;vertical-align:middle"><span
+										class="span_font"><label class="btn btn-default">
+												<input type="checkbox" id="pushOpen" name="cks">
+										</label> 是否开启</span></td>
+
+								</tr>
+
+								<tr>
+									<td style="width:100px;vertical-align:middle" rowspan="2"><span
+										class="span_font">定时推送</span></td>
+									<td style="text-align:left;vertical-align:middle"><span
+										class="span_font"><label class="btn btn-default">
+												<input type="checkbox" id="timeOpen" name="cks">
+										</label> 是否开启</span></td>
+
+								</tr>
+								<tr>
+									<td><span class="span_font"> 开始时间 <input
+											type="text" id="timeOpenStart" style="width: 52px">
+											停止时间 <input type="text" id="timeOpenStop" style="width: 52px">
+									</span></td>
+
+								</tr>
+								<tr>
+									<td style="width:100px;vertical-align:middle"><span
+										class="span_font">语音推送</span></td>
+									<td style="text-align:left;vertical-align:middle"><span
+										class="span_font"><label class="btn btn-default">
+												<input type="checkbox" id="voiceOpen" name="cks">
+										</label> 是否开启</span></td>
+
+								</tr>
+								<tr>
+									<td style="width:100px;vertical-align:middle"><span
+										class="span_font">单设备控制</span></td>
+									<td style="text-align:left;vertical-align:middle"><span
+										class="span_font"><label class="btn btn-default">
+												<input type="checkbox" id="deviceOpen" name="cks">
+										</label> 是否支持</span></td>
+
+								</tr>
+
+							</table>
+
+
+						</div>
+						<div class="tab-pane fade" id="tab_b">
+							<div class="input-group col-md-2"
+								style="float: left;margin-bottom: 10px">
+								<button class="btn btn-primary btn-sm" data-toggle="modal"
+									data-target="#Pushadd"
+									style="float: left;margin-bottom: 5px;margin-top:15px">添加</button>
+							</div>
+
+							<table id="table_noticePush" class="table"
+								style="border-width: 0px; padding: 0px; margin: 0px; border-spacing: 0px; border-collapse: collapse;font-size: 24px">
+								<tr>
+								</tr>
+							</table>
+						</div>
+					</div>
+
+					<div style=" clear:both"></div>
+				</div>
+
+				<div class="modal-footer">
+
+					<button type="button" class="btn btn-primary saveNotice"
+						onclick="saveNotice()">保存</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- / 通知消息 -->
+
+	<!-- 推送配置添加 -->
+	<div class="modal fade myModal" id="Pushadd" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div id="modalDialog" class="modal-dialog" style="width: 500px">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">推送配置添加</h4>
+				</div>
+				<div class="modal-body">
+					<form id="userform">
+						<table style="margin-top: 10px">
+							<tr>
+								<td><span class="input-group-addon"
+									style="height:40px;width: 112px">&nbsp;&nbsp;推送编号</span></td>
+								<td><input type="text" name="pushNo" id="pushNo"
+									style="width:350px;height:40px;" class="form-control"></td>
+							</tr>
+							<tr>
+								<td><span class="input-group-addon"
+									style="height:40px;width: 112px;height: 53px">推送信息</span></td>
+								<td><textarea class="form-control" id="pushInfo"
+										name="pushInfo" style="width:350px"></textarea></td>
+							</tr>
+						</table>
+					</form>
+					<div style=" clear:both"></div>
+				</div>
+
+				<div class="modal-footer">
+
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消
+					</button>
+					<button type="button" class="btn btn-primary "
+						onclick="saveNoticePush()">确认</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /推送配置添加  -->
+
+
+	<!-- 推送配置修改 -->
+	<div class="modal fade myModal" id="PushUpd" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div id="modalDialog" class="modal-dialog" style="width: 500px">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">推送配置添加</h4>
+				</div>
+				<div class="modal-body">
+					<form id="userform">
+						<table style="margin-top: 10px">
+							<tr>
+								<td><span class="input-group-addon"
+									style="height:40px;width: 112px">&nbsp;&nbsp;推送编号</span></td>
+								<td><input type="text" name="pushNoUpd" id="pushNoUpd"
+									style="width:350px;height:40px;" class="form-control"
+									readonly="readonly"></td>
+							</tr>
+							<tr>
+								<td><span class="input-group-addon"
+									style="height:40px;width: 112px;height: 53px">推送信息</span></td>
+								<td><textarea class="form-control" id="pushInfoUpd"
+										name="pushInfoUpd" style="width:350px"></textarea></td>
+							</tr>
+						</table>
+					</form>
+					<div style=" clear:both"></div>
+				</div>
+
+				<div class="modal-footer">
+
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消
+					</button>
+					<button type="button" class="btn btn-primary " onclick="PushUpd()">确认</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /推送配置添加  -->
+
+
+
+
+	<!-- 推送配置测试 -->
+	<div class="modal fade myModal" id="PushText" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div id="modalDialog" class="modal-dialog" style="width: 500px">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">推送调试</h4>
+				</div>
+				<div class="modal-body">
+					<form id="userform">
+						<input type="hidden" name="pushNo_PushText" id="pushNo_PushText"
+							style="width:130px;height:40px;" class="form-control"> <input
+							type="hidden" name="pushInfo_PushText" id="pushInfo_PushText"
+							style="width:130px;height:40px;" class="form-control">
+						<table style="margin-top: 10px">
+							<tr>
+								<td><span class="input-group-addon"
+									style="height:40px;width: 112px">&nbsp;&nbsp;手机号</span></td>
+								<td><input type="text" name="tel_PushText"
+									id="tel_PushText" style="width:130px;height:40px;"
+									class="form-control"></td>
+								<td>
+									<button type="button" class="btn btn-success"
+										onclick="PushText()" style="margin-left: 15px">推送调试</button>
+								</td>
+							</tr>
+						</table>
+
+					</form>
+					<div style=" clear:both"></div>
+				</div>
+
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /推送配置测试  -->
+
+	<!-- 产品添加 -->
+	<div class="modal fade myModal" id="myModal" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div id="modalDialog" class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">产品增加</h4>
+				</div>
+				<div class="modal-body">
+					<form id="userform">
+						<div class="col-md-12">
+							<div class="col-md-6">
+								<div class="input-group">
+									<span class="input-group-addon">产品名称</span><input type="text"
+										name="firmware" id="name" class="form-control" minlength="3"
+										style="width:142px;height:40px" required> </select>
+								</div>
+								<br>
+
+								<div class="input-group">
+									<span class="input-group-addon">产品类型</span><input type="text"
+										name="type" id="type" class="form-control" minlength="3"
+										style="width:142px;height:40px" required>
+								</div>
+								<br>
+							</div>
+							<div class="col-md-6">
+								<div class="input-group">
+									<span class="input-group-addon">品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;牌</span>
+									<input type="text" name="firmware" id="brands"
+										class="form-control" minlength="3"
+										style="width:142px;height:40px" required>
+								</div>
+								<br>
+								<div class="input-group">
+									<span class="input-group-addon">型&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号</span>
+									<input type="text" name="firmware" id="model"
+										style="width:142px;height:40px" class="form-control"
+										minlength="3" required>
+								</div>
+								<br>
+							</div>
+							<div class="col-md-12">
+								<div class="input-group">
+									<span class="input-group-addon" style="height:40px">产品描述</span>
+									<textarea name="description" id="description"
+										class="form-control" required minlength="10"
+										style="width:410px;height:40px"></textarea>
+								</div>
+							</div>
+						</div>
+					</form>
+					<div style=" clear:both"></div>
+				</div>
+
+				<div class="modal-footer">
+
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消
+					</button>
+					<button type="button" class="btn btn-primary addProd">确认</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /产品添加 -->
+
+	<!-- 产品添维护-->
+	<div class="modal fade myModal" id="myModalUpd" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div id="modalDialog" class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">产品维护</h4>
+				</div>
+				<div class="modal-body">
+					<form id="userform">
+						<div class="col-md-12">
+							<div class="col-md-6">
+								<div class="input-group">
+									<span class="input-group-addon">产品名称</span><input type="text"
+										name="firmwareUpd" id="nameUpd" class="form-control"
+										minlength="3" style="width:142px;height:40px" required>
+									<input type="hidden" name="productIdUpd" id="productIdUpd"
+										class="form-control" minlength="3"
+										style="width:142px;height:40px" required>
+
+								</div>
+								<br>
+								<div class="input-group">
+									<span class="input-group-addon">产品类型</span><input type="text"
+										name="typeUpd" id="typeUpd" class="form-control" minlength="3"
+										style="width:142px;height:40px" required>
+								</div>
+								<br>
+							</div>
+							<div class="col-md-6">
+								<div class="input-group">
+									<span class="input-group-addon">品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;牌</span>
+									<input type="text" name="brandsUpd" id="brandsUpd"
+										class="form-control" minlength="3"
+										style="width:142px;height:40px" required>
+								</div>
+								<br>
+								<div class="input-group">
+									<span class="input-group-addon">型&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;号</span>
+									<input type="text" name="modelUpd" id="modelUpd"
+										style="width:142px;height:40px" class="form-control"
+										minlength="3" required>
+								</div>
+								<br>
+							</div>
+							<div class="col-md-12">
+								<div class="input-group">
+									<span class="input-group-addon" style="height:40px">产品描述</span>
+									<textarea name="descriptionUpd" id="descriptionUpd"
+										class="form-control" required minlength="10"
+										style="width:423px;height:40px"></textarea>
+								</div>
+							</div>
+						</div>
+					</form>
+					<div style=" clear:both"></div>
+				</div>
+
+				<div class="modal-footer">
+
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消
+					</button>
+					<button type="button" class="btn btn-primary " onclick="saveProd()">确认</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /产品维护 -->
+
+
+	<!--产品列表 -->
+	<h4 style="margin-bottom: -15px;margin-top: 2px">产品列表</h4>
+	<hr
+		style="height:1px;border:none;border-top:3px solid #028cfd;margin-bottom: 15px;" />
+	<button class="btn btn-primary " data-toggle="modal"
+		data-target="#myModal" style="float: left;">
+		<span class="glyphicon glyphicon-plus"
+			style="color:rgb(255, 255, 255);">增加产品</span>
+	</button>
+	<!-- 	<button class="btn btn-primary " data-toggle="modal"
+		data-target="#myModalProdQnr" onclick="saveProdQnr()"
+		style="float: left;">
+		<span class="glyphicon glyphicon-tasks"
+			style="color: rgb(255, 255, 255);">问卷调查</span>
+	</button> -->
+	<table id="tableData"></table>
+
+
+</body>
+<script>
+	
+</script>
+
+<script type="text/javascript">
+	//初始化 产品信息
+	var appId = $api.getCurrApp();
+	function initTable() {
+		var data = {};
+		$pow.selProdByApp(data, success, error);
+		function success(ret) {
+			var obj = ret.prodList;
+			$table = $('#tableData').bootstrapTable({
+				data : obj, //最终的JSON数据放在这里
+				height : $(window).height() - 100,
+				striped : true,
+				pagination : true,
+				pageNumber : 1,
+				pageSize : 10,
+				pageList : [ 5, 10, 20, 50, 100 ],
+				search : true,
+				columns : [
+					{
+						title : '序号',
+						formatter : function(value, row, index) {
+							return index + 1;
+						}
+					},
+					{
+						field : 'productId',
+						title : '产品ID',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : 'name',
+						title : '产品名称',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : 'brands',
+						title : '品牌',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : 'type',
+						title : '类型',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : 'model',
+						title : '型号',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : 'description',
+						title : '产品描述',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : 'operate',
+						title : '操作',
+						align : 'center',
+						formatter : function(value, row, index) {
+							var a = '<button type="button" class="btn btn-warning  btn-sm" style="margin-right:15px;" data-toggle="modal" data-target="#myModalUpd" onclick="updProd(\'' + row.productId + '\',\'' + row.name + '\',\'' + row.brands + '\',\'' + row.type + '\',\'' + row.model + '\',\'' + row.description + '\')">产品维护</button>';
+							var b = '<button type="button" class="btn btn-success  btn-sm" style="margin-right:15px;" data-toggle="modal" 	 onclick="goOTA	(\'' + row.productId + '\')">OTA管理</button>';
+							var c = '<button type="button" class="btn btn-success  btn-sm" style="margin-right:15px;" data-toggle="modal" 	data-target="#Notice"  onclick="goNotice(\'' + row.productId + '\',\'' + row.name + '\')">通知消息</button>';
+							return a + b + c;
+						}
+					} ],
+				formatNoMatches : function() {
+					return "没有相关的匹配结果";
+				},
+				formatLoadingMessage : function() {
+					return "";
+				}
+			});
+		}
+		;
+		function error() {
+			//	$api.ui_openAlert('提示', '应用信息加载失败');
+		}
+		;
+
+	}
+	function refreshTableData() {
+		var data = '';
+		$pow.selProdByApp(data, success, error);
+		function success(ret) {
+			var data = ret.prodList;
+			$("#tableData").bootstrapTable('load', data);
+		}
+		function error() {
+			$api.ui_openAlert('提示', '产品信息更新失败');
+		}
+
+	}
+</script>
+
+<script>
+
+	/*  查询产品信息 */
+	function selProdByApp() {
+		var data = '';
+		$pow.selProdByApp(data, success, error);
+		function success(ret) {
+			var list = ret.prodList;
+			for (i in list) {
+				$("#qnrId").append('<option value=' + list[i].productId + '>' + list[i].productId + '</option>')
+			}
+		}
+		function error() {
+		}
+	}
+</script>
+<script type="text/javascript">
+	function clearFrom() {
+		$(':input', '#userform')
+			.not(':button, :submit, :reset, :hidden')
+			.val('')
+			.removeAttr('checked')
+			.removeAttr('selected');
+
+	}
+	function clearFrom1() {
+		$(':input', '#Pushadd')
+			.not(':button, :submit, :reset, :hidden')
+			.val('')
+			.removeAttr('checked')
+			.removeAttr('selected');
+
+	}
+</script>
+<script>
+/* 产品添加 */
+
+	$(".addProd").click(function() {
+		$api.ui_openLoading('提示', '用户信息更新中，请耐心等待......');
+		window.setTimeout(function() {
+			$api.ui_closeLoading();
+		}, 500);
+		var name = $("#name").val();
+		var model = $("#model").val();
+		var type = $("#type").val();
+		var brands = $("#brands").val();
+		var description = $("#description").val();
+		var data = {};
+		data.appId = appId;
+		data.name = name;
+		data.model = model;
+		data.type = type;
+		data.brands = brands;
+		data.description = description;
+		$pow.saveProdInfo(data, success, error);
+		function success() {
+			refreshTableData();
+			$("#myModal").modal("hide");
+			clearFrom();
+		}
+		;
+		function error() {
+			alert("添加失败");
+			clearFrom();
+		}
+		;
+	});
+</script>
+<script>
+	/* 问卷调查 */
+	function saveProdQnr() {
+		$(".saveProdQnr").click(function() {
+			$api.ui_openLoading('提示', '用户信息更新中，请耐心等待......');
+			window.setTimeout(function() {
+				$api.ui_closeLoading();
+			}, 500);
+			var create_Time = "";
+			var curr_time = new Date();
+			var strDate = curr_time.getYear() + "-";
+			strDate += curr_time.getMonth() + 1 + "-";
+			strDate += curr_time.getDate() + "-";
+			strDate += curr_time.getHours() + ":";
+			strDate += curr_time.getMinutes() + ":";
+			strDate += curr_time.getSeconds();
+			var curr_time = new Date();
+			with(curr_time)
+			{
+			var strDate = getYear() + 1900 + "-";
+			strDate += getMonth() + 1 + "-";
+			strDate += getDate() + "-";
+			strDate += getHours() + ":";
+			strDate += getMinutes() + ":";
+			strDate += getSeconds();
+			create_Time = strDate;
+			}
+			var createTime = $ota.toUnix(create_Time);
+			var qnrId = $("#qnrId").val();
+			var qnrPar = $("#qnrPar").val();
+			var deviceId = $("#deviceId").val();
+			var phone = $("#phone").val();
+			var title = $("#title").val();
+			var content = $("#content").val();
+			var status = $("#status").val();
+			var data = {};
+			data.qnrId = qnrId;
+			data.createTime = createTime;
+			data.qnrPar = qnrPar;
+			data.phone = phone;
+			data.deviceId = deviceId;
+			data.title = title;
+			data.content = content;
+			data.status = status;
+			$pow.saveProdQnr(data, success, error);
+			function success() {
+				refreshTableData();
+				$("#myModalUpd").modal("hide");
+			}
+			;
+			function error() {
+				alert("添加失败");
+			}
+			;
+		});
+	}
+</script>
+<script>
+	/* 修改产品信息 */
+	function updProd(productId, name, brands, type, model, description) {
+		$("#productIdUpd").val(productId);
+		$("#nameUpd").val(name);
+		$("#brandsUpd").val(brands);
+		$("#typeUpd").val(type);
+		$("#modelUpd").val(model);
+		$("#descriptionUpd").val(description);
+		$("#UpdProd").click(function() {})
+	}
+	/* 保存产品信息 */
+	function saveProd() {
+		var data = {};
+		data.productId = $("#productIdUpd").val();
+		data.name = $("#nameUpd").val();
+		data.brands = $("#brandsUpd").val();
+		data.type = $("#typeUpd").val();
+		data.model = $("#modelUpd").val();
+		data.description = $("#descriptionUpd").val();
+		console.log(data)
+		$pow.saveProdInfo(data, success, error);
+		function success() {
+			refreshTableData();
+			$("#myModalUpd").modal("hide");
+			clearFrom();
+		}
+		;
+		function error() {
+			alert("修改失败");
+			clearFrom();
+		}
+
+	}
+</script>
+<script>
+	function goOTA(data) {
+		$api.setParameter(data);
+		location.href = "otaInfo.html";
+	}
+	function goNotice(productId, name) {
+		$('#myTab a:first').tab('show');
+		opentab_a(productId);
+		opentab_b();
+		$("#Notice_productId").val(productId);
+		$("#pName").text(name);
+
+	}
+
+	function opentab_a(productId) {
+		var data = {};
+		data.productId = productId;
+
+
+		$notice.selNoticeRule(data, function(ret) {
+			console.log(ret.NoticeRule);
+			ret = ret.NoticeRule;
+			$("#timeOpenStart").val(ret.timeStart);
+			$("#timeOpenStop").val(ret.timeStop);
+			if (ret.deviceOpen == true) {
+				$("#deviceOpen").attr("checked", true);
+			} else {
+				$("#deviceOpen").attr("checked", false);
+			}
+			if (ret.pushOpen == true) {
+				$("#pushOpen").attr("checked", true);
+			} else {
+				$("#pushOpen").attr("checked", false);
+			}
+			if (ret.smsOpen == true) {
+				$("#smsOpen").attr("checked", true);
+			} else {
+				$("#smsOpen").attr("checked", false);
+			}
+			if (ret.voiceOpen == true) {
+				$("#voiceOpen").attr("checked", true);
+			} else {
+				$("#voiceOpen").attr("checked", false);
+			}
+			if (ret.timeOpen == true) {
+				$("#timeOpen").attr("checked", true);
+			} else {
+				$("#timeOpen").attr("checked", false);
+			}
+		}, function() {})
+
+		$("#timeOpen").click(function() {
+			if ($('#timeOpen').is(':checked')) {
+				$("#timeOpenStart").val('8:00');
+				$("#timeOpenStop").val('20:00');
+			} else {
+				$("#timeOpenStart").val('');
+				$("#timeOpenStop").val('');
+			}
+		})
+
+	}
+
+	function saveNotice() {
+		var productId = $("#Notice_productId").val();
+		var deviceOpen = false;
+		var pushOpen = false;
+		var smsOpen = false;
+		var voiceOpen = false;
+		var timeOpen = false;
+		var timeOpenStart = $("#timeOpenStart").val();
+		var timeOpenStop = $("#timeOpenStop").val();
+		if( ($('#deviceOpen').is(':checked')) ) {
+			deviceOpen = true;
+
+		}
+		if( ($('#pushOpen').is(':checked')) ) {
+			pushOpen = true;
+
+		}
+		if( ($('#smsOpen').is(':checked')) ) {
+			smsOpen = true;
+
+		}
+		if( ($('#voiceOpen').is(':checked')) ) {
+			voiceOpen = true;
+
+		}
+		if( ($('#timeOpen').is(':checked')) ) {
+			timeOpen = true;
+
+		}
+		var data = {
+			"productId" : productId,
+			"deviceOpen" : deviceOpen,
+			"smsOpen" : smsOpen,
+			"pushOpen" : pushOpen,
+			"voiceOpen" : smsOpen,
+			"timeOpen" : voiceOpen,
+			"timeStart" : timeOpenStart,
+			"timeStop" : timeOpenStop
+		}
+		console.log(data);
+		$notice.selNoticeRule(data, function(ret) {
+			var productId = ret.NoticeRule.productId
+
+			if (!$api.isNull(productId)) {
+			}
+			$notice.updNoticeRule(data, function(ret) {
+				$("#Notice").modal("hide");
+			}, function() {
+				alert("修改失败")
+			})
+		}, function() {
+			$notice.addNoticeRule(data, function(ret) {
+				$("#Notice").modal("hide");
+			}, function() {
+				alert("添加失败")
+			})
+
+		})
+
+	}
+</script>
+
+<script type="text/javascript">
+
+	//推送配置界面
+	function opentab_b() {
+		var productId = $("#Notice_productId").val();
+		var data = {};
+		data.productId = productId;
+		$notice.selNoticePushAll(data, function(ret) {
+			var obj = ret.NoticePush;
+			//bootstrap-Table获取数据
+			$('#table_noticePush').bootstrapTable('destroy');
+			$table = $('#table_noticePush').bootstrapTable({
+				data : obj, //最终的JSON数据放在这里
+				striped : true,
+				pagination : true,
+				pageNumber : 1,
+				pageSize : 5,
+				pageList : [ 5 ],
+				sidePagination : "client",
+				minimunCountColumns : 2,
+				columns : [
+					{
+						field : 'pushNo',
+						title : '配置编号',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : 'pushInfo',
+						title : '配置内容',
+						align : 'center',
+						valign : 'middle',
+						sortable : true
+					},
+					{
+						field : 'operate',
+						title : '操作',
+						align : 'center',
+						formatter : function(value, row, index) {
+							a = '<button type="button" class="btn btn-warning  btn-sm" style="margin-right:15px;" data-toggle="modal" data-target="#PushUpd" ' +
+								'onclick="toPushUpd(\''
+								+ row.pushNo + '\',\''
+								+ row.pushInfo + '\',\''
+								+ '\')">编辑</button>';
+
+							b = '<button type="button" class="btn btn-success  btn-sm" style="margin-right:15px;" data-toggle="modal" data-target="#PushText" ' +
+								'onclick="toNaticPushTest(\''
+								+ row.pushNo + '\',\''
+								+ row.pushInfo + '\',\''
+								+ '\')">调试</button>';
+							c = '<button type="button" class="btn btn-danger  btn-sm" style="margin-right:15px;"  ' +
+								'onclick="delNaticPush(\''
+								+ row.pushNo + '\',\''
+								+ row.pushInfo + '\',\''
+								+ '\')">删除</button>';
+							return a + b + c;
+						}
+					} ],
+				formatNoMatches : function() {
+					return "没有相关的匹配结果";
+				},
+				formatLoadingMessage : function() {
+					return "";
+				}
+			});
+		}, function() {})
+	}
+
+	function refreshPushTableData() {
+		var productId = $("#Notice_productId").val();
+		var data = {};
+		data.productId = productId;
+		$notice.selNoticePushAll(data, success, error);
+		function success(ret) {
+			var data = ret.NoticePush;
+			$("#table_noticePush").bootstrapTable('load', data);
+		}
+		function error() {
+			$api.ui_openAlert('提示', '应用信息更新失败');
+		}
+
+	}
+	//推送配置保存
+	function saveNoticePush() {
+		var productId = $("#Notice_productId").val();
+		var data = {};
+		data.productId = productId;
+		data.pushNo = $("#pushNo").val();
+		data.pushInfo = $("#pushInfo").val();
+		console.log(data);
+		$notice.addNoticePush(data, function(ret) {
+			$("#Pushadd").modal("hide");
+			refreshPushTableData();
+			clearFrom1();
+		}, function() {
+			$("#Pushadd").modal("hide");
+			clearFrom1();
+		})
+
+	}
+
+	function toPushUpd(pushNo, pushInfo) {
+		$("#pushNoUpd").val(pushNo);
+		$("#pushInfoUpd").val(pushInfo);
+	}
+
+	function PushUpd() {
+		var productId = $("#Notice_productId").val();
+		var productId = $("#Notice_productId").val();
+		var data = {};
+		data.productId = productId;
+		data.pushNo = $("#pushNoUpd").val();
+		data.pushInfo = $("#pushInfoUpd").val();
+		$notice.updNoticePush(data, function(ret) {
+			$("#PushUpd").modal("hide");
+			refreshPushTableData();
+			clearFrom1();
+		}, function() {
+			$("#PushUpd").modal("hide");
+			clearFrom1();
+		})
+
+	}
+	function toNaticPushTest(pushNo, pushInfo) {
+		$("#pushNo_PushText").val(pushNo);
+		$("#pushInfo_PushText").val(pushInfo);
+	}
+
+	//推送配置测试
+	function PushText() {
+		var productId = $("#Notice_productId").val();
+		var tel = $("#tel_PushText").val();
+		var pushNo = $("#pushNo_PushText").val();
+		var data = {};
+		data.productId = productId;
+		data.pushNo = pushNo;
+		data.tel = tel;
+		console.log(data)
+		$notice.pushTest(data, function(ret) {
+			$api.ui_openAlert('提示', '推送测试成功');
+		}, function() {
+			$api.ui_openAlert('提示', '推送测试失败');
+		})
+
+	}
+
+	function delNaticPush(pushNo, pushInfo) {
+		var productId = $("#Notice_productId").val();
+		var data = {};
+		data.productId = productId;
+		data.pushNo = pushNo;
+		$api.ui_openAlert('推送配置提示', '请确认是否要删除推送配置', function(tag) {
+			if (tag) {
+				$notice.delNoticePush(data, function(ret) {
+					refreshPushTableData();
+				}, function() {
+					$api.ui_openAlert('提示', '推送配置删失败除');
+				})
+			}
+		});
+
+	}
+</script>
+<script>
+	$(function() {
+		$api.Initialize();
+		initTable();
+		selProdByApp();
+		$("#Notice").on("hidden.bs.modal", function() {
+			$(this).removeData("bs.modal");
+		});
+	});
+	//执行一个laydate实例
+	laydate.render({
+		elem : '#timeOpenStart', //指定元素
+		type : 'time',
+		format : 'HH:mm'
+	});
+	laydate.render({
+		elem : '#timeOpenStop', //指定元素
+		type : 'time',
+		format : 'HH:mm'
+	});
+</script>
+<script>
+
+</script>
+</html>

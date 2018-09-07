@@ -1,0 +1,32 @@
+Protel Design System Design Rule Check
+PCB File : Q:\工作\工程\SIM7600-4G模块\工程文件\SIM7600_M_V1.1\Project\PCB\SIM7600_M_V1.0.1.PcbDoc
+Date     : 2018/4/19
+Time     : 14:16:18
+
+Processing Rule : Matched Net Lengths(Tolerance=25.4mm) (InDifferentialPair ('NewDifferentialPair1'))
+Rule Violations :0
+
+Processing Rule : Width Constraint (Min=0.381mm) (Max=0.381mm) (Preferred=0.381mm) (InDifferentialPair('NewDifferentialPair1'))
+Rule Violations :0
+
+Processing Rule : Short-Circuit Constraint (Allowed=No) (All),(All)
+Rule Violations :0
+
+Processing Rule : Broken-Net Constraint ( (All) )
+Rule Violations :0
+
+Processing Rule : Clearance Constraint (Gap=0.1524mm) (All),(All)
+Rule Violations :0
+
+Processing Rule : Width Constraint (Min=0.254mm) (Max=5.08mm) (Preferred=0.381mm) (All)
+Rule Violations :0
+
+Processing Rule : Height Constraint (Min=0mm) (Max=25.4mm) (Prefered=12.7mm) (All)
+Rule Violations :0
+
+Processing Rule : Hole Size Constraint (Min=0.0254mm) (Max=2.54mm) (All)
+Rule Violations :0
+
+
+Violations Detected : 0
+Time Elapsed        : 00:00:01

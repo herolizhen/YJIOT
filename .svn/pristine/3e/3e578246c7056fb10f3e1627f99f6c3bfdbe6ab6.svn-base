@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.stats.dao.QueryMapper">
+
+	<select id="consumeDetailQuery" parameterType="com.yjyz.iot.stats.entity.QueryParm"
+		resultType="java.util.HashMap">
+		<![CDATA[
+			SELECT
+				tdm. NAME AS '商户名称',
+				tdm.business_scope AS '商户类型',
+				pcu.nickname AS '消费者',
+				tda.position AS '消费地点',
+				FORMAT(tdc.total_free / 100, 2) AS '消费金额（￥）',
+			IF (tdc. STATUS = 2, '已消费', '已支付') AS '付款状态',
+			IF (tdc.type = 1, '微信', '支付宝') AS '支付类型',
+			 DATE_FORMAT(tdc.create_time,'%Y-%m-%d %H:%i:%S') as '消费时间',
+			 tdi.device_mac AS '设备MAC'
+			FROM
+				t_dev_consume tdc,
+				t_pow_client_user pcu,
+				t_dev_info tdi,
+				t_dev_account tda,
+				t_dict_merchant tdm,
+				t_prod_info tpi
+			WHERE
+				tdc.device_id = tdi.device_id
+			AND tdi.device_id = tda.device_id
+			AND tdc.client_id = pcu.client_id
+			AND tdc. STATUS != '0'
+			AND tdc.client_id = pcu.client_id
+			AND tdm.merchant_code = tda.owner_code
+			AND tdi.product_id = tpi.product_id
+			AND CHARACTER_LENGTH(tda.owner_code) > 4
+			AND tpi.app_id = #{appId,jdbcType=VARCHAR}
+			AND tdc.create_time >= #{beginDate,jdbcType=DATE}
+			AND tdc.create_time <= #{endDate,jdbcType=DATE}
+			AND (tdm.merchant_code = #{merchantCode,jdbcType=VARCHAR} or #{merchantCode,jdbcType=VARCHAR} ='all')
+			ORDER BY
+				tdc.create_time desc
+		]]>
+	</select>
+	
+	<select id="consumeMerchantQuery" parameterType="com.yjyz.iot.stats.entity.QueryParm"
+		resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT
+			tdm. NAME AS '商户名称',
+			tdm.address AS '地址',
+			tdm.legal_name AS '法人',
+			tdm.business_scope AS '商户类型',
+			FORMAT(SUM(tdc.total_free) / 100, 2) AS '费用发生（￥）',
+			tdm.buss_leader AS '销售经理',
+			tdm.merchant_code AS merchantCode
+		FROM
+			t_dev_consume tdc,
+			t_dev_account tda,
+			t_dict_merchant tdm,
+			t_dev_info tdi,
+			t_prod_info tpi
+		WHERE
+			tdc.device_id = tda.device_id
+		AND tda.device_id = tdi.device_id
+		AND tdi.product_id = tpi.product_id
+		AND tdc. STATUS != '0'
+		AND tdm.merchant_code = tda.owner_code 
+		AND CHARACTER_LENGTH(tda.owner_code) > 4
+		AND tpi.app_id = #{appId,jdbcType=VARCHAR}
+		AND tdc.create_time >= #{beginDate,jdbcType=DATE}
+		AND tdc.create_time <= #{endDate,jdbcType=DATE}
+		AND (tdm.merchant_code = #{merchantCode,jdbcType=VARCHAR} or #{merchantCode,jdbcType=VARCHAR} ='all')
+		GROUP BY
+			tdm. NAME,
+			tdm.business_scope
+		ORDER BY
+			tdm. NAME DESC
+		]]>
+	</select>
+	
+
+</mapper>

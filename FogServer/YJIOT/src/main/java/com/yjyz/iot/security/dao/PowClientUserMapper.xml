@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.security.dao.PowClientUserMapper">
+	<resultMap id="BaseResultMap" type="com.yjyz.iot.security.entity.PowClientUser">
+		<id column="openid" jdbcType="VARCHAR" property="openid" />
+		<result column="client_id" jdbcType="VARCHAR" property="clientId" />
+		<result column="tel" jdbcType="VARCHAR" property="tel" />
+		<result column="nickname" jdbcType="VARCHAR" property="nickname" />
+		<result column="sex" jdbcType="VARCHAR" property="sex" />
+		<result column="city" jdbcType="VARCHAR" property="city" />
+		<result column="country" jdbcType="VARCHAR" property="country" />
+		<result column="province" jdbcType="VARCHAR" property="province" />
+		<result column="language" jdbcType="VARCHAR" property="language" />
+		<result column="headimgurl" jdbcType="VARCHAR" property="headimgurl" />
+		<result column="remark" jdbcType="VARCHAR" property="remark" />
+		<result column="tagid_list" jdbcType="VARCHAR" property="tagidList" />
+		<result column="type" jdbcType="CHAR" property="type" />
+		<result column="password" jdbcType="VARCHAR" property="password" />
+		<result column="app_id" jdbcType="VARCHAR" property="appId" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		openid, client_id, tel, nickname, sex, city, country, province, language,
+		headimgurl,
+		remark, tagid_list, type, password, app_id
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_pow_client_user
+		where openid = #{openid,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from t_pow_client_user
+		where openid = #{openid,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.yjyz.iot.security.entity.PowClientUser">
+		insert into t_pow_client_user (openid, client_id, tel,
+		nickname, sex, city,
+		country, province, language,
+		headimgurl, remark, tagid_list,
+		type, password, app_id)
+		values (#{openid,jdbcType=VARCHAR}, #{clientId,jdbcType=VARCHAR},
+		#{tel,jdbcType=VARCHAR},
+		#{nickname,jdbcType=VARCHAR}, #{sex,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR},
+		#{country,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR},
+		#{language,jdbcType=VARCHAR},
+		#{headimgurl,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, #{tagidList,jdbcType=VARCHAR},
+		#{type,jdbcType=CHAR}, #{password,jdbcType=VARCHAR},
+		#{appId,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.yjyz.iot.security.entity.PowClientUser">
+		insert into t_pow_client_user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="openid != null">
+				openid,
+			</if>
+			<if test="clientId != null">
+				client_id,
+			</if>
+			<if test="tel != null">
+				tel,
+			</if>
+			<if test="nickname != null">
+				nickname,
+			</if>
+			<if test="sex != null">
+				sex,
+			</if>
+			<if test="city != null">
+				city,
+			</if>
+			<if test="country != null">
+				country,
+			</if>
+			<if test="province != null">
+				province,
+			</if>
+			<if test="language != null">
+				language,
+			</if>
+			<if test="headimgurl != null">
+				headimgurl,
+			</if>
+			<if test="remark != null">
+				remark,
+			</if>
+			<if test="tagidList != null">
+				tagid_list,
+			</if>
+			<if test="type != null">
+				type,
+			</if>
+			<if test="password != null">
+				password,
+			</if>
+			<if test="appId != null">
+				app_id,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="openid != null">
+				#{openid,jdbcType=VARCHAR},
+			</if>
+			<if test="clientId != null">
+				#{clientId,jdbcType=VARCHAR},
+			</if>
+			<if test="tel != null">
+				#{tel,jdbcType=VARCHAR},
+			</if>
+			<if test="nickname != null">
+				#{nickname,jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				#{sex,jdbcType=VARCHAR},
+			</if>
+			<if test="city != null">
+				#{city,jdbcType=VARCHAR},
+			</if>
+			<if test="country != null">
+				#{country,jdbcType=VARCHAR},
+			</if>
+			<if test="province != null">
+				#{province,jdbcType=VARCHAR},
+			</if>
+			<if test="language != null">
+				#{language,jdbcType=VARCHAR},
+			</if>
+			<if test="headimgurl != null">
+				#{headimgurl,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				#{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="tagidList != null">
+				#{tagidList,jdbcType=VARCHAR},
+			</if>
+			<if test="type != null">
+				#{type,jdbcType=CHAR},
+			</if>
+			<if test="password != null">
+				#{password,jdbcType=VARCHAR},
+			</if>
+			<if test="appId != null">
+				#{appId,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yjyz.iot.security.entity.PowClientUser">
+		update t_pow_client_user
+		<set>
+			<if test="clientId != null">
+				client_id = #{clientId,jdbcType=VARCHAR},
+			</if>
+			<if test="tel != null">
+				tel = #{tel,jdbcType=VARCHAR},
+			</if>
+			<if test="nickname != null">
+				nickname = #{nickname,jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				sex = #{sex,jdbcType=VARCHAR},
+			</if>
+			<if test="city != null">
+				city = #{city,jdbcType=VARCHAR},
+			</if>
+			<if test="country != null">
+				country = #{country,jdbcType=VARCHAR},
+			</if>
+			<if test="province != null">
+				province = #{province,jdbcType=VARCHAR},
+			</if>
+			<if test="language != null">
+				language = #{language,jdbcType=VARCHAR},
+			</if>
+			<if test="headimgurl != null">
+				headimgurl = #{headimgurl,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				remark = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="tagidList != null">
+				tagid_list = #{tagidList,jdbcType=VARCHAR},
+			</if>
+			<if test="type != null">
+				type = #{type,jdbcType=CHAR},
+			</if>
+			<if test="password != null">
+				password = #{password,jdbcType=VARCHAR},
+			</if>
+			<if test="appId != null">
+				app_id = #{appId,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where openid = #{openid,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yjyz.iot.security.entity.PowClientUser">
+		update t_pow_client_user
+		set client_id = #{clientId,jdbcType=VARCHAR},
+		tel = #{tel,jdbcType=VARCHAR},
+		nickname = #{nickname,jdbcType=VARCHAR},
+		sex = #{sex,jdbcType=VARCHAR},
+		city = #{city,jdbcType=VARCHAR},
+		country = #{country,jdbcType=VARCHAR},
+		province = #{province,jdbcType=VARCHAR},
+		language = #{language,jdbcType=VARCHAR},
+		headimgurl = #{headimgurl,jdbcType=VARCHAR},
+		remark = #{remark,jdbcType=VARCHAR},
+		tagid_list = #{tagidList,jdbcType=VARCHAR},
+		type = #{type,jdbcType=CHAR},
+		password = #{password,jdbcType=VARCHAR},
+		app_id = #{appId,jdbcType=VARCHAR}
+		where openid = #{openid,jdbcType=VARCHAR}
+	</update>
+	<select id="findUserByTel" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_pow_client_user
+		where tel = #{tel,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectByClientId" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_pow_client_user
+		where client_id = #{clientId,jdbcType=VARCHAR}
+	</select>
+	
+	<update id="updateByClientIdSelective" parameterType="com.yjyz.iot.security.entity.PowClientUser">
+		update t_pow_client_user
+		<set>
+			<if test="clientId != null">
+				client_id = #{clientId,jdbcType=VARCHAR},
+			</if>
+			<if test="tel != null">
+				tel = #{tel,jdbcType=VARCHAR},
+			</if>
+			<if test="nickname != null">
+				nickname = #{nickname,jdbcType=VARCHAR},
+			</if>
+			<if test="sex != null">
+				sex = #{sex,jdbcType=VARCHAR},
+			</if>
+			<if test="city != null">
+				city = #{city,jdbcType=VARCHAR},
+			</if>
+			<if test="country != null">
+				country = #{country,jdbcType=VARCHAR},
+			</if>
+			<if test="province != null">
+				province = #{province,jdbcType=VARCHAR},
+			</if>
+			<if test="language != null">
+				language = #{language,jdbcType=VARCHAR},
+			</if>
+			<if test="headimgurl != null">
+				headimgurl = #{headimgurl,jdbcType=VARCHAR},
+			</if>
+			<if test="remark != null">
+				remark = #{remark,jdbcType=VARCHAR},
+			</if>
+			<if test="tagidList != null">
+				tagid_list = #{tagidList,jdbcType=VARCHAR},
+			</if>
+			<if test="type != null">
+				type = #{type,jdbcType=CHAR},
+			</if>
+			<if test="password != null">
+				password = #{password,jdbcType=VARCHAR},
+			</if>
+			<if test="appId != null">
+				app_id = #{appId,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where client_id = #{clientId,jdbcType=VARCHAR}
+	</update>
+</mapper>

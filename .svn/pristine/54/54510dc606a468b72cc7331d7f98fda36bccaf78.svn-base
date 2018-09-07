@@ -1,0 +1,35 @@
+#ifndef __SYS_RUN_H__
+#define __SYS_RUN_H__
+
+
+//自动模式下PM2.5和风挡的对应关系 0-75静音模式  75-150低档  >150高档
+#define PM25_QUIET_SPEED   75
+#define PM25_LOW_SPEED     150
+
+
+
+
+
+
+
+void sys_init_check(void);
+
+void sys_data_clear(void);
+
+void sys_start(void);
+void sys_stop(void);
+
+void sys_run(void);
+
+void display_pm_data(void);
+
+void sys_smart_mode(void);
+
+void sys_dev_selfcheck(void);
+void check_if_doorclose_manual(void);
+
+
+
+
+
+#endif

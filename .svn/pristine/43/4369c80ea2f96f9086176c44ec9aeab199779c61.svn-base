@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.stats.dao.AccountQueryMapper">
+
+	<select id="deviceAccountQuery" parameterType="com.yjyz.iot.stats.entity.QueryParm"
+		resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT
+			tdi.device_name AS '设备名称',
+			tdi.device_id ,
+			tdi.device_mac AS 'MAC',
+			tdi.activate_time AS '激活时间',
+			tdi.module_name AS '无线模块',
+			tdi.reg_ip AS 'IP',
+			tdi.firmware AS '固件版本',
+			tda.owner_name AS '商户名称',
+			tda.position AS '安装位置',
+			IF (
+				SYSDATE() - tda.last_time >= #{ttl,jdbcType=VARCHAR},
+				'否',
+				'是'
+			) AS '是否在线',
+			 tda.last_time AS '最新同步',
+			 FORMAT(sum(tdc.total_free) / 100, 2) AS '消费金额（￥）',
+			 sum(tdc.chips) AS '运行时间（分钟）'
+		  FROM
+				t_dev_info tdi
+				LEFT JOIN t_dev_account  tda on tdi.device_id = tda.device_id  
+	      		LEFT JOIN t_dev_consume tdc on tdc.device_id = tdi.device_id  AND tdc. STATUS = '2' ,
+				t_prod_info tpi
+		 WHERE
+				tdi.product_id = tpi.product_id
+			AND CHARACTER_LENGTH(tda.owner_code) > 4
+			AND (tdi.device_id = #{deviceId,jdbcType=VARCHAR} or #{deviceId,jdbcType=VARCHAR} ='all')  
+			AND tpi.app_id = #{appId,jdbcType=VARCHAR}
+			GROUP BY
+				tdi.device_id
+			ORDER BY
+				sum(tdc.total_free) DESC
+		]]>
+	</select>
+
+	<select id="deviceOfferMonthQuery" parameterType="com.yjyz.iot.stats.entity.QueryParm"
+		resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT
+			concat(YEAR (tdc.create_time),'-',MONTH (tdc.create_time)) AS date, 
+			SUM(tdc.total_free) / 100 AS fund,
+			count(tdc.device_id) AS count
+		FROM
+			t_dev_consume tdc
+		WHERE
+			tdc. STATUS = '2'
+		AND tdc.device_id = #{deviceId,jdbcType=VARCHAR}
+		GROUP BY concat(YEAR (tdc.create_time),'-',MONTH (tdc.create_time)) 
+		ORDER BY create_time ASC
+		]]>
+	</select>
+
+	<select id="deviceOfferWeekQuery" parameterType="com.yjyz.iot.stats.entity.QueryParm"
+		resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT
+			concat(weekofyear(tdc.create_time), '周') AS weekno,
+			sum(tdc.total_free / 100) AS fund,
+			count(tdc.device_id) AS count
+		FROM
+			t_dev_consume tdc,
+			t_dev_account tda,
+			t_dict_merchant tdm
+		WHERE
+			tdc.device_id = tda.device_id
+			AND tdm.merchant_code = tda.owner_code
+			AND tdc. STATUS = '2'
+			AND tdc.create_time > DATE_SUB(sysdate(), INTERVAL 12 MONTH)
+			and tda.device_id  = #{deviceId,jdbcType=VARCHAR}
+		GROUP BY
+			weekofyear(tdc.create_time)
+		ORDER BY
+			tdc.create_time asc
+		]]>
+	</select>
+
+	<select id="merchantAccountQuery" parameterType="com.yjyz.iot.stats.entity.QueryParm"
+		resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT
+			tdm. NAME AS '商户名称',
+			tdm.merchant_code AS merchantCode,
+			tdm.address AS '地址',
+			tdm.business_scope AS '经营范围',
+			tdm.legal_name AS '法人',
+			tdm.credit_id AS '信用ID',
+			tdm.found_date AS '成立日期',
+			tdm.buss_leader AS '销售员',
+			tdm.charge_type AS '收费类别',
+			count(DISTINCT tda.device_id) as '设备数量',
+			sta.ONLINE as '在线' ,
+			sta.dayoff as  '离线一天',
+			sta.weekoff as  '离线一周',
+			sta.longoff as  '长期离线',
+			FORMAT(sum(tdc.total_free) / 100, 2) AS '资金总回流（￥）'
+		FROM
+			t_dict_merchant tdm,
+			t_dev_account tda
+			LEFT JOIN t_dev_consume tdc on tdc.device_id = tda.device_id  AND tdc. STATUS = '2' 
+		  LEFT JOIN (SELECT
+				tdm.merchant_code as code,
+				sum(IF (
+				tda.last_time >= DATE_SUB(sysdate(), INTERVAL 500 MINUTE) ,
+				1,0))as online,
+				sum(IF (
+				tda.last_time >= DATE_SUB(sysdate(), INTERVAL 1 DAY) AND tda.last_time <
+				DATE_SUB(sysdate(), INTERVAL 500 MINUTE),
+				1,0)) as dayoff,
+				sum(IF (
+				tda.last_time >= DATE_SUB(sysdate(), INTERVAL 1 WEEK) AND tda.last_time <
+				DATE_SUB(sysdate(), INTERVAL 1 DAY) ,
+				1,0)) as weekoff,
+				sum(IF (
+				tda.last_time < DATE_SUB(sysdate(), INTERVAL 1 WEEK) ,
+				1,0))as longoff
+				FROM
+				t_dev_account tda,
+				t_dict_merchant tdm
+				WHERE
+				tda.owner_code = tdm.merchant_code
+				AND CHARACTER_LENGTH(tda.owner_code) > 4
+		GROUP BY tdm.merchant_code
+				) sta 	on tda.owner_code = sta.code
+		WHERE
+			tdm.merchant_code = tda.owner_code
+		AND CHARACTER_LENGTH(tdm.merchant_code) > 4
+		AND tdm.app_id = #{appId,jdbcType=VARCHAR}
+		AND (tdm.name = #{merchantName,jdbcType=VARCHAR} or #{merchantName,jdbcType=VARCHAR} ='all')  
+		GROUP BY
+			tdm.name
+		ORDER BY
+			sum(tdc.total_free) DESC
+		]]>
+	</select>
+	<select id="merchantOfferMonthQuery" parameterType="com.yjyz.iot.stats.entity.StatsParm"
+		resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT
+			concat(YEAR (tdc.create_time),'-',MONTH (tdc.create_time)) AS date,
+			SUM(tdc.total_free) / 100 AS fund,
+			count(tdc.device_id) AS count
+		FROM
+			t_dev_consume tdc,
+			t_dev_account tda,
+			t_dict_merchant tdm
+		WHERE
+			tdm.merchant_code = tda.owner_code
+		AND tdc.device_id = tda.device_id
+		AND CHARACTER_LENGTH(tda.owner_code) > 4
+		AND tdc. STATUS = '2'
+		AND tdm.merchant_code = #{merchantCode,jdbcType=VARCHAR}
+		GROUP BY
+			concat(YEAR (tdc.create_time),'-',MONTH (tdc.create_time)) 
+		ORDER BY
+			tdc.create_time ASC
+		]]>
+	</select>
+	<select id="merchantOfferWeekQuery" parameterType="com.yjyz.iot.stats.entity.StatsParm"
+		resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT
+			concat(weekofyear(tdc.create_time), '周') AS weekno,
+			SUM(tdc.total_free) / 100 AS fund,
+			count(tdc.device_id) AS count
+		FROM
+			t_dev_consume tdc,
+			t_dev_account tda,
+			t_dict_merchant tdm
+		WHERE
+			tdm.merchant_code = tda.owner_code
+		AND tdc.device_id = tda.device_id
+		AND CHARACTER_LENGTH(tda.owner_code) > 4
+		AND tdc. STATUS = '2'
+		AND tdm.merchant_code = #{merchantCode,jdbcType=VARCHAR}
+		GROUP BY
+			concat(weekofyear(tdc.create_time), '周') 
+		ORDER BY
+			tdc.create_time ASC
+		]]>
+	</select>
+</mapper>

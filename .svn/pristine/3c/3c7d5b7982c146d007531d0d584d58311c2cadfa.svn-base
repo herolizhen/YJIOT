@@ -1,0 +1,25 @@
+package com.yjyz.iot.notice.service;
+
+import com.yjyz.iot.notice.entity.NoticeConfig;
+import com.yjyz.iot.notice.entity.NoticeRule;
+
+public interface INoticeService {
+
+	boolean delNoticeConfig(String appId);
+
+	boolean insNoticeConfig(NoticeConfig record);
+
+	NoticeConfig selNoticeConfig(String appId);
+
+	boolean updNoticeConfig(NoticeConfig record);
+
+	boolean delNoticeRule(String productId);
+
+	boolean insNoticeRule(NoticeRule record);
+
+	NoticeRule selNoticeRule(String productId);
+
+	boolean updNoticeRule(NoticeRule record);
+
+	boolean noticeMessage(String deviceId, int pushType);
+}

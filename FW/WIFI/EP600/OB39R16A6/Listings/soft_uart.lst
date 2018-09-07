@@ -1,0 +1,309 @@
+C51 COMPILER V9.52.0.0   SOFT_UART                                                         09/22/2017 17:18:12 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE SOFT_UART
+OBJECT MODULE PLACED IN .\Objects\soft_uart.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\UART\soft_uart.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\USER\IIC;.
+                    -\USER\UART;.\USER\TM1618;.\USER\Sensor;.\USER;.\USER\PWM;.\USER\DC_MOTOR;.\USER\timer;.\USER\inc;.\USER\EXINT;.\USER\tou
+                    -ch_key;.\USER\SYS_RUN;.\USER\step_motor;.\USER\BUZZER;.\USER\UART;.\USER\common;.\USER\lib;.\USER\UV;.\USER\ION;.\USER\E
+                    -EPROM;.\USER\TM1620;.\USER\charge) DEBUG OBJECTEXTEND PRINT(.\Listings\soft_uart.lst) TABS(2) OBJECT(.\Objects\soft_uart
+                    -.obj)
+
+line level    source
+
+   1          #include "OB39R16A6.h"
+   2          #include "soft_uart.h"
+   3          #include "global.h"
+   4          #include "wifi_uart.h"
+   5          #include "debug_uart.h"
+   6          #include "TM1618.h"
+   7          /*
+   8          //时钟周期 22.1184MHz
+   9          1秒的机器周期为 22118400/12
+  10          
+  11          
+  12          1ms的需要的机器周期为 22118.4/12
+  13          22118.4/12 = 1843.2(0x0733)
+  14          65536 - 1843 = 43418（0xF8CD）
+  15          
+  16          0.5ms需要的机器周期为 22118.4/12/2 = 921.6
+  17          65536 - 921  = 64615(0xFC67)
+  18          
+  19          0.25ms需要的机器周期为 22118.4/12/2/2 = 460.8
+  20          65536 - 461  = 65075(0xFE33)
+  21          
+  22          0.1ms需要的机器周期为 22118.4/12/10 = 184.32
+  23          65536 - 184  = 65352(0xFF48)
+  24          
+  25          0.05ms = 50us 需要的机器周期为 22118.4/12/10/2 = 92.16
+  26          65536 - 92  = 65444(0xFFA4)
+  27          
+  28          104.17us = 0.10417ms 需要的机器周期为 (22118.4/12)/(1/0.10417) = 192 对应的波特率 9600
+  29          TMIER1采用模式2,8bit- autoreload模式 TH1 = 256 - 192 = 64 
+  30          
+  31          34.7us = 0.0347ms 需要的机器周期为 (22118.4/12)/(1/0.0347) = 63.96 = 64  对应的波特率为 9600*3
+  32          TMIER1采用模式2,8bit- autoreload模式 TH1 = 256 - 64 = 192 
+  33          */
+  34          
+  35          //定时器为104.17us时 U2RxRate_bk = 1；定时器为34.7s时 U2RxRate_bk = 3；
+  36          static unsigned char U2RxRate_bk = 0;
+  37          static unsigned char U2TxRate_bk = 0;
+  38          static unsigned char U3RxRate_bk = 0;
+  39          static unsigned char U3TxRate_bk = 0;
+  40          
+  41          #define d_T1MOD    0x20
+  42          #define d_T1_TH1   192
+  43          
+  44          void Timer1_Init(void)
+  45          {
+  46   1          ET1 = 1;
+  47   1          TMOD  |= d_T1MOD;
+  48   1          TH1   = d_T1_TH1;  //MODE1 16bit
+  49   1          //TL0   = d_T0_TL0;
+  50   1          EA   = 1;
+  51   1          TR1  = 1;
+C51 COMPILER V9.52.0.0   SOFT_UART                                                         09/22/2017 17:18:12 PAGE 2   
+
+  52   1      }
+  53          
+  54          void Soft_I2C_Init(void)
+  55          {
+  56   1          Timer1_Init();
+  57   1          U2RxRate_bk = 3;
+  58   1          U2TxRate_bk = 3;
+  59   1        
+  60   1          U3RxRate_bk = 3;
+  61   1          U3TxRate_bk = 3;
+  62   1      }
+  63          
+  64          
+  65          
+  66          
+  67          
+  68          /*********************
+  69          High priority interupt
+  70          TIMER1  34.7us timer, 9600*3 bps
+  71          中断函数内部勿使用耗时的函数，否则模拟UART的发送和接收比特率会出问题
+  72          ******************/
+  73          void TIMER1_ISR(void) interrupt d_T1_Vector
+  74          { 
+  75   1          static unsigned char U2RxBitCount = 0;
+  76   1          static unsigned char U2RxBuf = 0;
+  77   1          static unsigned char U2TxBuf = 0;
+  78   1          static unsigned char U2RxRate = 0;
+  79   1        
+  80   1          static unsigned char U3RxBitCount = 0;
+  81   1          static unsigned char U3RxBuf = 0;
+  82   1          static unsigned char U3TxBuf = 0;
+  83   1          static unsigned char U3RxRate = 0;
+  84   1      
+  85   1       /*模拟 UART2函数*/   
+  86   1        
+  87   1        // Rx
+  88   1        if(U2RxPtr < U2RxBuff_MAXSIZE)
+  89   1        {
+  90   2          if(U2RxBitCount)
+  91   2          {
+  92   3            if(!--U2RxRate)
+  93   3            {
+  94   4              //用两个判断 U2RxBitCount==9,此处是延时一个停止位
+  95   4              if(U2RxBitCount == 9)
+  96   4              {
+  97   5                U2RxBitCount = 0;   //stop Rxing
+  98   5                U2RxBuffer[U2RxPtr++] = U2RxBuf;
+  99   5                U2RxBuf = 0;
+ 100   5                //U2RxRate = U2RxRate_bk;
+ 101   5                IsU2RxBusy = 0;
+ 102   5                
+ 103   5              }
+ 104   4              else
+ 105   4              {
+ 106   5                U2RxRate = U2RxRate_bk;
+ 107   5                if(U2RxPin)
+ 108   5                {
+ 109   6                    U2RxBuf |= (1 << 7);
+ 110   6                }
+ 111   5                else
+ 112   5                { 
+ 113   6                    U2RxBuf &= ~(1 << 7);
+C51 COMPILER V9.52.0.0   SOFT_UART                                                         09/22/2017 17:18:12 PAGE 3   
+
+ 114   6                }
+ 115   5                
+ 116   5                U2RxBitCount++;
+ 117   5                if(U2RxBitCount == 9)
+ 118   5                {
+ 119   6                    U2RxRate = U2RxRate_bk;
+ 120   6                    return;
+ 121   6                }
+ 122   5                U2RxBuf >>= 1;          
+ 123   5              }
+ 124   4            }
+ 125   3          }
+ 126   2          else
+ 127   2          {
+ 128   3            if(!U2RxPin)
+ 129   3            {
+ 130   4              U2RxBitCount = 1;   //start Rx
+ 131   4              U2RxRate = U2RxRate_bk + 1;
+ 132   4              IsU2RxBusy = 1;
+ 133   4            }
+ 134   3          }  
+ 135   2        }
+ 136   1      
+ 137   1        
+ 138   1        
+ 139   1        //to initiate a Tx, just write the U8 data to U2TxBuf,and set U2TxBitCount = 10 ,U2TxRate set to 3
+ 140   1        //first check if it's Txing (if U2TxBitCount != 0), 
+ 141   1      
+ 142   1        
+ 143   1        if(U2TxBitCount){
+ 144   2          if(!--U2TxRate){
+ 145   3            U2TxRate = U2TxRate_bk;
+ 146   3            //
+ 147   3            switch(U2TxBitCount --){
+ 148   4              case 1:   //Stop bit; send next byte
+ 149   4                U2TxPin = 1;
+ 150   4                if(U2TxPtr != U2LdPtr){
+ 151   5                  U2TxBuf = U2TxBuffer[U2TxPtr ++];
+ 152   5                  U2TxBitCount = 10;
+ 153   5                }
+ 154   4                else{
+ 155   5                  U2TxPtr = 0;
+ 156   5                  U2LdPtr = 0;
+ 157   5                  IsU2TxBusy = 0;
+ 158   5                }
+ 159   4              break;
+ 160   4      
+ 161   4              case 10:  //Start bit
+ 162   4                IsU2TxBusy = 1;
+ 163   4                U2TxPin = 0;
+ 164   4                if(U2TxPtr == 0)
+ 165   4                {
+ 166   5                  U2TxBuf = U2TxBuffer[U2TxPtr ++];
+ 167   5                }
+ 168   4              break;
+ 169   4              
+ 170   4              default:
+ 171   4                //U2TxPin = U2TxBuf & 0XFE;
+ 172   4                U2TxPin = U2TxBuf & 0x01;
+ 173   4                U2TxBuf >>= 1;
+ 174   4              break;
+ 175   4      
+C51 COMPILER V9.52.0.0   SOFT_UART                                                         09/22/2017 17:18:12 PAGE 4   
+
+ 176   4            }
+ 177   3          }
+ 178   2        } 
+ 179   1        
+ 180   1      
+ 181   1      /*模拟 UART3函数*/  
+ 182   1        // Rx
+ 183   1        if(U3RxPtr < U3RxBuff_MAXSIZE)
+ 184   1        {
+ 185   2          if(U3RxBitCount)
+ 186   2          {
+ 187   3            if(!--U3RxRate)
+ 188   3            {
+ 189   4              //用两个判断 U2RxBitCount==9,此处是延时一个停止位
+ 190   4              if(U3RxBitCount == 9)
+ 191   4              {
+ 192   5                U3RxBitCount = 0;   //stop Rxing
+ 193   5                U3RxBuffer[U2RxPtr++] = U3RxBuf;
+ 194   5                U3RxBuf = 0;
+ 195   5                IsU3RxBusy = 0;
+ 196   5                
+ 197   5              }
+ 198   4              else
+ 199   4              {
+ 200   5                U3RxRate = U3RxRate_bk;
+ 201   5                if(U3RxPin)
+ 202   5                {
+ 203   6                    U3RxBuf |= (1 << 7);
+ 204   6                }
+ 205   5                else
+ 206   5                { 
+ 207   6                    U3RxBuf &= ~(1 << 7);
+ 208   6                }
+ 209   5                
+ 210   5                U3RxBitCount++;
+ 211   5                if(U3RxBitCount == 9)
+ 212   5                {
+ 213   6                    return;
+ 214   6                }
+ 215   5                U3RxBuf >>= 1;          
+ 216   5              }
+ 217   4            }
+ 218   3          }
+ 219   2          else
+ 220   2          {
+ 221   3            if(!U3RxPin)
+ 222   3            {
+ 223   4              U3RxBitCount = 1;   //start Rx
+ 224   4              U3RxRate = U3RxRate_bk + 1;
+ 225   4              IsU3RxBusy = 1;
+ 226   4            }
+ 227   3          }  
+ 228   2        }
+ 229   1      
+ 230   1        
+ 231   1       
+ 232   1        
+ 233   1        //to initiate a Tx, just write the U8 data to U2TxBuf,and set U2TxBitCount = 10 ,U2TxRate set to 3
+ 234   1        //first check if it's Txing (if U2TxBitCount != 0), 
+ 235   1      
+ 236   1        
+ 237   1        if(U3TxBitCount){
+C51 COMPILER V9.52.0.0   SOFT_UART                                                         09/22/2017 17:18:12 PAGE 5   
+
+ 238   2          if(!--U3TxRate){
+ 239   3            U3TxRate = U3TxRate_bk;
+ 240   3            //
+ 241   3            switch(U3TxBitCount --){
+ 242   4              case 1:   //Stop bit; send next byte
+ 243   4                U3TxPin = 1;
+ 244   4                if(U3TxPtr != U3LdPtr){
+ 245   5                  U3TxBuf = U3TxBuffer[U3TxPtr ++];
+ 246   5                  U3TxBitCount = 10;
+ 247   5                }
+ 248   4                else{
+ 249   5                  U3TxPtr = 0;
+ 250   5                  U3LdPtr = 0;
+ 251   5                  IsU3TxBusy = 0;
+ 252   5                }
+ 253   4              break;
+ 254   4      
+ 255   4              case 10:  //Start bit
+ 256   4                IsU3TxBusy = 1;
+ 257   4                U3TxPin = 0;
+ 258   4                if(U3TxPtr == 0)
+ 259   4                {
+ 260   5                  U3TxBuf = U3TxBuffer[U3TxPtr ++];
+ 261   5                }
+ 262   4              break;
+ 263   4              
+ 264   4              default:
+ 265   4                U3TxPin = U3TxBuf & 0x01;
+ 266   4                U3TxBuf >>= 1;
+ 267   4              break;
+ 268   4      
+ 269   4            }
+ 270   3          }
+ 271   2        }   
+ 272   1        
+ 273   1        
+ 274   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    611    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =     12    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

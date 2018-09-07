@@ -1,0 +1,59 @@
+C51 COMPILER V9.52.0.0   ION                                                               01/11/2018 14:22:52 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE ION
+OBJECT MODULE PLACED IN .\Objects\ION.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\ION\ION.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(..\project;.\USER\B
+                    -UZZER;.\USER\charge;.\USER\common;.\USER\DC_MOTOR;.\USER\EEPROM;.\USER\EXINT;.\USER\IIC;.\USER\inc;.\USER\ION;.\USER\M26
+                    -;.\USER\PWM;.\USER\Sensor;.\USER\step_motor;.\USER\SYS_RUN;.\USER\timer;.\USER\TM1620;.\USER\touch_key;.\USER\UART;.\USE
+                    -R\UV;.\USER\LVI) DEBUG OBJECTEXTEND PRINT(.\Listings\ION.lst) TABS(2) OBJECT(.\Objects\ION.obj)
+
+line level    source
+
+   1          #include "ION.h"
+   2          #include "global.h"
+   3          #include "TM1620.h"
+   4          
+   5          
+   6          
+   7          void ION_Pin_Init(void)
+   8          {
+   9   1          ION_PIN_PxM0 |= (1 << ION_PIN_PORTBIT);
+  10   1          ION_PIN_PxM1 &= ~(1 << ION_PIN_PORTBIT);
+  11   1        
+  12   1          ION_CONTROL_PIN = 0;
+  13   1      }
+  14          
+  15          
+  16          void ION_On(void)
+  17          {
+  18   1          ION_CONTROL_PIN = 1;
+  19   1          Is_ION_On = 1;
+  20   1          TM1620_LED_Control(LED_ION,LED_ON);
+  21   1        
+  22   1          dev_status = 1;
+  23   1          
+  24   1      }
+  25          
+  26          void ION_Off(void)
+  27          {
+  28   1          ION_CONTROL_PIN = 0;
+  29   1          Is_ION_On = 0;
+  30   1          TM1620_LED_Control(LED_ION,LED_OFF);
+  31   1        
+  32   1          dev_status = 1;
+  33   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     37    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

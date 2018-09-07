@@ -1,0 +1,2352 @@
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE M26
+OBJECT MODULE PLACED IN .\Objects\M26.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\M26\M26.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(..\project;.\USER\B
+                    -UZZER;.\USER\charge;.\USER\common;.\USER\DC_MOTOR;.\USER\EEPROM;.\USER\EXINT;.\USER\IIC;.\USER\inc;.\USER\ION;.\USER\M26
+                    -;.\USER\PWM;.\USER\Sensor;.\USER\step_motor;.\USER\SYS_RUN;.\USER\timer;.\USER\TM1620;.\USER\touch_key;.\USER\UART;.\USE
+                    -R\UV;.\USER\LVI) DEBUG OBJECTEXTEND PRINT(.\Listings\M26.lst) TABS(2) OBJECT(.\Objects\M26.obj)
+
+line level    source
+
+   1          #include <stdio.h>
+   2          #include <string.h>
+   3          #include <stdlib.h>
+   4          #include "M26.h"
+   5          #include "wifi_uart.h"
+   6          #include "debug_uart.h"
+   7          #include "global.h"
+   8          #include "timer.h"
+   9          #include "TM1620.h"
+  10          #include "dc_motor.h"
+  11          #include "UV.h"
+  12          #include "ION.h"
+  13          #include "sys_run.h"
+  14          #include "step_motor.h"
+  15          #include "buzzer.h"
+  16          
+  17          //AT÷∏¡Ó∑¢ÀÕ ±º‰
+  18          M26_Cmd_Typedef m26_cmd_info;
+  19          
+  20          M26_RESGISTER_Typedef M26_register_net;
+  21          
+  22          //M26_DEV_INFO_Typedef m26_dev_info;
+  23          
+  24          
+  25          //m26”Î∑˛ŒÒ∆˜httpÕ®—∂µ⁄º∏≤Ω±Í ∂
+  26          static bit Is_http = 0;
+  27          static unsigned char http_step = 0;
+  28          //m26∂Ø◊˜±Í ∂◊÷Ω⁄£¨bit0±Ì æº§ªÓ£¨bit1±Ì æ∞Ê±æ∏¸–¬£¨bit2±Ì æ ˝æ›…œ±®£¨bit3±Ì æ◊¥Ã¨∏¸–¬£¨bit4±Ì æ≥Ô¬Î»∑»œ
+  29          unsigned char m26_action = 0;
+  30          
+  31          //µÁ‘¥–æ∆¨øÿ÷∆π‹Ω≈µÕµÁ∆Ω ±£¨µÁ‘¥–æ∆¨π§◊˜
+  32          void M26_Power_Pin_Init(void)
+  33          {
+  34   1          M26_POWER_PIN_PxM0 |= (1 << M26_POWER_PIN_PORTBIT);
+  35   1          M26_POWER_PIN_PxM1 &= ~(1 << M26_POWER_PIN_PORTBIT);
+  36   1        
+  37   1          M26_POWER_PIN = 1;
+  38   1      }
+  39          
+  40          void M26_Power_On(void)
+  41          {
+  42   1          M26_POWER_PIN = 0;   
+  43   1      }
+  44          
+  45          void M26_Power_Off(void)
+  46          {
+  47   1          M26_POWER_PIN = 1;
+  48   1          //÷ÿ∆ÙM26µƒª∞∂œµÁ±£≥÷“ª∂Œ ±º‰£¨∑¿÷π∆Ù∂Øπ˝øÏ
+  49   1          if(g_1s_flag == 1)
+  50   1          {
+  51   2              g_1s_flag = 0;
+  52   2          } 
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 2   
+
+  53   1          while(g_1s_flag == 0) ;
+  54   1          
+  55   1          g_1s_flag = 0;
+  56   1          while(g_1s_flag == 0) ;
+  57   1      }
+  58          
+  59          //PWKπ‹Ω≈∏ﬂµÁ∆Ω±£≥÷3√Î∫ÛM26ø™ª˙
+  60          void M26_Wakeup_Pin_Init(void)
+  61          {
+  62   1          M26_WAKEPU_PIN_PxM0 |= (1 << M26_WAKEPU_PIN_PORTBIT);
+  63   1          M26_WAKEPU_PIN_PxM1 &= ~(1 << M26_WAKEPU_PIN_PORTBIT);
+  64   1        
+  65   1          M26_WAKEPU_PIN = 0;
+  66   1      }
+  67          
+  68          void M26_Wakeup(void)
+  69          {
+  70   1          unsigned char times_s = 0;
+  71   1          M26_WAKEPU_PIN = 1;
+  72   1        
+  73   1          if(g_1s_flag == 1)
+  74   1          {
+  75   2              g_1s_flag = 0;
+  76   2          } 
+  77   1          //wakeupπ‹Ω≈¿≠∏ﬂ≥÷–¯3√Î
+  78   1      
+  79   1          while(times_s <= 6)
+  80   1          {
+  81   2              if(g_1s_flag == 1)
+  82   2              {
+  83   3                  g_1s_flag = 0;
+  84   3                  times_s += 1;
+  85   3              }
+  86   2          }
+  87   1        
+  88   1          M26_WAKEPU_PIN = 0;
+  89   1      
+  90   1      }
+  91          
+  92          void M26_Restart(void)
+  93          {
+  94   1          //÷ÿ∆Ùm26       
+  95   1          M26_Power_Off();
+  96   1          M26_Power_On();
+  97   1            
+  98   1          //∏’…œµÁ—” ±“ªµ„ ±º‰
+  99   1          if(g_1s_flag == 1)
+ 100   1          {
+ 101   2              g_1s_flag = 0;
+ 102   2          }
+ 103   1          while(g_1s_flag == 0);
+ 104   1              
+ 105   1          M26_Wakeup();
+ 106   1              
+ 107   1          M26_register_net.step = 0;
+ 108   1          http_step = 0;
+ 109   1          Is_http = 0;
+ 110   1          m26_action = 0;
+ 111   1          
+ 112   1          Is_signal_err_code_zero = 0;
+ 113   1          Is_device_activate = 0;
+ 114   1          M26_register_net.Is_m26_registerd = 0;
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 3   
+
+ 115   1              
+ 116   1          m26_cmd_info.error_times = 0;
+ 117   1          m26_cmd_info.timeout_times = 0;
+ 118   1          
+ 119   1          is_m26_fogcloud_init = 0;
+ 120   1          
+ 121   1          mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 122   1          sprintf(m26_cmd_info.sendtring,"m26 restart\r\n");
+ 123   1          DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,strlen(m26_cmd_info.sendtring));
+ 124   1          
+ 125   1      }
+ 126          
+ 127          unsigned char make_m26_send_string(char *str_buff,char *cmd,char *cmd_para)
+ 128          {
+ 129   1          if(str_buff == NULL)
+ 130   1          {
+ 131   2              return 1;
+ 132   2          }
+ 133   1          
+ 134   1          if(cmd == NULL && cmd_para == NULL)
+ 135   1          {
+ 136   2              return 2;
+ 137   2          }
+ 138   1          
+ 139   1          if(cmd != NULL)
+ 140   1          {
+ 141   2              if(str_buff[0] != 0)
+ 142   2              {
+ 143   3                  //strcat(str_buff,cmd);
+ 144   3                  
+ 145   3              }
+ 146   2              else
+ 147   2              {
+ 148   3                  strcpy(str_buff,cmd);
+ 149   3              }
+ 150   2                
+ 151   2              
+ 152   2          }
+ 153   1          
+ 154   1          //”–º∏∏ˆ÷∏¡Ó¥¯≤Œ ˝£¨œ»ÃÌº”≤Œ ˝‘Ÿº”\r\n
+ 155   1          if(cmd_para != NULL)
+ 156   1          {
+ 157   2              strcat(str_buff,cmd_para);
+ 158   2          }
+ 159   1          
+ 160   1          strcat(str_buff,M26_CMD_END_FLAG);
+ 161   1          
+ 162   1          return 0;
+ 163   1      }
+ 164          
+ 165          
+ 166          int M26_wait_response(void)
+ 167          {
+ 168   1          int res = M26_WAIT_RESPONSE;
+ 169   1          //unsigned char i,j = 0;
+ 170   1          //unsigned char num = 0;
+ 171   1          char *cmd_position = NULL;
+ 172   1          //unsigned char debug_buff[180] = {0};
+ 173   1          
+ 174   1        
+ 175   1          //»Áπ˚÷Æ«∞√ª”–∑¢ÀÕπ˝ ˝æ›ªÚ’ﬂ√¸¡Ó£¨‘Ú÷±Ω”∑µªÿ
+ 176   1          if(m26_cmd_info.Is_wait_data == 0)
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 4   
+
+ 177   1          {
+ 178   2              res = CMD_IDLE;
+ 179   2              m26_cmd_info.cmd_result = CMD_IDLE;
+ 180   2              goto exit;
+ 181   2          }
+ 182   1          
+ 183   1          nowtime_ms = get_sys_mstime();
+ 184   1          
+ 185   1          
+ 186   1          //∑¿÷π ±º‰“Á≥ˆ
+ 187   1          if(m26_cmd_info.cmd_send_time > 0xF0000000 && nowtime_ms < 0xE0000000)
+ 188   1          {
+ 189   2              m26_cmd_info.cmd_send_time = nowtime_ms;
+ 190   2          }
+ 191   1      
+ 192   1          
+ 193   1          //≥¨ ± √ª”–∑µªÿ ˝æ›
+ 194   1          if(nowtime_ms >= (m26_cmd_info.cmd_send_time + (M26_TIME_OUT | 0x00)))
+ 195   1          {
+ 196   2              m26_cmd_info.cmd_result = CMD_TIMEOUT;
+ 197   2              
+ 198   2              res = CMD_TIMEOUT;
+ 199   2              goto cmd_failed;
+ 200   2          }
+ 201   1          
+ 202   1          if(strstr(U0RxBuffer,END_ERROR) != NULL)
+ 203   1          {
+ 204   2              m26_cmd_info.cmd_result = CMD_ERROR;
+ 205   2              res = CMD_ERROR;
+ 206   2              goto cmd_failed;
+ 207   2          }
+ 208   1          
+ 209   1          if(m26_cmd_info.type == STRING_TYPE)
+ 210   1          {
+ 211   2              //∑¢ÀÕ◊÷∑˚¥Æ ±∑µªÿOKªÚ’ﬂERROR
+ 212   2              if(strstr(U0RxBuffer,m26_cmd_info.end_flag) != NULL)
+ 213   2              {
+ 214   3                  m26_cmd_info.cmd_result = CMD_SUCESS;   
+ 215   3                  res = CMD_SUCESS; 
+ 216   3                  goto  cmd_sucess;       
+ 217   3              }
+ 218   2            
+ 219   2          }
+ 220   1          else if(m26_cmd_info.type == CMD_TYPE)
+ 221   1          {
+ 222   2              
+ 223   2              //∑¢ÀÕ√¸¡Ó ±ª·∑µªÿ√¸¡Ó+OKªÚ’ﬂ√¸¡Ó+ERROR
+ 224   2              cmd_position = strstr(U0RxBuffer,m26_cmd_info.cmd);
+ 225   2              if(cmd_position != NULL && strstr(cmd_position,m26_cmd_info.end_flag) != NULL)
+ 226   2              //if(strstr(U0RxBuffer,"OK") != NULL)
+ 227   2              {            
+ 228   3                  res = CMD_SUCESS;
+ 229   3                  m26_cmd_info.cmd_result = CMD_SUCESS;   
+ 230   3              
+ 231   3                  goto cmd_sucess;
+ 232   3              }
+ 233   2      
+ 234   2              
+ 235   2          }
+ 236   1          
+ 237   1      
+ 238   1      exit:    
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 5   
+
+ 239   1          return res;
+ 240   1          
+ 241   1      cmd_sucess:
+ 242   1          //m26_cmd_info.cmd_result = CMD_SUCESS;
+ 243   1          return res;
+ 244   1          
+ 245   1          
+ 246   1      cmd_failed:
+ 247   1          //m26_cmd_info.cmd_result = res;
+ 248   1          return res;
+ 249   1          
+ 250   1      }
+ 251          
+ 252          
+ 253          void check_m26_cmd_result(void)
+ 254          {    
+ 255   1          char *position = NULL;
+ 256   1          int value_int = -1;
+ 257   1          long value_long = -1;
+ 258   1          int status = -1;
+ 259   1          unsigned char ordnum_cmp_result = 0;
+ 260   1          
+ 261   1        
+ 262   1          unsigned char i = 0;
+ 263   1          
+ 264   1          //char debug_buff[40] = {0};
+ 265   1          
+ 266   1          if(m26_cmd_info.Is_wait_data == 0)
+ 267   1          {
+ 268   2              return;
+ 269   2          }
+ 270   1          else if(m26_cmd_info.Is_wait_data == 1)
+ 271   1          {
+ 272   2              if(m26_cmd_info.cmd_result == CMD_WAIT)
+ 273   2              {
+ 274   3                  return;
+ 275   3              }
+ 276   2              else if(m26_cmd_info.cmd_result == CMD_SUCESS)
+ 277   2              {
+ 278   3      
+ 279   3                
+ 280   3                  m26_cmd_info.Is_wait_data = 0;
+ 281   3                
+ 282   3                  //http∑¢ÀÕurl∫Û‘Ÿ∑¢ÀÕ◊÷∑˚¥Æ≤¢≤ª∑µªÿ√¸¡Ó£¨÷ª∑µªÿOK
+ 283   3                  if(Is_http == 1 && (http_step == 1 || http_step == 3))
+ 284   3                  {
+ 285   4                      http_step += 1;
+ 286   4                      return;
+ 287   4                  }
+ 288   3      
+ 289   3                
+ 290   3                  if(strcmp(m26_cmd_info.cmd,M26_ATI_CMD) == 0)
+ 291   3                  {
+ 292   4                  
+ 293   4                  }
+ 294   3                  else if(strcmp(m26_cmd_info.cmd,M26_CSQ_CMD) == 0)
+ 295   3                  {
+ 296   4                      //ªÒ»°–≈∫≈÷ ¡ø
+ 297   4                      //debug
+ 298   4                      DEBUG_Uart_Sendbytes(U0RxBuffer,strlen(U0RxBuffer)); 
+ 299   4                    
+ 300   4                      position = strstr(U0RxBuffer,",");
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 6   
+
+ 301   4                      if(position != NULL)
+ 302   4                      {
+ 303   5                          for(i = 0;i < strlen(U0RxBuffer);i++)
+ 304   5                          {
+ 305   6                              if(*(position + 1 + i) == ASCII_RETURN || *(position + 1 + i) == ASCII_NEW_LINE)
+ 306   6                              {
+ 307   7                                  if(i != 0)
+ 308   7                                  {
+ 309   8                                      mymemset(m26_cmd_info.cmd_para,0,sizeof(m26_cmd_info.cmd_para));
+ 310   8                                      strncpy(m26_cmd_info.cmd_para,(position + 1),i); 
+ 311   8                                      value_int = atol(m26_cmd_info.cmd_para);
+ 312   8                                    
+ 313   8                                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 314   8                                      sprintf(m26_cmd_info.sendtring,"i = %d,signal err code:%d\r\n",(unsigned i
+             -nt)i,(unsigned int)value_int);
+ 315   8                                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtrin
+             -g));
+ 316   8                                    
+ 317   8                                      if(value_int == 0)
+ 318   8                                      {
+ 319   9                                          Is_signal_err_code_zero = 1;
+ 320   9                                      }
+ 321   8                                      else
+ 322   8                                      {
+ 323   9                                          mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 324   9                                          sprintf(m26_cmd_info.sendtring,"signal err code not equal zero,wait\r\
+             -n");
+ 325   9                                          DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.send
+             -tring));
+ 326   9                                      }
+ 327   8                                  }
+ 328   7                                  else
+ 329   7                                  {
+ 330   8                                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 331   8                                      sprintf(m26_cmd_info.sendtring,"not find signal err code\r\n");
+ 332   8                                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtrin
+             -g));
+ 333   8                                  }                           
+ 334   7                                  break;
+ 335   7                              }                      
+ 336   6                          }
+ 337   5                      }               
+ 338   4                  }
+ 339   3                  else if(strcmp(m26_cmd_info.cmd,M26_GSN_CMD) == 0)
+ 340   3                  {
+ 341   4                      //ªÒ»°IMEI≥…π¶
+ 342   4      //                mymemset(M26_IMEI,0,sizeof(M26_IMEI));
+ 343   4      //                position = strstr(U0RxBuffer,M26_CMD_END_FLAG);
+ 344   4      //                strncpy(M26_IMEI,position + 2,M26_IMEI_LEN);
+ 345   4                    
+ 346   4      //                mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 347   4      //                sprintf(m26_cmd_info.sendtring,"IMEI:%s\n",M26_IMEI);
+ 348   4      //                DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+ 349   4                    
+ 350   4                      //Is_Get_IMEI = 1;
+ 351   4                  }
+ 352   3                  else if(strcmp(m26_cmd_info.cmd,M26_QCCID_CMD) == 0)
+ 353   3                  {
+ 354   4                      //ªÒ»°CCID≥…π¶
+ 355   4                      mymemset(ccid,0,sizeof(ccid));
+ 356   4                      position = strstr(U0RxBuffer,M26_CMD_END_FLAG);
+ 357   4                      strncpy(ccid,position + 2,M26_CCID_LEN);
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 7   
+
+ 358   4                    
+ 359   4                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 360   4                      sprintf(m26_cmd_info.sendtring,"CCID:%s\n",ccid);
+ 361   4                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+ 362   4                    
+ 363   4                      Is_Get_CCID = 1;
+ 364   4                  }            
+ 365   3                  else if(strcmp(m26_cmd_info.cmd,M26_QSPN_CMD) == 0)
+ 366   3                  {     
+ 367   4                      //∂¡»°SIM ø®∑˛ŒÒ‘À”™…Ã√˚≥∆             
+ 368   4                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 369   4                      sprintf(m26_cmd_info.sendtring,"M26_QSPN_CMD OK\n");
+ 370   4                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+ 371   4                    
+ 372   4                      M26_register_net.step = 1;
+ 373   4                  }
+ 374   3                  else if(strcmp(m26_cmd_info.cmd,M26_QIFGCNT_CMD) == 0)
+ 375   3                  {     
+ 376   4                      //…Ë÷√«∞æ∞ƒ£ Ω              
+ 377   4                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 378   4                      sprintf(m26_cmd_info.sendtring,"M26_QIFGCNT_CMD OK\n");
+ 379   4                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+ 380   4                    
+ 381   4                      M26_register_net.step = 2;
+ 382   4                  }
+ 383   3                  else if(strcmp(m26_cmd_info.cmd,M26_QICSGP_CM_CMD) == 0)
+ 384   3                  {   
+ 385   4                      //…Ë÷√¡¥Ω”ƒ£ Ω              
+ 386   4                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 387   4                      sprintf(m26_cmd_info.sendtring,"M26_QICSGP_CM_CMD OK\n");
+ 388   4                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+ 389   4                    
+ 390   4                      //M26_register_net.Is_m26_registerd = 1;
+ 391   4                      M26_register_net.step = 3;
+ 392   4                  }
+ 393   3                  else if(strcmp(m26_cmd_info.cmd,M26_QIREGAPP_CMD) == 0)
+ 394   3                  {   
+ 395   4                      //∆Ù∂Ø»ŒŒÒ≤¢…Ë÷√Ω”»Îµ„             
+ 396   4                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 397   4                      sprintf(m26_cmd_info.sendtring,"M26_QIREGAPP_CMD OK\n");
+ 398   4                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+ 399   4                    
+ 400   4                      //M26_register_net.Is_m26_registerd = 1;
+ 401   4                      M26_register_net.step = 4;
+ 402   4                  }
+ 403   3                  else if(strcmp(m26_cmd_info.cmd,M26_QIACT_CMD) == 0)
+ 404   3                  {   
+ 405   4                      //º§ªÓÕ¯¬Á            
+ 406   4                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 407   4                      sprintf(m26_cmd_info.sendtring,"M26_QIACT_CMD OK\n");
+ 408   4                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+ 409   4                    
+ 410   4                      M26_register_net.Is_m26_registerd = 1;
+ 411   4                      M26_register_net.step = 0;
+ 412   4                  }
+ 413   3                  else if(strcmp(m26_cmd_info.cmd,M26_QHTTPURL_CMD) == 0)
+ 414   3                  {   
+ 415   4                      //set HTTP Server URL          
+ 416   4      //                mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 417   4      //                sprintf(m26_cmd_info.sendtring,"M26_QHTTPURL_CMD OK\n");
+ 418   4      //                DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+ 419   4                    
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 8   
+
+ 420   4      
+ 421   4                      http_step += 1;
+ 422   4                  }
+ 423   3                  else if(strcmp(m26_cmd_info.cmd,M26_QHTTPPOST_CMD) == 0)
+ 424   3                  {   
+ 425   4                      //http post          
+ 426   4      //                mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 427   4      //                sprintf(m26_cmd_info.sendtring,"M26_QHTTPPOST_CMD OK\n");
+ 428   4      //                DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+ 429   4                    
+ 430   4                      http_step += 1;
+ 431   4                  }
+ 432   3                  else if(strcmp(m26_cmd_info.cmd,M26_QHTTPREAD_CMD) == 0)
+ 433   3                  {
+ 434   4                      m26_cmd_info.error_times = 0;
+ 435   4                      m26_cmd_info.timeout_times = 0;              
+ 436   4                      //http read          
+ 437   4      //                mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 438   4      //                sprintf(m26_cmd_info.sendtring,"M26_QHTTPREAD_CMD OK\r\n");
+ 439   4      //                DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+ 440   4                     
+ 441   4                      if(M26_BIT_CHECK(m26_action,HTTP_ACTIVATE))
+ 442   4                      {
+ 443   5                          //º§ªÓ£¨ªÒ»°µΩdevice_id
+ 444   5                          if((position = strstr(U0RxBuffer,"DID")) != NULL)
+ 445   5                          {
+ 446   6                              mymemset(device_id,0,sizeof(device_id));
+ 447   6                              strncpy(device_id,position + 6,DEVICE_ID_LEN);
+ 448   6                            
+ 449   6                              mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 450   6                              sprintf(m26_cmd_info.sendtring,"id:%s\n",(char *)device_id);
+ 451   6                              DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+ 452   6                          }
+ 453   5                          Is_device_activate = 1;
+ 454   5                      }
+ 455   4                      else if(M26_BIT_CHECK(m26_action,HTTP_OTA))
+ 456   4                      {
+ 457   5                          //ota check
+ 458   5                        
+ 459   5                          is_m26_fogcloud_init = 1;
+ 460   5      
+ 461   5                          DEBUG_Uart_Sendbytes(U0RxBuffer,mystrlen(U0RxBuffer));
+ 462   5                        
+ 463   5                          mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 464   5                          sprintf(m26_cmd_info.sendtring,"ota check sucess\r\n");
+ 465   5                          DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));        
+             -          
+ 466   5                      }
+ 467   4                      else if(M26_BIT_CHECK(m26_action,HTTP_UPLOAD_DATA))
+ 468   4                      {                   
+ 469   5                          mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 470   5                          sprintf(m26_cmd_info.sendtring,"upload data sucess\r\n");
+ 471   5                          DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));        
+             -        
+ 472   5                      }
+ 473   4                      else if(M26_BIT_CHECK(m26_action,HTTP_SYNC))
+ 474   4                      {
+ 475   5                          //…Ë±∏◊¥Ã¨Õ¨≤Ω
+ 476   5                          //…Ë±∏◊¥Ã¨Õ¨≤Ω∑¢ÀÕ≥…π¶∫Û£¨resync«Â¡„
+ 477   5                          resync = 0;
+ 478   5                          if(dr_confirm == 1)
+ 479   5                          {
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 9   
+
+ 480   6                              dr_confirm = 0;
+ 481   6                          }
+ 482   5                        
+ 483   5                          //debug
+ 484   5      //                    mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 485   5      //                    sprintf(m26_cmd_info.sendtring,"%s\r\n",U0RxBuffer);  
+ 486   5      //                    DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));     
+ 487   5                          //DEBUG_Uart_Sendbytes(U0RxBuffer,mystrlen(U0RxBuffer));                    
+ 488   5                          
+ 489   5                          if((position = strstr(U0RxBuffer,"SF")) == NULL)
+ 490   5                          {
+ 491   6                              mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 492   6                              sprintf(m26_cmd_info.sendtring,"not find SF\r\n");
+ 493   6                              DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));    
+             -               
+ 494   6                          }
+ 495   5                          else
+ 496   5                          {
+ 497   6                              value_int = -1;
+ 498   6                              value_int = string_get_int(position);
+ 499   6                            
+ 500   6      //                        mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 501   6      //                        sprintf(m26_cmd_info.sendtring,"SF val:%d\r\n",(unsigned int)value_int);
+ 502   6      //                        DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring)); 
+ 503   6                              if(value_int == 1)
+ 504   6                              {
+ 505   7                                  //ªÒ»°µΩµƒ◊÷∑˚¥Æ÷–¥Ê‘⁄øÿ÷∆–≈œ¢
+ 506   7                                  position = strstr(U0RxBuffer,"SM");
+ 507   7                                  if(position != NULL)
+ 508   7                                  {
+ 509   8                                      // ÷◊‘∂Øƒ£ Ωµƒ∏ƒ±‰
+ 510   8                                      value_int = -1;
+ 511   8                                      value_int = string_get_int(position);
+ 512   8                                    
+ 513   8                                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 514   8                                      sprintf(m26_cmd_info.sendtring,"SM:%d\r\n",(unsigned int)value_int);
+ 515   8                                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtrin
+             -g));                              
+ 516   8                                    
+ 517   8                                      if(value_int == 1 && run_mode == 0)
+ 518   8                                      {
+ 519   9                                          set_sys_to_smart_mode();
+ 520   9                                      }  
+ 521   8                                      else if(value_int == 0 && run_mode == 1)
+ 522   8                                      {
+ 523   9                                          stop_sys_smart_mode();
+ 524   9                                      }                                 
+ 525   8                                  } 
+ 526   7                                  position = strstr(U0RxBuffer,"FA");
+ 527   7                                  if(position != NULL)
+ 528   7                                  {
+ 529   8                                      //∑Áª˙øÿ÷∆
+ 530   8                                      value_int = -1;
+ 531   8                                      value_int = string_get_int(position);
+ 532   8                                    
+ 533   8                                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 534   8                                      sprintf(m26_cmd_info.sendtring,"FA:%d\r\n",(unsigned int)value_int);
+ 535   8                                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtrin
+             -g)); 
+ 536   8                                    
+ 537   8                                      Set_DC_Motor_Speed((unsigned char)value_int);
+ 538   8                                    
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 10  
+
+ 539   8                                  }
+ 540   7                                  position = strstr(U0RxBuffer,"UV");
+ 541   7                                  if(position != NULL)
+ 542   7                                  {
+ 543   8                                      //UVµ∆øÿ÷∆
+ 544   8                                      value_int = -1;
+ 545   8                                      value_int = string_get_int(position);
+ 546   8                                    
+ 547   8                                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 548   8                                      sprintf(m26_cmd_info.sendtring,"UV:%d\r\n",(unsigned int)value_int);
+ 549   8                                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtrin
+             -g)); 
+ 550   8                                    
+ 551   8                                      if(value_int == 1 && IsUVOn == 0)
+ 552   8                                      {
+ 553   9                                          UV_On();  
+ 554   9                                      }
+ 555   8                                      else if(value_int == 0 && IsUVOn == 1)
+ 556   8                                      {
+ 557   9                                          UV_Off();
+ 558   9                                      }
+ 559   8                                    
+ 560   8                                  }                                                        
+ 561   7                                  position = strstr(U0RxBuffer,"NI");
+ 562   7                                  if(position != NULL)
+ 563   7                                  {
+ 564   8                                      //IONøÿ÷∆
+ 565   8                                      value_int = -1;
+ 566   8                                      value_int = string_get_int(position);
+ 567   8                                    
+ 568   8                                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 569   8                                      sprintf(m26_cmd_info.sendtring,"NI:%d\r\n",(unsigned int)value_int);
+ 570   8                                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtrin
+             -g));  
+ 571   8      
+ 572   8                                      if(value_int == 1 && Is_ION_On == 0)
+ 573   8                                      {
+ 574   9                                          ION_On();  
+ 575   9                                      }
+ 576   8                                      else if(value_int == 0 && Is_ION_On == 1)
+ 577   8                                      {
+ 578   9                                          ION_Off();
+ 579   9                                      }                                
+ 580   8                                    
+ 581   8                                  }
+ 582   7                                  position = strstr(U0RxBuffer,"DR");
+ 583   7                                  if(position != NULL)
+ 584   7                                  {
+ 585   8                                      //ø™≤÷√≈
+ 586   8                                      value_int = -1;
+ 587   8                                      value_int = string_get_int(position);
+ 588   8                                    
+ 589   8                                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 590   8                                      sprintf(m26_cmd_info.sendtring,"DR:%d\r\n",(unsigned int)value_int);
+ 591   8                                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtrin
+             -g));  
+ 592   8                                      
+ 593   8                                      dr_confirm = 1;
+ 594   8                                    
+ 595   8                                      //∏ƒ±‰œ¬“ª¥ŒÕ¨≤Ωµƒ ±º‰£¨¡¢øÃ÷¥––sync∂Ø◊˜
+ 596   8                                      next_sync_mstime = get_sys_mstime();
+ 597   8                                      
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 11  
+
+ 598   8                                      Door_Open();                                                        
+ 599   8                                  }
+ 600   7                                  position = strstr(U0RxBuffer,"ACKS");
+ 601   7                                  if(position != NULL)
+ 602   7                                  {
+ 603   8                                      //ø™ º◊‘ºÏ
+ 604   8                                      value_int = -1;
+ 605   8                                      value_int = string_get_int(position);
+ 606   8                                    
+ 607   8                                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 608   8                                      sprintf(m26_cmd_info.sendtring,"ACKS:%d\r\n",(unsigned int)value_int);
+ 609   8                                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtrin
+             -g));  
+ 610   8                                      
+ 611   8                                      start_sys_auto_check();
+ 612   8                                  }
+ 613   7                                  position = strstr(U0RxBuffer,"ACKP");
+ 614   7                                  if(position != NULL)
+ 615   7                                  {
+ 616   8                                      //Õ£÷π◊‘ºÏ
+ 617   8                                      value_int = -1;
+ 618   8                                      value_int = string_get_int(position);
+ 619   8                                    
+ 620   8                                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 621   8                                      sprintf(m26_cmd_info.sendtring,"ACKP:%d\r\n",(unsigned int)value_int);
+ 622   8                                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtrin
+             -g));  
+ 623   8                                      
+ 624   8                                      stop_sys_auto_check();
+ 625   8                                  }
+ 626   7                                  position = strstr(U0RxBuffer,"MCKS");
+ 627   7                                  if(position != NULL)
+ 628   7                                  {
+ 629   8                                      //ø™ º ÷∂ØºÏ≤‚
+ 630   8                                      value_int = -1;
+ 631   8                                      value_int = string_get_int(position);
+ 632   8                                    
+ 633   8                                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 634   8                                      sprintf(m26_cmd_info.sendtring,"MCKS:%d\r\n",(unsigned int)value_int);
+ 635   8                                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtrin
+             -g));  
+ 636   8                                      
+ 637   8                                      start_sys_manual_check();
+ 638   8                                  }
+ 639   7                                  position = strstr(U0RxBuffer,"MCKP");
+ 640   7                                  if(position != NULL)
+ 641   7                                  {
+ 642   8                                      //Õ£÷π ÷∂ØºÏ≤‚
+ 643   8                                      value_int = -1;
+ 644   8                                      value_int = string_get_int(position);
+ 645   8                                    
+ 646   8                                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 647   8                                      sprintf(m26_cmd_info.sendtring,"MCKP:%d\r\n",(unsigned int)value_int);
+ 648   8                                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtrin
+             -g));  
+ 649   8                                      
+ 650   8                                      stop_sys_manual_check();
+ 651   8                                  }
+ 652   7                                  
+ 653   7                              }
+ 654   6                          }
+ 655   5                          
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 12  
+
+ 656   5                          if((position = strstr(U0RxBuffer,"CF")) == NULL)
+ 657   5                          {
+ 658   6                              mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 659   6                              sprintf(m26_cmd_info.sendtring,"not find CF\r\n");
+ 660   6                              DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));    
+             -               
+ 661   6                          }
+ 662   5                          else
+ 663   5                          {
+ 664   6                              value_int = -1;
+ 665   6                              value_int = string_get_int(position);
+ 666   6                            
+ 667   6      //                        mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 668   6      //                        sprintf(m26_cmd_info.sendtring,"CF val:%d\r\n",(unsigned int)value_int);
+ 669   6      //                        DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring)); 
+ 670   6                            
+ 671   6                              if(value_int == 1)
+ 672   6                              {
+ 673   7                                  //debug
+ 674   7                                  //DEBUG_Uart_Sendbytes(U0RxBuffer,strlen(U0RxBuffer)); 
+ 675   7                                  //ªÒ»°µΩµƒ◊÷∑˚¥Æ÷–¥Ê‘⁄≥Ô¬Î–≈œ¢ 
+ 676   7                                  position = strstr(U0RxBuffer,"\"C\"");
+ 677   7                                  if(position != NULL)
+ 678   7                                  {
+ 679   8                                      value_long = -1;
+ 680   8                                      value_long = string_get_long(position);
+ 681   8                                    
+ 682   8                                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 683   8                                      sprintf(m26_cmd_info.sendtring,"C:%d\r\n",(unsigned int)value_int);
+ 684   8                                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtrin
+             -g)); 
+ 685   8                                  }
+ 686   7                                  
+ 687   7                                  position = strstr(U0RxBuffer,"\"T\"");
+ 688   7                                  if(position != NULL)
+ 689   7                                  {
+ 690   8                                      value_int = -1;
+ 691   8                                      value_int = string_get_int(position);
+ 692   8                                    
+ 693   8      //                                mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 694   8      //                                sprintf(m26_cmd_info.sendtring,"T:%d\r\n",(unsigned int)value_int);
+ 695   8      //                                DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtr
+             -ing)); 
+ 696   8                                  }
+ 697   7                                  
+ 698   7                                  position = strstr(U0RxBuffer,"\"S\"");
+ 699   7                                  if(position != NULL)
+ 700   7                                  {
+ 701   8                                      status = -1;
+ 702   8                                      status = string_get_int(position);
+ 703   8                                    
+ 704   8      //                                mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 705   8      //                                sprintf(m26_cmd_info.sendtring,"S:%d\r\n",(unsigned int)status);
+ 706   8      //                                DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtr
+             -ing)); 
+ 707   8                                  }
+ 708   7                                
+ 709   7                                  position = strstr(U0RxBuffer,"\"O\"");
+ 710   7                                  if(position != NULL)
+ 711   7                                  {
+ 712   8                                      mymemset(m26_cmd_info.sendtring,0,strlen(m26_cmd_info.sendtring));
+ 713   8                                      sprintf(m26_cmd_info.sendtring,"odernum:");
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 13  
+
+ 714   8                                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtrin
+             -g)); 
+ 715   8                                    
+ 716   8                                      //ordernum∏¥÷∆µΩ m26_cmd_info.sendtring ÷–
+ 717   8                                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 718   8                                      string_get_string(position,m26_cmd_info.sendtring);
+ 719   8                                      //debug
+ 720   8                                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtrin
+             -g)); 
+ 721   8                                    
+ 722   8                                      //¡¢øÃ∂‘Order numΩ¯––±»Ωœ£¨∑¿÷π m26_cmd_info.sendtring ‘⁄∫Û√Ê±ª∏ƒ±‰¡À
+ 723   8                                      //»Áπ˚±»ΩœΩ·π˚œ‡µ» ordnum_cmp_result == 0
+ 724   8                                      ordnum_cmp_result = strcmp(order_num,m26_cmd_info.sendtring);
+ 725   8                                      if(strlen(m26_cmd_info.sendtring) <= 40)
+ 726   8                                      {
+ 727   9                                          strcpy(order_num,m26_cmd_info.sendtring);
+ 728   9                                      }
+ 729   8                                      else
+ 730   8                                      {
+ 731   9                                          mymemset(m26_cmd_info.sendtring,0,strlen(m26_cmd_info.sendtring));
+ 732   9                                          sprintf(m26_cmd_info.sendtring,"odernum too long");
+ 733   9                                          DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.send
+             -tring)); 
+ 734   9                                          
+ 735   9                                          return;
+ 736   9                                      }
+ 737   8                                      
+ 738   8                                        
+ 739   8                                      
+ 740   8                                  }
+ 741   7                                  
+ 742   7                                  if(status == 1)
+ 743   7                                  {
+ 744   8                                      if(value_int >= 0 && value_long >= 0)
+ 745   8                                      {
+ 746   9                                          if(value_int == 0)
+ 747   9                                          {
+ 748  10                                              //∞—…Ë±∏±‰∏¸Œ™º“”√–Õ
+ 749  10                                              charge_info.IsChargeType = 0;
+ 750  10                                              charge_info.lefttime.l_time = 0;
+ 751  10                                              charge_lefttime_flash_write();
+ 752  10                                          }
+ 753   9                                          else 
+ 754   9                                          {
+ 755  10                                              if(ordnum_cmp_result != 0)
+ 756  10                                              {
+ 757  11                                                  Buzzer_Get_Charge();
+ 758  11                                                
+ 759  11                                                  if(charge_info.IsChargeType != 1)
+ 760  11                                                  {
+ 761  12                                                      charge_info.IsChargeType = 1;
+ 762  12                                                      charge_info.lefttime.l_time = (unsigned long)value_long;
+ 763  12                                                  }
+ 764  11                                                  else 
+ 765  11                                                  {
+ 766  12                                                      charge_info.lefttime.l_time += (unsigned long)value_long; 
+             -                                          
+ 767  12                                                  }
+ 768  11                                                  charge_info.next_1min_time = get_sys_stime() + (MIN_TO_S | 0x0
+             -0);
+ 769  11                                                  charge_lefttime_flash_write();
+ 770  11                                                  
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 14  
+
+ 771  11                                                  if(charge_info.IsChargeType == 1 && charge_info.lefttime.l_tim
+             -e > 0)
+ 772  11                                                  {
+ 773  12                                                      if(sys_mode == STANDBY)
+ 774  12                                                      {
+ 775  13                                                          //—” ±1√Î÷”£¨∑Ò‘ÚΩ” ’µΩ≥Ô¬Îø™ª˙µƒ¡Ω∏ˆ∑‰√˘∆˜œÏ…˘ª·÷ÿµ˛‘
+             -⁄“ª∆
+ 776  13                                                          if(g_1s_flag == 1)
+ 777  13                                                          {
+ 778  14                                                              g_1s_flag = 0;
+ 779  14                                                          }
+ 780  13                                                          while(g_1s_flag == 0);
+ 781  13                                                          sys_start(); 
+ 782  13                                                          Clear_Touch_Info();
+ 783  13                                                      }
+ 784  12                                                  }
+ 785  11                                                  
+ 786  11                                                  mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtrin
+             -g));
+ 787  11                                                  sprintf(m26_cmd_info.sendtring,"time:%x %x %x %x\r\n",(unsigne
+             -d int)charge_info.lefttime.c_time[0],(unsigned int)charge_info.lefttime.c_time[1],
+ 788  11                                                        (unsigned int)charge_info.lefttime.c_time[2],(unsigned i
+             -nt)charge_info.lefttime.c_time[3]);
+ 789  11                                                  DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,strlen(m26_cmd_inf
+             -o.sendtring));  
+ 790  11      
+ 791  11                                                  
+ 792  11                                              }
+ 793  10                                          }
+ 794   9                                          //≥Ô¬Î»∑»œ
+ 795   9                                          charge_confirm = 1;
+ 796   9                                          //¡¢øÃ…œ¥´“ª¥Œ ˝æ›
+ 797   9                                          next_upload_data_time = get_sys_stime() - 1; 
+ 798   9                                          
+ 799   9                                      }
+ 800   8                                  }
+ 801   7                                  
+ 802   7                              }
+ 803   6      
+ 804   6                          }
+ 805   5                          
+ 806   5                          if(Is_send_dr_confirm == 1)
+ 807   5                          {
+ 808   6                              dr_confirm = 0;
+ 809   6                              Is_send_dr_confirm = 0;
+ 810   6                          }
+ 811   5      //                mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 812   5      //                sprintf(m26_cmd_info.sendtring,"device sync sucess\r\n");
+ 813   5      //                DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));  
+ 814   5      
+ 815   5                      }   
+ 816   4                      else if(M26_BIT_CHECK(m26_action,HTTP_C_CONFIRM))
+ 817   4                      {
+ 818   5                          //≥Ô¬Î»∑»œ
+ 819   5                          mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 820   5                          sprintf(m26_cmd_info.sendtring,"confirm\r\n");
+ 821   5                          DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+ 822   5                          mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 823   5                          sprintf(m26_cmd_info.sendtring,"%s\r\n",U0RxBuffer);
+ 824   5                          DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+ 825   5                        
+ 826   5                          charge_confirm = 0;
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 15  
+
+ 827   5                      }                
+ 828   4      
+ 829   4                    
+ 830   4                      http_step = 0;
+ 831   4                      Is_http = 0;
+ 832   4                      m26_action = 0;
+ 833   4                      
+ 834   4                      // ’µΩ≥Ô¬Î∫Û¡¢øÃ÷¥––≥Ô¬Î»∑»œ£¨∑¿÷π¡¨–¯ ’µΩ
+ 835   4                      if(charge_confirm == 1)
+ 836   4                      {
+ 837   5                          M26_Charge_Confirm();
+ 838   5                      }
+ 839   4                  }
+ 840   3                  
+ 841   3              }
+ 842   2              else if(m26_cmd_info.cmd_result == CMD_ERROR)
+ 843   2              {
+ 844   3                  m26_cmd_info.error_times += 1;
+ 845   3                  m26_cmd_info.Is_wait_data = 0;
+ 846   3                
+ 847   3                  //∞¥œ¬◊È∫œº¸¡À£¨’˝‘⁄ºÏ≤‚–≈∫≈
+ 848   3                  if(Is_signal_check == 1)
+ 849   3                  {
+ 850   4                      signal_check_err_times += 1;
+ 851   4                  }
+ 852   3                
+ 853   3                  if(Is_http == 1 && (http_step == 1 || http_step == 3))
+ 854   3                  {
+ 855   4                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 856   4                      sprintf(m26_cmd_info.sendtring,"send string error,fail\n");
+ 857   4                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+ 858   4                    
+ 859   4                      http_step = 0;
+ 860   4                      return;
+ 861   4                  }
+ 862   3                
+ 863   3                
+ 864   3                  if(strcmp(m26_cmd_info.cmd,M26_ATI_CMD) == 0)
+ 865   3                  {
+ 866   4                      
+ 867   4                  }
+ 868   3                  else if(strcmp(m26_cmd_info.cmd,M26_CSQ_CMD) == 0)
+ 869   3                  {     
+ 870   4                      //ªÒ»°–≈∫≈÷ ¡ø             
+ 871   4                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 872   4                      sprintf(m26_cmd_info.sendtring,"get signal quality error\n");
+ 873   4                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+ 874   4                    
+ 875   4                      M26_register_net.step = 0;
+ 876   4                  }
+ 877   3                  else if(strcmp(m26_cmd_info.cmd,M26_QCCID_CMD) == 0)
+ 878   3                  {     
+ 879   4                      //∂¡»°SIM ø®CCID          
+ 880   4                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 881   4                      sprintf(m26_cmd_info.sendtring,"M26_QCCID_CMD error\n");
+ 882   4                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+ 883   4                    
+ 884   4                      M26_register_net.step = 0;
+ 885   4                  }
+ 886   3                  else if(strcmp(m26_cmd_info.cmd,M26_GSN_CMD) == 0)
+ 887   3                  {
+ 888   4                      //ªÒ»°IMEI ß∞‹              
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 16  
+
+ 889   4                      //Is_Get_IMEI = 0;
+ 890   4                  }
+ 891   3                  else if(strcmp(m26_cmd_info.cmd,M26_QSPN_CMD) == 0)
+ 892   3                  {     
+ 893   4                      //∂¡»°SIM ø®∑˛ŒÒ‘À”™…Ã√˚≥∆             
+ 894   4                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 895   4                      sprintf(m26_cmd_info.sendtring,"M26_QSPN_CMD error\n");
+ 896   4                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+ 897   4                    
+ 898   4                      M26_register_net.step = 0;
+ 899   4                  }
+ 900   3                  else if(strcmp(m26_cmd_info.cmd,M26_QIFGCNT_CMD) == 0)
+ 901   3                  {     
+ 902   4                      //…Ë÷√«∞æ∞ƒ£ Ω              
+ 903   4                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 904   4                      sprintf(m26_cmd_info.sendtring,"M26_QIFGCNT_CMD error\n");
+ 905   4                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+ 906   4                    
+ 907   4                      M26_register_net.step = 0;
+ 908   4                  }
+ 909   3                  else if(strcmp(m26_cmd_info.cmd,M26_QICSGP_CM_CMD) == 0)
+ 910   3                  {   
+ 911   4                      //…Ë÷√¡¥Ω”ƒ£ Ω              
+ 912   4                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 913   4                      sprintf(m26_cmd_info.sendtring,"M26_QICSGP_CM_CMD error\n");
+ 914   4                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+ 915   4                    
+ 916   4                      //M26_register_net.Is_m26_registerd = 0;
+ 917   4                      M26_register_net.step = 0;
+ 918   4                  }
+ 919   3                  else if(strcmp(m26_cmd_info.cmd,M26_QIREGAPP_CMD) == 0 || strcmp(m26_cmd_info.cmd,M26_QIACT_CM
+             -D) == 0)
+ 920   3                  {   
+ 921   4                      //∆Ù∂Ø»ŒŒÒ≤¢…Ë÷√Ω”»Îµ„   
+ 922   4                      if(strcmp(m26_cmd_info.cmd,M26_QIREGAPP_CMD) == 0)
+ 923   4                      {
+ 924   5                          mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 925   5                          sprintf(m26_cmd_info.sendtring,"M26_QIREGAPP_CMD error\n");
+ 926   5                          DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+ 927   5                      } 
+ 928   4                      else
+ 929   4                      {
+ 930   5                      //º§ªÓÕ¯¬Á             
+ 931   5                          mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 932   5                          sprintf(m26_cmd_info.sendtring,"M26_QIACT_CMD error\n");
+ 933   5                          DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));        
+             -        
+ 934   5                      }                  
+ 935   4      
+ 936   4                      M26_Restart();
+ 937   4                      M26_register_net.step = 0;
+ 938   4                  }
+ 939   3                  else if(strcmp(m26_cmd_info.cmd,M26_QHTTPURL_CMD) == 0)
+ 940   3                  {   
+ 941   4                      //set HTTP Server URL              
+ 942   4                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 943   4                      sprintf(m26_cmd_info.sendtring,"M26_QHTTPURL_CMD error\n");
+ 944   4                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+ 945   4                    
+ 946   4                      //M26_register_net.Is_m26_registerd = 0;
+ 947   4                      http_step = 0;
+ 948   4                  }
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 17  
+
+ 949   3                  else if(strcmp(m26_cmd_info.cmd,M26_QHTTPPOST_CMD) == 0)
+ 950   3                  {   
+ 951   4                      //http post             
+ 952   4                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 953   4                      sprintf(m26_cmd_info.sendtring,"M26_QHTTPPOST_CMD error\n");
+ 954   4                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+ 955   4                    
+ 956   4                      //M26_register_net.Is_m26_registerd = 0;
+ 957   4                      http_step = 0;
+ 958   4                  }
+ 959   3                  else if(strcmp(m26_cmd_info.cmd,M26_QHTTPREAD_CMD) == 0)
+ 960   3                  {   
+ 961   4                      //http read             
+ 962   4                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 963   4                      sprintf(m26_cmd_info.sendtring,"M26_QHTTPREAD_CMD error\n");
+ 964   4                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+ 965   4                    
+ 966   4                      //M26_register_net.Is_m26_registerd = 0;
+ 967   4                      http_step = 0;
+ 968   4                  }
+ 969   3                  
+ 970   3                   //»Áπ˚ «◊¥Ã¨∏¸–¬£¨‘Ú÷ÿ–¬∞—À˘”–◊¥Ã¨…œ¥´
+ 971   3                  if(M26_BIT_CHECK(m26_action,HTTP_SYNC) )  
+ 972   3                  {
+ 973   4                      //»Áπ˚±æ¥Œ «device sync£¨µ´ « ß∞‹¡À£¨‘Úœ¬“ª¥Œ»‘»ª…œ¥´…Ë±∏◊¥Ã¨
+ 974   4                      if(sync_this_loop == 1)
+ 975   4                      {
+ 976   5                          resync = 1;
+ 977   5                      }
+ 978   4                      
+ 979   4                      //»Áπ˚∑¢ÀÕDR ß∞‹£¨ «∑Ò”–±ÿ“™‘Ÿ¥Œ∑¢ÀÕDR£¨”––Ë—È÷§£¨‘Ÿ¥Œ∑¢ÀÕø…ƒ‹“—æ≠≥¨ ±
+ 980   4      //                if(dr_confirm == 1)
+ 981   4      //                {
+ 982   4      //                    Is_send_dr_confirm = 0;
+ 983   4      //                }
+ 984   4                        dr_confirm = 0;
+ 985   4                        Is_send_dr_confirm = 0;
+ 986   4                  }
+ 987   3                
+ 988   3                
+ 989   3              }
+ 990   2              else if(m26_cmd_info.cmd_result == CMD_TIMEOUT)
+ 991   2              {
+ 992   3                  m26_cmd_info.timeout_times += 1;
+ 993   3                  m26_cmd_info.Is_wait_data = 0;
+ 994   3                
+ 995   3                  //∞¥œ¬◊È∫œº¸¡À£¨’˝‘⁄ºÏ≤‚–≈∫≈
+ 996   3                  if(Is_signal_check == 1)
+ 997   3                  {
+ 998   4                      signal_check_err_times += 1;
+ 999   4                  }
+1000   3                
+1001   3                  if(Is_http == 1)
+1002   3                  {
+1003   4                      http_step = 0;
+1004   4                  }
+1005   3                  
+1006   3                  if(strcmp(m26_cmd_info.cmd,M26_CSQ_CMD) == 0)
+1007   3                  {     
+1008   4                      //ªÒ»°–≈∫≈÷ ¡ø            
+1009   4                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+1010   4                      sprintf(m26_cmd_info.sendtring,"get signal quality timeout\n");
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 18  
+
+1011   4                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+1012   4                    
+1013   4                      M26_register_net.step = 0;
+1014   4                  }
+1015   3                  else if(strcmp(m26_cmd_info.cmd,M26_QCCID_CMD) == 0)
+1016   3                  {     
+1017   4                      //∂¡»°SIM ø®CCID            
+1018   4                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+1019   4                      sprintf(m26_cmd_info.sendtring,"M26_QCCID_CMD timeout\n");
+1020   4                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+1021   4                    
+1022   4                      M26_register_net.step = 0;
+1023   4                  }
+1024   3                  
+1025   3                  if(strcmp(m26_cmd_info.cmd,M26_QIREGAPP_CMD) == 0 || strcmp(m26_cmd_info.cmd,M26_QIACT_CMD) ==
+             - 0 || strcmp(m26_cmd_info.cmd,M26_QCCID_CMD) == 0)
+1026   3                  {   
+1027   4                      //∆Ù∂Ø»ŒŒÒ≤¢…Ë÷√Ω”»Îµ„   
+1028   4                      if(strcmp(m26_cmd_info.cmd,M26_QIREGAPP_CMD) == 0)
+1029   4                      {
+1030   5                          mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+1031   5                          sprintf(m26_cmd_info.sendtring,"M26_QIREGAPP_CMD timeout\n");
+1032   5                          DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));
+1033   5                      } 
+1034   4                      else
+1035   4                      {
+1036   5                      //º§ªÓÕ¯¬Á             
+1037   5                          mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+1038   5                          sprintf(m26_cmd_info.sendtring,"M26_QIACT_CMD timeout\n");
+1039   5                          DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));        
+             -        
+1040   5                      }                  
+1041   4      
+1042   4                      M26_Restart();
+1043   4                      
+1044   4                  }
+1045   3                  
+1046   3                  ////»Áπ˚±æ¥Œ «device sync£¨µ´ « ß∞‹¡À£¨‘Úœ¬“ª¥Œ»‘»ª…œ¥´…Ë±∏◊¥Ã¨
+1047   3                  if(M26_BIT_CHECK(m26_action,HTTP_SYNC))  
+1048   3                  {
+1049   4                      if(sync_this_loop == 1)
+1050   4                      {
+1051   5                          resync = 1;
+1052   5                      }
+1053   4                      
+1054   4                      //»Áπ˚∑¢ÀÕDR ß∞‹£¨ «∑Ò”–±ÿ“™‘Ÿ¥Œ∑¢ÀÕDR£¨”––Ë—È÷§£¨‘Ÿ¥Œ∑¢ÀÕø…ƒ‹“—æ≠≥¨ ±
+1055   4      //                if(dr_confirm == 1)
+1056   4      //                {
+1057   4      //                    Is_send_dr_confirm = 0;
+1058   4      //                }
+1059   4                        dr_confirm = 0;
+1060   4                        Is_send_dr_confirm = 0;
+1061   4                  }
+1062   3              }
+1063   2              
+1064   2          }
+1065   1      
+1066   1      }
+1067          
+1068          
+1069          
+1070          //√ø¥Œ∑¢ÀÕ√¸¡Ó«∞œ»∞—UART0µƒª∫¥Ê«¯«Âø’
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 19  
+
+1071          void clear_wifi_uart_buff(void)
+1072          {
+1073   1          mymemset(U0RxBuffer,0,U0RxPtr);
+1074   1          U0RxPtr = 0;
+1075   1      
+1076   1      }
+1077          
+1078          
+1079          int M26_Send_data(unsigned char type,const char *cmd,const char *str)
+1080          {
+1081   1          //unsigned char temp = 0;
+1082   1          unsigned char debug_buff[30] = {0};
+1083   1      
+1084   1        
+1085   1          if(m26_cmd_info.Is_wait_data == 1)
+1086   1          {
+1087   2              return M26_BUSY;
+1088   2          }
+1089   1        
+1090   1          if(str == NULL || str[0] == 0)
+1091   1          {
+1092   2              return M26_SEND_DATA_NULL;
+1093   2          }
+1094   1          
+1095   1          clear_wifi_uart_buff();
+1096   1          
+1097   1          mymemset(m26_cmd_info.end_flag,0,sizeof(m26_cmd_info.end_flag));
+1098   1          
+1099   1          m26_cmd_info.cmd_result = CMD_WAIT;
+1100   1          
+1101   1      
+1102   1          
+1103   1          Wifi_Uart_Sendbytes(str,(unsigned int)strlen(str));
+1104   1          
+1105   1          m26_cmd_info.cmd_send_time = get_sys_mstime();
+1106   1          
+1107   1          
+1108   1          if(type == CMD_TYPE)
+1109   1          {
+1110   2            
+1111   2              mymemset(debug_buff,0,sizeof(debug_buff));
+1112   2              sprintf(debug_buff,"cmd:%s\n",m26_cmd_info.cmd);
+1113   2              DEBUG_Uart_Sendbytes(debug_buff,strlen(debug_buff));
+1114   2              
+1115   2          }
+1116   1          else
+1117   1          {
+1118   2              //m26_cmd_info.cmd = NULL;
+1119   2          }
+1120   1          
+1121   1          
+1122   1          if(type == STRING_TYPE)
+1123   1          {
+1124   2              strcpy(m26_cmd_info.end_flag,END_OK);
+1125   2          }
+1126   1          else
+1127   1          {      
+1128   2              if(strcmp(cmd,M26_ATI_CMD) == 0)
+1129   2              {
+1130   3                  strcpy(m26_cmd_info.end_flag,END_OK);
+1131   3              }
+1132   2              if(strcmp(cmd,M26_CSQ_CMD) == 0)
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 20  
+
+1133   2              {
+1134   3                  strcpy(m26_cmd_info.end_flag,END_OK);
+1135   3              }
+1136   2              else if(strcmp(cmd,M26_GSN_CMD) == 0)
+1137   2              {
+1138   3                  strcpy(m26_cmd_info.end_flag,END_OK);
+1139   3              }
+1140   2              else if(strcmp(cmd,M26_QCCID_CMD) == 0)
+1141   2              {
+1142   3                  strcpy(m26_cmd_info.end_flag,END_OK);
+1143   3              }
+1144   2              else if(strcmp(cmd,M26_QSPN_CMD) == 0)
+1145   2              {
+1146   3                  strcpy(m26_cmd_info.end_flag,END_OK);
+1147   3              }
+1148   2              else if(strcmp(cmd,M26_QIFGCNT_CMD) == 0)
+1149   2              {
+1150   3                  strcpy(m26_cmd_info.end_flag,END_OK);
+1151   3              }
+1152   2              else if(strcmp(cmd,M26_QICSGP_CM_CMD) == 0)
+1153   2              {
+1154   3                  strcpy(m26_cmd_info.end_flag,END_OK);
+1155   3              }
+1156   2              else if(strcmp(cmd,M26_QIREGAPP_CMD) == 0)
+1157   2              {
+1158   3                  strcpy(m26_cmd_info.end_flag,END_OK);
+1159   3              }
+1160   2              else if(strcmp(cmd,M26_QIACT_CMD) == 0)
+1161   2              {
+1162   3                  strcpy(m26_cmd_info.end_flag,END_OK);
+1163   3              }
+1164   2              else if(strcmp(cmd,M26_QHTTPURL_CMD) == 0)
+1165   2              {
+1166   3                  strcpy(m26_cmd_info.end_flag,END_CONNECT);
+1167   3              }
+1168   2              else if(strcmp(cmd,M26_QHTTPPOST_CMD) == 0)
+1169   2              {
+1170   3                  strcpy(m26_cmd_info.end_flag,END_CONNECT);
+1171   3              }
+1172   2              else if(strcmp(cmd,M26_QHTTPREAD_CMD) == 0)
+1173   2              {
+1174   3                  strcpy(m26_cmd_info.end_flag,END_OK);
+1175   3              }
+1176   2          }
+1177   1      
+1178   1          
+1179   1        //¥À¥¶–Ë…Ë÷√
+1180   1          m26_cmd_info.Is_wait_data = 1;
+1181   1          
+1182   1          
+1183   1          return M26_OK;
+1184   1      
+1185   1      
+1186   1      }
+1187          
+1188          
+1189          void M26_Register_to_Net(void)
+1190          {
+1191   1          unsigned char res = 0;
+1192   1      
+1193   1          
+1194   1          //unsigned char debug_buff[50] = {0};
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 21  
+
+1195   1          
+1196   1        
+1197   1          //»Áπ˚‘⁄µ»¥˝…œ“ªÃı÷∏¡Óµƒ ˝æ›∑µªÿ£¨‘Ú÷±Ω”∑µªÿ
+1198   1          if(m26_cmd_info.Is_wait_data == 1)
+1199   1          {
+1200   2              return;
+1201   2          }
+1202   1          
+1203   1          if(M26_register_net.Is_m26_registerd == 1)
+1204   1          {
+1205   2              return;
+1206   2          }
+1207   1          
+1208   1      
+1209   1          mymemset(m26_cmd_info.cmd,0,sizeof(m26_cmd_info.cmd));
+1210   1          mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+1211   1       
+1212   1          if(M26_register_net.step == 0)
+1213   1          {    
+1214   2              m26_cmd_info.type = CMD_TYPE;      
+1215   2              strcpy(m26_cmd_info.cmd,M26_QSPN_CMD);   
+1216   2               
+1217   2          }
+1218   1          else if(M26_register_net.step == 1)
+1219   1          {
+1220   2              m26_cmd_info.type = CMD_TYPE;   
+1221   2              strcpy(m26_cmd_info.cmd,M26_QIFGCNT_CMD);     
+1222   2          } 
+1223   1          else if(M26_register_net.step == 2)
+1224   1          {   
+1225   2              m26_cmd_info.type = CMD_TYPE;         
+1226   2              strcpy(m26_cmd_info.cmd,M26_QICSGP_CM_CMD);      
+1227   2          }
+1228   1          else if(M26_register_net.step == 3)
+1229   1          { 
+1230   2              //∆Ù∂Ø»ŒŒÒ≤¢…Ë÷√Ω”»Îµ„ 
+1231   2              m26_cmd_info.type = CMD_TYPE;         
+1232   2              strcpy(m26_cmd_info.cmd,M26_QIREGAPP_CMD);      
+1233   2          }
+1234   1          else if(M26_register_net.step == 4)
+1235   1          {      
+1236   2              //º§ªÓÕ¯¬Á
+1237   2              m26_cmd_info.type = CMD_TYPE;   
+1238   2              strcpy(m26_cmd_info.cmd,M26_QIACT_CMD);       \
+1239   1          }
+1240   1          
+1241   1          m26_cmd_info.type = CMD_TYPE;     
+1242   1          
+1243   1          res = make_m26_send_string(m26_cmd_info.sendtring,m26_cmd_info.cmd,NULL);     
+1244   1          if(res == 0)
+1245   1          {
+1246   2              M26_Send_data(m26_cmd_info.type,m26_cmd_info.cmd,m26_cmd_info.sendtring);
+1247   2          } 
+1248   1         
+1249   1         //M26_Send_data(CMD_TYPE,m26_cmd_info.cmd,m26_cmd_info.sendtring);
+1250   1      
+1251   1      //    mymemset(debug_buff,0,sizeof(debug_buff));
+1252   1      //    sprintf(debug_buff,"cmdstr:%s\n",data_string);
+1253   1      //    DEBUG_Uart_Sendbytes(debug_buff,strlen(debug_buff));    
+1254   1      
+1255   1      }
+1256          
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 22  
+
+1257          
+1258          void m26_http_loop(void)
+1259          {
+1260   1          unsigned char res = 0;
+1261   1          unsigned char string_length = 0;
+1262   1          
+1263   1        
+1264   1          if(Is_http == 0)
+1265   1          {
+1266   2              return;
+1267   2          }
+1268   1          
+1269   1          
+1270   1          if(m26_cmd_info.Is_wait_data == 1)
+1271   1          {
+1272   2              return;
+1273   2          }
+1274   1          
+1275   1          mymemset(m26_cmd_info.cmd,0,sizeof(m26_cmd_info.cmd));
+1276   1          mymemset(m26_cmd_info.cmd_para,0,sizeof(m26_cmd_info.cmd_para));
+1277   1          if(http_step != 3)
+1278   1          {
+1279   2              mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));    
+1280   2          }
+1281   1      
+1282   1          
+1283   1          //if(m26_action & (1 << HTTP_ACTIVATE))
+1284   1          if(M26_BIT_CHECK(m26_action,HTTP_ACTIVATE))
+1285   1          {
+1286   2              if(http_step == 0)
+1287   2              {
+1288   3                  //set HTTP Server URL
+1289   3                  m26_cmd_info.type = CMD_TYPE;
+1290   3                  strcpy(m26_cmd_info.cmd,M26_QHTTPURL_CMD);
+1291   3                  strcpy(m26_cmd_info.cmd_para,M26_ACTIVATE_URL_PAR);
+1292   3              }
+1293   2              else if(http_step == 1)
+1294   2              {
+1295   3                  //send http address string
+1296   3                  m26_cmd_info.type = STRING_TYPE;
+1297   3                  strcpy(m26_cmd_info.sendtring,SERVER_ADDR);            
+1298   3                  //device activate
+1299   3                  strcat(m26_cmd_info.sendtring,M26_ACTIVATE_URL);           
+1300   3              }
+1301   2              else if(http_step == 2 || http_step == 3)
+1302   2              {
+1303   3                  //http post
+1304   3                  sprintf(m26_cmd_info.sendtring,"PID=%s&CCID=%s&PW=%d",PRODUCT_ID,ccid,(unsigned int)(g_sys_tim
+             -e_ms%10000));  
+1305   3                
+1306   3                  //DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,strlen(m26_cmd_info.sendtring));
+1307   3      
+1308   3                  if(http_step == 2)
+1309   3                  {
+1310   4                      m26_cmd_info.type = CMD_TYPE;
+1311   4                      strcpy(m26_cmd_info.cmd,M26_QHTTPPOST_CMD);
+1312   4                    
+1313   4                      string_length = (unsigned char)strlen(m26_cmd_info.sendtring);   
+1314   4                      sprintf(m26_cmd_info.cmd_para,M26_POST_PARA,(unsigned int)string_length); 
+1315   4                    
+1316   4                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));    
+1317   4                  }
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 23  
+
+1318   3                  else
+1319   3                  {
+1320   4                      m26_cmd_info.type = STRING_TYPE;
+1321   4                  }                          
+1322   3              }
+1323   2              else if(http_step == 4)
+1324   2              {
+1325   3                  //http read
+1326   3                  m26_cmd_info.type = CMD_TYPE;
+1327   3                  strcpy(m26_cmd_info.cmd,M26_QHTTPREAD_CMD);
+1328   3                  strcpy(m26_cmd_info.cmd_para,M26_HTTPREAD_PARA);
+1329   3              }
+1330   2          }
+1331   1          else if(M26_BIT_CHECK(m26_action,HTTP_OTA))           //ota check
+1332   1          {
+1333   2              if(http_step == 0)
+1334   2              {
+1335   3                  //set HTTP Server URL
+1336   3                  m26_cmd_info.type = CMD_TYPE;
+1337   3                  strcpy(m26_cmd_info.cmd,M26_QHTTPURL_CMD);
+1338   3                  strcpy(m26_cmd_info.cmd_para,M26_OTA_CHECK_URL_PAR);
+1339   3              }
+1340   2              else if(http_step == 1)
+1341   2              {
+1342   3                  //send http address string
+1343   3                  m26_cmd_info.type = STRING_TYPE;
+1344   3                  strcpy(m26_cmd_info.sendtring,SERVER_ADDR);            
+1345   3                  //ota check
+1346   3                  strcat(m26_cmd_info.sendtring,M26_OTA_CHECK_URL);  
+1347   3                  
+1348   3                  //debug
+1349   3                  DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,strlen(m26_cmd_info.sendtring));
+1350   3              }
+1351   2              else if(http_step == 2 || http_step == 3)
+1352   2              {
+1353   3                  //http post
+1354   3                  sprintf(m26_cmd_info.sendtring,"DID=%s&MN=M26&FW=%s&IV=%s",device_id,FIRMWARE_VERSION,IOT_VERS
+             -ION);  
+1355   3                
+1356   3                  
+1357   3      
+1358   3                  if(http_step == 2)
+1359   3                  {
+1360   4                      m26_cmd_info.type = CMD_TYPE;
+1361   4                      strcpy(m26_cmd_info.cmd,M26_QHTTPPOST_CMD);
+1362   4                    
+1363   4                      string_length = (unsigned char)strlen(m26_cmd_info.sendtring);   
+1364   4                      sprintf(m26_cmd_info.cmd_para,M26_POST_PARA,(unsigned int)string_length); 
+1365   4                    
+1366   4                      //debug
+1367   4                      //sprintf(m26_cmd_info.sendtring,"length:%d\r\n",(unsigned int)string_length); 
+1368   4                      //DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,strlen(m26_cmd_info.sendtring));            
+             -  
+1369   4                    
+1370   4                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));    
+1371   4                  }
+1372   3                  else
+1373   3                  {
+1374   4                      m26_cmd_info.type = STRING_TYPE;
+1375   4                      //debug
+1376   4                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,strlen(m26_cmd_info.sendtring));
+1377   4                  }                          
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 24  
+
+1378   3              }
+1379   2              else if(http_step == 4)
+1380   2              {
+1381   3                  //http read
+1382   3                  m26_cmd_info.type = CMD_TYPE;
+1383   3                  strcpy(m26_cmd_info.cmd,M26_QHTTPREAD_CMD);
+1384   3                  strcpy(m26_cmd_info.cmd_para,M26_HTTPREAD_PARA);
+1385   3              }    
+1386   2          }
+1387   1          else if(M26_BIT_CHECK(m26_action,HTTP_UPLOAD_DATA))    //upload data
+1388   1          {
+1389   2              if(http_step == 0)
+1390   2              {
+1391   3                  //set HTTP Server URL
+1392   3                  m26_cmd_info.type = CMD_TYPE;
+1393   3                  strcpy(m26_cmd_info.cmd,M26_QHTTPURL_CMD);
+1394   3                  strcpy(m26_cmd_info.cmd_para,M26_UPLOAD_DATA_URL_PAR);
+1395   3              }
+1396   2              else if(http_step == 1)
+1397   2              {
+1398   3                  //send http address string
+1399   3                  m26_cmd_info.type = STRING_TYPE;
+1400   3                  strcpy(m26_cmd_info.sendtring,SERVER_ADDR);            
+1401   3                  //device activate
+1402   3                  strcat(m26_cmd_info.sendtring,M26_UPLOAD_DATA_URL);           
+1403   3              }
+1404   2              else if(http_step == 2 || http_step == 3)
+1405   2              {
+1406   3                  //http post          
+1407   3                  if(http_step == 2)
+1408   3                  {
+1409   4                      charge_info.lefttime_bak = charge_info.lefttime.l_time;
+1410   4                  }
+1411   3                  
+1412   3                  sprintf(m26_cmd_info.sendtring,"DID=%s&SF=1&SD=\"SMD\":%d,\"SM\":%d,\"FA\":%d,\"UV\":%d,\"NI\"
+             -:%d,\"TYPE\":%d,\"CHIPS\":%d,\"P\":%d"
+1413   3                                ,device_id,(unsigned int)sys_mode,(unsigned int)run_mode,(unsigned int)speed_dan
+             -g,(unsigned int)IsUVOn,
+1414   3                                 (unsigned int)Is_ION_On,(unsigned int)charge_info.IsChargeType,(unsigned int)ch
+             -arge_info.lefttime_bak,
+1415   3                                   (unsigned int)display_pm_value);
+1416   3      
+1417   3                  if(http_step == 2)
+1418   3                  {
+1419   4                      m26_cmd_info.type = CMD_TYPE;
+1420   4                      strcpy(m26_cmd_info.cmd,M26_QHTTPPOST_CMD);
+1421   4                
+1422   4      //            sprintf(m26_cmd_info.sendtring,"DID=%s&SF=%d&SD=\"SMD\":%d,\"SM\":%d,\"FA\":%d,\"UV\":%d,\"N
+             -I\":%d,\"T\":%d,\"C\":%d"
+1423   4      //                          ,device_id,0,(unsigned int)sys_mode,(unsigned int)run_mode,(unsigned int)speed
+             -_dang,(unsigned int)IsUVOn,
+1424   4      //                           (unsigned int)Is_ION_On,(unsigned int)0,(unsigned int)0); 
+1425   4                    
+1426   4                      string_length = (unsigned char)strlen(m26_cmd_info.sendtring);   
+1427   4                      sprintf(m26_cmd_info.cmd_para,M26_POST_PARA,(unsigned int)string_length); 
+1428   4          
+1429   4                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));  
+1430   4                  } 
+1431   3                  else
+1432   3                  {
+1433   4                      m26_cmd_info.type = STRING_TYPE;
+1434   4                      //µ˜ ‘
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 25  
+
+1435   4                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));  
+1436   4                  }              
+1437   3                       
+1438   3              }
+1439   2              else if(http_step == 4)
+1440   2              {
+1441   3                  //http read
+1442   3                  m26_cmd_info.type = CMD_TYPE;
+1443   3                  strcpy(m26_cmd_info.cmd,M26_QHTTPREAD_CMD);
+1444   3                  strcpy(m26_cmd_info.cmd_para,M26_HTTPREAD_PARA);
+1445   3              }
+1446   2          }
+1447   1          else if(M26_BIT_CHECK(m26_action,HTTP_SYNC))        //status sync
+1448   1          {
+1449   2              if(http_step == 0)
+1450   2              {
+1451   3                  //set HTTP Server URL
+1452   3                  m26_cmd_info.type = CMD_TYPE;
+1453   3                  strcpy(m26_cmd_info.cmd,M26_QHTTPURL_CMD);
+1454   3                  strcpy(m26_cmd_info.cmd_para,M26_STATUS_SYNC_URL_PAR);
+1455   3              }
+1456   2              else if(http_step == 1)
+1457   2              {
+1458   3                  //send http address string
+1459   3                  m26_cmd_info.type = STRING_TYPE;
+1460   3                  strcpy(m26_cmd_info.sendtring,SERVER_ADDR);            
+1461   3                  strcat(m26_cmd_info.sendtring,M26_STATUS_SYNC_URL);           
+1462   3              }
+1463   2              else if(http_step == 2 || http_step == 3)
+1464   2              {
+1465   3                  //http post   
+1466   3                  if(http_step == 2)
+1467   3                  {
+1468   4                      charge_info.lefttime_bak = charge_info.lefttime.l_time;
+1469   4                    
+1470   4                      //sync_this_loopµƒ◊¥Ã¨‘⁄httpµƒ“ª∏ˆ÷‹∆⁄ƒ⁄÷ª∏¸–¬“ª¥Œ
+1471   4                      if(dev_status == 1)
+1472   4                      {
+1473   5                          sync_this_loop = 1;
+1474   5                          dev_status = 0;
+1475   5                      }          
+1476   4                      else
+1477   4                      {  
+1478   5                          sync_this_loop = 0;
+1479   5                      }
+1480   4                      
+1481   4                      //»Áπ˚…œ“ª¥Œsync ß∞‹£¨‘Ú’‚¥Œ»‘»ª…œ¥´…Ë±∏◊¥Ã¨
+1482   4                      if(resync == 1)
+1483   4                      {
+1484   5                          sync_this_loop = 1;
+1485   5                      }
+1486   4                      
+1487   4                  }
+1488   3      
+1489   3      //            if(dr_confirm == 1)
+1490   3      //            {
+1491   3      //                sprintf(m26_cmd_info.sendtring,"DID=%s&SD=\"DR\":1",device_id); 
+1492   3      //                Is_send_dr_confirm = 1;
+1493   3      //            }
+1494   3      //            else
+1495   3      //            {
+1496   3      //            sprintf(m26_cmd_info.sendtring,"DID=%s&SD=\"SMD\":%d,\"SM\":%d,\"FA\":%d,\"UV\":%d,\"NI\":%d
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 26  
+
+             -,\"TYPE\":%d,\"CHIPS\":%d,\"P\":%d"
+1497   3      //                          ,device_id,(unsigned int)sys_mode,(unsigned int)run_mode,(unsigned int)speed_d
+             -ang,(unsigned int)IsUVOn,
+1498   3      //                           (unsigned int)Is_ION_On,(unsigned int)charge_info.IsChargeType,(unsigned long
+             -)charge_info.lefttime_bak,
+1499   3      //                            (unsigned int)display_pm_value);            
+1500   3      //            }
+1501   3      
+1502   3      
+1503   3                                               
+1504   3      
+1505   3                  if(sync_this_loop == 1)
+1506   3                  {
+1507   4                      if(dr_confirm == 1)
+1508   4                      {
+1509   5                          sprintf(m26_cmd_info.sendtring,"DID=%s&SD=\"SMD\":%d,\"SM\":%d,\"FA\":%d,\"UV\":%d,\"N
+             -I\":%d,\"DR\":1"
+1510   5                                ,device_id,(unsigned int)sys_mode,(unsigned int)run_mode,(unsigned int)speed_dan
+             -g,(unsigned int)IsUVOn,
+1511   5                                 (unsigned int)Is_ION_On);                     
+1512   5                      }
+1513   4                      else
+1514   4                      {
+1515   5                          sprintf(m26_cmd_info.sendtring,"DID=%s&SD=\"SMD\":%d,\"SM\":%d,\"FA\":%d,\"UV\":%d,\"N
+             -I\":%d"
+1516   5                                ,device_id,(unsigned int)sys_mode,(unsigned int)run_mode,(unsigned int)speed_dan
+             -g,(unsigned int)IsUVOn,
+1517   5                                 (unsigned int)Is_ION_On);                 
+1518   5                      }
+1519   4                            
+1520   4                  }
+1521   3                  else
+1522   3                  {
+1523   4                      if(dr_confirm == 1)
+1524   4                      {
+1525   5                          //sprintf(m26_cmd_info.sendtring,"DID=%s&SD=\"DR\":1",device_id);      
+1526   5                        
+1527   5                          sprintf(m26_cmd_info.sendtring,"DID=%s&SD=\"SMD\":%d,\"SM\":%d,\"FA\":%d,\"UV\":%d,\"N
+             -I\":%d,\"TYPE\":%d,\"CHIPS\":%d,\"P\":%d,\"DR\":1"
+1528   5                                ,device_id,(unsigned int)sys_mode,(unsigned int)run_mode,(unsigned int)speed_dan
+             -g,(unsigned int)IsUVOn,
+1529   5                                 (unsigned int)Is_ION_On,(unsigned int)charge_info.IsChargeType,(unsigned int)ch
+             -arge_info.lefttime_bak,
+1530   5                                  (unsigned int)display_pm_value);  
+1531   5                      }
+1532   4                      else
+1533   4                      {
+1534   5                          //sprintf(m26_cmd_info.sendtring,"DID=%s",device_id); 
+1535   5      
+1536   5                          sprintf(m26_cmd_info.sendtring,"DID=%s&SD=\"SMD\":%d,\"SM\":%d,\"FA\":%d,\"UV\":%d,\"N
+             -I\":%d,\"TYPE\":%d,\"CHIPS\":%d,\"P\":%d"
+1537   5                                ,device_id,(unsigned int)sys_mode,(unsigned int)run_mode,(unsigned int)speed_dan
+             -g,(unsigned int)IsUVOn,
+1538   5                                 (unsigned int)Is_ION_On,(unsigned int)charge_info.IsChargeType,(unsigned int)ch
+             -arge_info.lefttime_bak,
+1539   5                                  (unsigned int)display_pm_value);                    
+1540   5                      }                         
+1541   4                  }
+1542   3      
+1543   3                   
+1544   3      
+1545   3                  if(http_step == 2)
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 27  
+
+1546   3                  {
+1547   4                      
+1548   4                    
+1549   4                      m26_cmd_info.type = CMD_TYPE;
+1550   4                      strcpy(m26_cmd_info.cmd,M26_QHTTPPOST_CMD);
+1551   4                    
+1552   4      //                sprintf(m26_cmd_info.sendtring,"DID=%s&SD=\"SMD\":%d,\"SM\":%d,\"FA\":%d,\"UV\":%d,\"NI\
+             -":%d,\"T\":%d,\"C\":%d"
+1553   4      //                          ,device_id,(unsigned int)sys_mode,(unsigned int)run_mode,(unsigned int)speed_d
+             -ang,(unsigned int)IsUVOn,
+1554   4      //                           (unsigned int)Is_ION_On,(unsigned int)0,(unsigned int)0); 
+1555   4                    
+1556   4                      string_length = (unsigned char)strlen(m26_cmd_info.sendtring);   
+1557   4                      sprintf(m26_cmd_info.cmd_para,M26_POST_PARA,(unsigned int)string_length); 
+1558   4          
+1559   4                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));  
+1560   4                
+1561   4                  } 
+1562   3                  else
+1563   3                  {
+1564   4                      m26_cmd_info.type = STRING_TYPE;
+1565   4                      //µ˜ ‘
+1566   4                      DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,mystrlen(m26_cmd_info.sendtring));  
+1567   4                  }              
+1568   3                       
+1569   3              }
+1570   2              else if(http_step == 4)
+1571   2              {
+1572   3                  //http read
+1573   3                  m26_cmd_info.type = CMD_TYPE;
+1574   3                  strcpy(m26_cmd_info.cmd,M26_QHTTPREAD_CMD);
+1575   3                  strcpy(m26_cmd_info.cmd_para,M26_HTTPREAD_PARA);
+1576   3              }    
+1577   2          }
+1578   1          else if(M26_BIT_CHECK(m26_action,HTTP_C_CONFIRM))     //charge confirm
+1579   1          {
+1580   2              if(http_step == 0)
+1581   2              {
+1582   3                  //set HTTP Server URL
+1583   3                  m26_cmd_info.type = CMD_TYPE;
+1584   3                  strcpy(m26_cmd_info.cmd,M26_QHTTPURL_CMD);
+1585   3                  strcpy(m26_cmd_info.cmd_para,M26_C_CONFIRM_URL_PAR);
+1586   3              }
+1587   2              else if(http_step == 1)
+1588   2              {
+1589   3                  //send http address string
+1590   3                  m26_cmd_info.type = STRING_TYPE;
+1591   3                  strcpy(m26_cmd_info.sendtring,SERVER_ADDR);            
+1592   3                  strcat(m26_cmd_info.sendtring,M26_C_CONFIRM_URL);           
+1593   3              }
+1594   2              else if(http_step == 2 || http_step == 3)
+1595   2              {
+1596   3                  //http post          
+1597   3                  sprintf(m26_cmd_info.sendtring,"DID=%s&ORN=%s",device_id,order_num); 
+1598   3                   
+1599   3                  if(http_step == 2)
+1600   3                  {
+1601   4                      m26_cmd_info.type = CMD_TYPE;
+1602   4                      strcpy(m26_cmd_info.cmd,M26_QHTTPPOST_CMD);
+1603   4                    
+1604   4                      string_length = (unsigned char)strlen(m26_cmd_info.sendtring);   
+1605   4                      sprintf(m26_cmd_info.cmd_para,M26_POST_PARA,(unsigned int)string_length); 
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 28  
+
+1606   4          
+1607   4                      mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));  
+1608   4                
+1609   4                  } 
+1610   3                  else
+1611   3                  {
+1612   4                      m26_cmd_info.type = STRING_TYPE;
+1613   4                  }              
+1614   3                       
+1615   3              }
+1616   2              else if(http_step == 4)
+1617   2              {
+1618   3                  //http read
+1619   3                  m26_cmd_info.type = CMD_TYPE;
+1620   3                  strcpy(m26_cmd_info.cmd,M26_QHTTPREAD_CMD);
+1621   3                  strcpy(m26_cmd_info.cmd_para,M26_HTTPREAD_PARA);
+1622   3              }    
+1623   2          }
+1624   1          
+1625   1          res = make_m26_send_string(m26_cmd_info.sendtring,m26_cmd_info.cmd,m26_cmd_info.cmd_para);    
+1626   1          if(res == 0)
+1627   1          {
+1628   2              M26_Send_data(m26_cmd_info.type,m26_cmd_info.cmd,m26_cmd_info.sendtring);
+1629   2          } 
+1630   1      
+1631   1      
+1632   1      }
+1633          
+1634          /*
+1635          void device_register_to_net(void)
+1636          {
+1637            
+1638            while(M26_register_net.Is_m26_registerd == 0)
+1639            {
+1640                if(_test_timeflag(g_1s_flag))
+1641                {
+1642                    g_1s_flag = 0;
+1643                    if(Is_signal_err_code_zero == 1)
+1644                    {
+1645                        M26_Register_to_Net(); 
+1646                    }
+1647                    else
+1648                    {
+1649                        M26_Get_Signal_Quality();
+1650                    }
+1651                    
+1652                }
+1653                if(_test_timeflag(g_100ms_flag))
+1654                {    
+1655                             
+1656                    M26_wait_response(); 
+1657                    check_m26_cmd_result();        
+1658                }
+1659            } 
+1660          
+1661          }
+1662          */
+1663          
+1664          void M26_Get_Signal_Quality(void)
+1665          {
+1666   1          unsigned char res = 0;
+1667   1        
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 29  
+
+1668   1          if(m26_cmd_info.Is_wait_data == 1 || Is_http == 1)
+1669   1          {
+1670   2              return;
+1671   2          }
+1672   1          
+1673   1          mymemset(m26_cmd_info.cmd,0,sizeof(m26_cmd_info.cmd));
+1674   1          mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+1675   1         
+1676   1          m26_cmd_info.type = CMD_TYPE;      
+1677   1          strcpy(m26_cmd_info.cmd,M26_CSQ_CMD);   
+1678   1                   
+1679   1          res = make_m26_send_string(m26_cmd_info.sendtring,m26_cmd_info.cmd,NULL);     
+1680   1          if(res == 0)
+1681   1          {
+1682   2              M26_Send_data(m26_cmd_info.type,m26_cmd_info.cmd,m26_cmd_info.sendtring);
+1683   2          } 
+1684   1          
+1685   1      }
+1686          
+1687          /*
+1688          //µ±M26∏’∆Ù∂Ø ±£¨œ»∂¡»°–≈∫≈÷ ¡ø£¨»Áπ˚¥ÌŒÛ¬Î¬ ≤ªµ»”⁄0µƒ«Èøˆœ¬º§ªÓÕ¯¬Áª· ß∞‹
+1689          void device_get_signal_quality(void)
+1690          {
+1691            while(Is_signal_err_code_zero != 1)
+1692            {
+1693                if(_test_timeflag(g_1s_flag))
+1694                {
+1695                    g_1s_flag = 0;          
+1696                    M26_Get_Signal_Quality();
+1697                }
+1698                if(_test_timeflag(g_100ms_flag))
+1699                {                       
+1700                    M26_wait_response(); 
+1701                    check_m26_cmd_result();   
+1702                    if(Is_signal_err_code_zero == 1)
+1703                    {
+1704                        break;
+1705                    }
+1706                }
+1707            }
+1708          }
+1709          */
+1710          
+1711          void M26_Get_CCID(void)
+1712          {
+1713   1          unsigned char res = 0;
+1714   1        
+1715   1          if(m26_cmd_info.Is_wait_data == 1 || Is_http == 1)
+1716   1          {
+1717   2              return;
+1718   2          }
+1719   1          
+1720   1          mymemset(m26_cmd_info.cmd,0,sizeof(m26_cmd_info.cmd));
+1721   1          mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+1722   1         
+1723   1          m26_cmd_info.type = CMD_TYPE;      
+1724   1          strcpy(m26_cmd_info.cmd,M26_QCCID_CMD);   
+1725   1                   
+1726   1          res = make_m26_send_string(m26_cmd_info.sendtring,m26_cmd_info.cmd,NULL);     
+1727   1          if(res == 0)
+1728   1          {
+1729   2              M26_Send_data(m26_cmd_info.type,m26_cmd_info.cmd,m26_cmd_info.sendtring);
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 30  
+
+1730   2          } 
+1731   1          
+1732   1      }
+1733          
+1734          
+1735          void M26_Device_Activate(void)
+1736          {
+1737   1         
+1738   1          if(m26_cmd_info.Is_wait_data == 1 || Is_http == 1)
+1739   1          {
+1740   2              return;
+1741   2          }
+1742   1          
+1743   1          m26_action = 0;
+1744   1          m26_action |= (1 << HTTP_ACTIVATE);
+1745   1          
+1746   1          Is_http = 1;
+1747   1      }
+1748          
+1749          
+1750          void device_activate(void)
+1751          {
+1752   1        M26_Device_Activate();    
+1753   1        while(Is_device_activate == 0)
+1754   1        {
+1755   2            if(_test_timeflag(g_100ms_flag))
+1756   2            {    
+1757   3                m26_http_loop();        
+1758   3                M26_wait_response(); 
+1759   3                check_m26_cmd_result();        
+1760   3            }
+1761   2        } 
+1762   1      
+1763   1      }
+1764          
+1765          void M26_Ota_Check(void)
+1766          {
+1767   1          if(Is_device_activate == 0)
+1768   1          {
+1769   2              return;
+1770   2          } 
+1771   1          
+1772   1          if(m26_cmd_info.Is_wait_data == 1 || Is_http == 1)
+1773   1          {
+1774   2              return;
+1775   2          }
+1776   1          
+1777   1          m26_action = 0;
+1778   1          m26_action |= (1 << HTTP_OTA);
+1779   1          
+1780   1          Is_http = 1;
+1781   1      }
+1782          
+1783          
+1784          
+1785          void M26_Upload_Data(void)
+1786          {   
+1787   1          if(is_m26_fogcloud_init == 0)
+1788   1          {
+1789   2              return;
+1790   2          }      
+1791   1        
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 31  
+
+1792   1          if(m26_cmd_info.Is_wait_data == 1 || Is_http == 1)
+1793   1          {
+1794   2              return;
+1795   2          }
+1796   1          
+1797   1          nowtime_s = get_sys_stime();
+1798   1          if(nowtime_s >= next_upload_data_time)
+1799   1          {
+1800   2              m26_action = 0;
+1801   2              m26_action |= (1 << HTTP_UPLOAD_DATA);
+1802   2          
+1803   2              Is_http = 1; 
+1804   2      
+1805   2              next_upload_data_time = nowtime_s + 60;      
+1806   2          }    
+1807   1      }
+1808          
+1809          
+1810          void M26_Status_Sync(void)
+1811          {
+1812   1          //5√Îµƒ ±º‰º‰∏Ù
+1813   1          const unsigned long code sync_mstime_interval = 5000;
+1814   1      
+1815   1        
+1816   1          if(is_m26_fogcloud_init == 0)
+1817   1          {
+1818   2              return;
+1819   2          } 
+1820   1          
+1821   1          if(m26_cmd_info.Is_wait_data == 1 || Is_http == 1)
+1822   1          {
+1823   2              return;
+1824   2          }
+1825   1          
+1826   1          nowtime_ms = get_sys_mstime();
+1827   1          //∑¿÷π ±º‰“Á≥ˆ
+1828   1          if(next_sync_mstime > 0xF0000000 && nowtime_ms < 0xE0000000)
+1829   1          {
+1830   2              next_sync_mstime = nowtime_ms;
+1831   2          }
+1832   1          
+1833   1          
+1834   1          if(nowtime_ms < next_sync_mstime)
+1835   1          {
+1836   2              return;
+1837   2          }
+1838   1          
+1839   1          m26_action = 0;
+1840   1          m26_action |= (1 << HTTP_SYNC);
+1841   1          
+1842   1          Is_http = 1;
+1843   1          
+1844   1          next_sync_mstime = nowtime_ms + sync_mstime_interval;
+1845   1      }
+1846          
+1847          
+1848          void M26_Charge_Confirm(void)
+1849          {
+1850   1          if(m26_cmd_info.Is_wait_data == 1 || Is_http == 1)
+1851   1          {
+1852   2              return;
+1853   2          }
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 32  
+
+1854   1          
+1855   1          m26_action = 0;
+1856   1          m26_action |= (1 << HTTP_C_CONFIRM);
+1857   1          
+1858   1          Is_http = 1;
+1859   1      }
+1860          
+1861          void device_get_ccid(void)
+1862          {
+1863   1        while(Is_Get_CCID == 0)
+1864   1        {
+1865   2            if(_test_timeflag(g_1s_flag))
+1866   2            {
+1867   3                g_1s_flag = 0;          
+1868   3                M26_Get_CCID();
+1869   3            }
+1870   2            if(_test_timeflag(g_100ms_flag))
+1871   2            {                       
+1872   3                M26_wait_response(); 
+1873   3                check_m26_cmd_result();        
+1874   3            }
+1875   2        } 
+1876   1      
+1877   1      }
+1878          
+1879          
+1880          int string_get_int(const char *string)
+1881          {
+1882   1          unsigned char index_start = 0;
+1883   1          unsigned char index_end = 0;
+1884   1          unsigned char i = 0;
+1885   1        
+1886   1          //char buff[6] = {0};
+1887   1        
+1888   1          for(i = 0;i < 15;i ++)
+1889   1          {
+1890   2              if(*(string + i) == ASCII_COLONS)
+1891   2              {
+1892   3                  if(*(string + i + 1) != ASCII_QUOTES)
+1893   3                  {
+1894   4                      index_start = i + 1;
+1895   4                  }
+1896   3                  else
+1897   3                  {
+1898   4                      index_start = i + 2;
+1899   4                  }
+1900   3                  
+1901   3              }
+1902   2              if(*(string + i) == ASCII_COMMA || *(string + i) == ASCII_BRANCE_CLOSE)
+1903   2              {
+1904   3                  if(*(string + i - 1) != ASCII_QUOTES)
+1905   3                  {
+1906   4                      index_end = i - 1;
+1907   4                  }
+1908   3                  else
+1909   3                  {
+1910   4                      index_end = i - 2;
+1911   4                  }
+1912   3                  
+1913   3                  break;
+1914   3              }
+1915   2          }
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 33  
+
+1916   1          
+1917   1          if(index_end < index_start)
+1918   1          {
+1919   2             return -1; 
+1920   2          }
+1921   1          else
+1922   1          {
+1923   2              if((index_end - index_start) > 5)
+1924   2              {
+1925   3                  return -1;
+1926   3              }
+1927   2          }
+1928   1          
+1929   1          mymemset(m26_cmd_info.cmd_para,0,sizeof(m26_cmd_info.cmd_para));
+1930   1          strncpy(m26_cmd_info.cmd_para,(string + index_start),(index_end - index_start + 1));
+1931   1          
+1932   1          
+1933   1          return(atoi(m26_cmd_info.cmd_para));
+1934   1      
+1935   1      }
+1936          
+1937          long string_get_long(const char *string)
+1938          {
+1939   1          unsigned char index_start = 0;
+1940   1          unsigned char index_end = 0;
+1941   1          unsigned char i = 0;
+1942   1        
+1943   1          //char buff[6] = {0};
+1944   1        
+1945   1          for(i = 0;i < 15;i ++)
+1946   1          {
+1947   2              if(*(string + i) == ASCII_COLONS)
+1948   2              {
+1949   3                  index_start = i + 1;
+1950   3              }
+1951   2              if(*(string + i) == ASCII_COMMA || *(string + i) == ASCII_BRANCE_CLOSE)
+1952   2              {
+1953   3                  index_end = i - 1;
+1954   3                  break;
+1955   3              }
+1956   2          }
+1957   1          
+1958   1          if(index_end < index_start)
+1959   1          {
+1960   2             return -1; 
+1961   2          }
+1962   1          else
+1963   1          {
+1964   2              if((index_end - index_start) > 5)
+1965   2              {
+1966   3                  return -1;
+1967   3              }
+1968   2          }
+1969   1          
+1970   1          mymemset(m26_cmd_info.cmd_para,0,sizeof(m26_cmd_info.cmd_para));
+1971   1          strncpy(m26_cmd_info.cmd_para,(string + index_start),(index_end - index_start + 1));
+1972   1          
+1973   1          
+1974   1          return(atol(m26_cmd_info.cmd_para));
+1975   1      
+1976   1      }
+1977          
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 34  
+
+1978          
+1979          void string_get_string(const char *string,char *dest)
+1980          {
+1981   1          //∏√∫Ø ˝÷–≤ª“™ π”√m26_cmd_info.string£¨ordernum∏¥÷∆µΩ¡À∏√ ˝◊È÷–
+1982   1          unsigned char index_start = 0;
+1983   1          unsigned char index_end = 0;
+1984   1          unsigned char i = 0;
+1985   1      
+1986   1          for(i = 0;i < 50;i ++)
+1987   1          {
+1988   2              if(*(string + i) == ASCII_COLONS)
+1989   2              {
+1990   3                  index_start = i + 2;
+1991   3              }
+1992   2              if(*(string + i) == ASCII_QUOTES && (*(string + i + 1) == ASCII_BRANCE_CLOSE || *(string + i + 1) 
+             -== ASCII_COMMA))
+1993   2              {
+1994   3                  index_end = i - 1;
+1995   3                  break;
+1996   3              }
+1997   2          }
+1998   1          
+1999   1      
+2000   1      
+2001   1          if(index_end < index_start || i == 50)
+2002   1          {
+2003   2              return;
+2004   2          }
+2005   1          else
+2006   1          {
+2007   2              if((index_end - index_start) > 40)
+2008   2              {
+2009   3                  return;
+2010   3              }
+2011   2          }
+2012   1          mymemset(dest,0,strlen(dest));
+2013   1          strncpy(dest,(string + index_start),(index_end - index_start + 1));  
+2014   1          
+2015   1      //    mymemset(m26_cmd_info.cmd,0,sizeof(m26_cmd_info.cmd));
+2016   1      //    sprintf(m26_cmd_info.cmd,"s:%d,t:%d,l:%d\r\n",(unsigned int)index_start,(unsigned int)index_end,(uns
+             -igned int)(index_end - index_start + 1));
+2017   1      //    DEBUG_Uart_Sendbytes(m26_cmd_info.cmd,mystrlen(m26_cmd_info.cmd));  
+2018   1          
+2019   1          //DEBUG_Uart_Sendbytes((string + index_start),(index_end - index_start + 1));  
+2020   1      
+2021   1        
+2022   1          
+2023   1      }
+2024          
+2025          
+2026          void Wifi_Led_On(void)
+2027          {
+2028   1          if(wifi_led_state == 0)
+2029   1          {
+2030   2              TM1620_LED_Control(LED_WIFI,LED_ON);
+2031   2              wifi_led_state = 1;
+2032   2          }
+2033   1      }
+2034          
+2035          void Wifi_Led_Off(void)
+2036          {
+2037   1          if(wifi_led_state == 1)
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 35  
+
+2038   1          {
+2039   2              TM1620_LED_Control(LED_WIFI,LED_OFF);
+2040   2              wifi_led_state = 0;
+2041   2          }
+2042   1      }
+2043          
+2044          //ºÏ≤‚m26 «∑Ò≥ˆœ÷Õ®—∂¥ÌŒÛ£¨»Áπ˚“ª÷±¥ÌŒÛªÚ’ﬂ≥¨ ±‘Ú÷ÿ∆Ùm26,m26Õ®—∂÷∏ æµ∆øÿ÷∆
+2045          //¥À∫Ø ˝≤ª–Ë“™Ã´∆µ∑±µƒ÷¥––
+2046          void m26_fogcloud_init_and_check(void)
+2047          {
+2048   1          if((m26_cmd_info.error_times >= 35 || m26_cmd_info.timeout_times >= 3))
+2049   1          {
+2050   2              //÷ÿ∆Ùm26       
+2051   2              M26_Restart();
+2052   2              
+2053   2          }
+2054   1        
+2055   1          if(m26_cmd_info.error_times != 0 || m26_cmd_info.timeout_times != 0 || Is_device_activate == 0)
+2056   1          {
+2057   2              if(wifi_led_state == 1)
+2058   2              {
+2059   3                  //πÿ±’wifi led
+2060   3                  Wifi_Led_Off();
+2061   3              }
+2062   2          }
+2063   1          else if(m26_cmd_info.error_times == 0 && m26_cmd_info.timeout_times == 0 && Is_device_activate == 1)
+2064   1          {
+2065   2              if(wifi_led_state == 0)
+2066   2              {
+2067   3                  //¥Úø™wifi led
+2068   3                  Wifi_Led_On();
+2069   3              }
+2070   2          }
+2071   1          
+2072   1          if(Is_signal_err_code_zero == 0)
+2073   1          {
+2074   2              M26_Get_Signal_Quality();
+2075   2          }
+2076   1          
+2077   1          if(M26_register_net.Is_m26_registerd == 0 && Is_signal_err_code_zero == 1)
+2078   1          {
+2079   2              M26_Register_to_Net();
+2080   2          }
+2081   1          
+2082   1          if(M26_register_net.Is_m26_registerd == 1 && Is_device_activate == 0)
+2083   1          {
+2084   2              M26_Device_Activate();
+2085   2          }
+2086   1          
+2087   1          if(is_m26_fogcloud_init == 0 && Is_device_activate == 1)
+2088   1          {
+2089   2              M26_Ota_Check();
+2090   2          }
+2091   1          
+2092   1          
+2093   1      }
+2094          
+2095          
+2096          /*
+2097          void m26_fog_service_init(void)
+2098          {
+2099              m26_cmd_info.error_times = 0;
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 36  
+
+2100              m26_cmd_info.timeout_times = 0;
+2101            
+2102              while(Is_device_activate == 0)
+2103              {
+2104                  
+2105                  if(_test_timeflag(g_1ms_flag))
+2106                  {
+2107                      g_1ms_flag = 0;
+2108                      sys_run();
+2109                      DirectMotor();       
+2110                  }
+2111                  if(_test_timeflag(g_2ms_flag))
+2112                  {
+2113                      g_2ms_flag = 0;
+2114                      TurnMotor();
+2115                  }         
+2116                  
+2117            
+2118                  if(_test_timeflag(g_10ms_flag))
+2119                  {
+2120                      g_10ms_flag = 0;
+2121                     
+2122                      Scan_TouchPad(); 
+2123                  
+2124                      m26_http_loop();        
+2125                      M26_wait_response(); 
+2126                      check_m26_cmd_result();
+2127                  }
+2128                  
+2129                  if(_test_timeflag(g_100ms_flag))
+2130                  {
+2131                      g_100ms_flag = 0;
+2132                      Dcmoto_adj();   
+2133                      UV_Check();                 
+2134                  }
+2135                  
+2136                  if(_test_timeflag(g_1s_flag))
+2137                  {
+2138                      g_1s_flag = 0;
+2139                      m26_check();
+2140                    
+2141                      charge_lefttime_count();  
+2142                      Check_If_Close_Door();
+2143                  }
+2144              }
+2145          
+2146          }
+2147          */
+2148          
+2149           
+2150          #define SIGNAL_CHECK_TIME_INTERVAL   61
+2151          //’˝≥£«Èøˆœ¬5√Î÷”Õ®—∂“ª¥Œ£¨1∑÷÷”ƒ⁄ø…“‘Õ®—∂11-12¥Œ
+2152          //Œ™¡ÀΩ⁄ °ƒ⁄¥Êø’º‰£¨¥À∫Ø ˝≤ª‘Ÿ¡ÌÕ‚∂®“Âlong¿‡–Õµƒ ±º‰±‰¡ø£¨¥À∫Ø ˝∑≈‘⁄main∫Ø ˝÷–µƒ1s≤ø∑÷£¨¥À∫Ø ˝“ª√Î÷¥––“ª¥Œ
+             -º¥ø…
+2153          void m26_signal_check(void)
+2154          {
+2155   1          //º«¬ººÏ≤‚¡À∂‡≥§ ±º‰£¨µ•Œª «√Î£¨‘›∂®ºÏ≤‚1∑÷÷”°£»Áπ˚ºÏ≤‚ ±º‰≥§µƒª∞–Ë“™–ﬁ∏ƒ±‰¡ø¿‡–Õ
+2156   1          static unsigned long signal_check_stimes = 0;
+2157   1          if(Is_signal_check == 0)
+2158   1          {
+2159   2              signal_check_stimes = 0;
+2160   2              signal_check_err_times = 0;
+C51 COMPILER V9.52.0.0   M26                                                               12/29/2017 16:22:31 PAGE 37  
+
+2161   2              return;
+2162   2          }
+2163   1          
+2164   1      //    if(M26_register_net.Is_m26_registerd == 0 || Is_device_activate == 0)
+2165   1      //    {
+2166   1      //        //¥À ±ø…ƒ‹ «“ÚŒ™…Ë±∏¡¨–¯Õ®—∂ ß∞‹£¨’˝‘⁄÷ÿ∆Ù
+2167   1      //        return;    
+2168   1      //    }
+2169   1          
+2170   1          signal_check_stimes += 1;
+2171   1          
+2172   1          TM1620_DispalyData(2,signal_check_err_times);
+2173   1          
+2174   1          if(signal_check_stimes <= 2 || signal_check_stimes >= (SIGNAL_CHECK_TIME_INTERVAL - 1))
+2175   1          {
+2176   2              Buzzer_Signal_Check();
+2177   2          }
+2178   1          
+2179   1          if(signal_check_stimes >= SIGNAL_CHECK_TIME_INTERVAL)
+2180   1          {
+2181   2              Is_signal_check = 0;
+2182   2          }
+2183   1          
+2184   1      
+2185   1          
+2186   1          
+2187   1      }
+2188          
+2189          
+2190          
+2191          
+2192          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =  10534    ----
+   CONSTANT SIZE    =   1654    ----
+   XDATA SIZE       =    188      85
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

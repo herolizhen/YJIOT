@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.stats.dao.StatsMapper">
+
+	<select id="devStateType" parameterType="com.yjyz.iot.stats.entity.StatsParm"
+		resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT
+		sum(
+		IF (CHARACTER_LENGTH(tda.owner_code) < 4, 1, 0)
+		)
+		AS activate_dev,
+		sum(
+		IF (CHARACTER_LENGTH(tda.owner_code) >= 4, 1, 0)
+		)
+		AS install_dev
+		FROM
+		t_dev_account tda,
+		t_dev_info tdi,
+		t_prod_info tpi
+		WHERE
+		tda.device_id = tdi.device_id
+		and tdi.product_id = tpi.product_id
+		AND tpi.app_id = #{appId,jdbcType=VARCHAR}
+		]]>
+	</select>
+	<select id="userRegMonth" parameterType="com.yjyz.iot.stats.entity.StatsParm"
+		resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT
+		DATE_FORMAT(pcu.reg_date, '%Y-%m') AS data,
+		count(pcu.client_id) AS reg_count
+		FROM
+		t_pow_client_user pcu
+		where
+		pcu.app_id = #{appId,jdbcType=VARCHAR}
+		GROUP BY
+		DATE_FORMAT(pcu.reg_date, '%Y-%m')
+		ORDER BY
+		pcu.reg_date asc
+		]]>
+	</select>
+	<select id="fundMonth" parameterType="com.yjyz.iot.stats.entity.StatsParm"
+		resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT
+		DATE_FORMAT(tdc.create_time, '%Y-%m') AS data,
+		SUM(tdc.total_free) / 100 AS free
+		FROM
+		t_dev_consume tdc,
+		t_dev_account
+		tac,
+		t_dev_info tdi,
+		t_prod_info tpi
+		WHERE
+		tdc.device_id = tac.device_id
+		AND tdc.device_id = tdi.device_id
+		AND tdi.product_id = tpi.product_id
+		AND CHARACTER_LENGTH(tac.owner_code) > 4
+		AND tdc. STATUS = '2'
+		and
+		tpi.app_id = #{appId,jdbcType=VARCHAR}
+		GROUP BY
+		DATE_FORMAT(tdc.create_time, '%Y-%m')
+		ORDER BY
+		tdc.create_time asc
+		]]>
+	</select>
+	<select id="fundMerChantDay" parameterType="com.yjyz.iot.stats.entity.StatsParm"
+		resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT
+		DATE_FORMAT(tdc.create_time, '%Y-%m-%d') AS data,
+		tdm.NAME name,
+		SUM(tdc.total_free) / 100 AS fund
+		FROM
+		t_dev_consume tdc,
+		t_dev_account tda,
+		t_dict_merchant tdm,
+		t_dev_info tdi,
+		t_prod_info tpi
+		WHERE
+		tdm.merchant_code = tda.owner_code
+		AND tdc.device_id =
+		tda.device_id
+		AND tda.device_id = tdi.device_id
+		AND tdi.product_id =
+		tpi.product_id
+		AND CHARACTER_LENGTH(tda.owner_code) > 4
+		AND tdc. STATUS
+		= '2'
+		AND tdc.create_time > DATE_SUB(sysdate(), INTERVAL 1 WEEK)
+		AND
+		tpi.app_id = #{appId,jdbcType=VARCHAR}
+		GROUP BY
+		tdm. NAME,
+		DATE_FORMAT(tdc.create_time, '%Y-%m-%d')
+		ORDER BY
+		tdc.create_time asc,
+		tdm. NAME DESC
+		]]>
+	</select>
+	<select id="fundMerChantWeek" parameterType="com.yjyz.iot.stats.entity.StatsParm"
+		resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT
+		concat(weekofyear(tdc.create_time), '周') AS weekno,
+		tdm.NAME,
+		SUM(tdc.total_free) / 100 AS fund
+		FROM
+		t_dev_consume tdc,
+		t_dev_account tda,
+		t_dict_merchant tdm,
+		t_dev_info tdi,
+		t_prod_info tpi
+		WHERE
+		tdm.merchant_code = tda.owner_code
+		AND tdc.device_id =
+		tda.device_id
+		AND tda.device_id = tdi.device_id
+		AND tdi.product_id =
+		tpi.product_id
+		AND CHARACTER_LENGTH(tda.owner_code) > 4
+		AND tdc. STATUS
+		= '2'
+		AND tdc.create_time > DATE_SUB(sysdate(), INTERVAL 3 MONTH)
+		AND
+		tpi.app_id = #{appId,jdbcType=VARCHAR}
+		GROUP BY
+		tdm. NAME,
+		weekofyear(tdc.create_time)
+		ORDER BY
+		tdc.create_time asc,
+		tdm. NAME DESC
+		]]>
+	</select>
+	<select id="fundTimesDay" parameterType="com.yjyz.iot.stats.entity.StatsParm"
+		resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT
+		DATE_FORMAT(tdc.create_time, '%Y-%m-%d') AS data,
+		tdic.price / 100 AS price,
+		count(tdc.device_id) AS count
+		FROM
+		t_dev_consume tdc,
+		t_dev_account tda,
+		t_dict_merchant tdim,
+		t_dict_charge tdic,
+		t_dev_info tdi,
+		t_prod_info tpi
+		WHERE
+		tdc.device_id =
+		tda.device_id
+		AND tdim.merchant_code = tda.owner_code
+		AND
+		tdim.charge_type = tdic.charge_type
+		AND tdc.chips = tdic.chips
+		AND
+		tda.device_id = tdi.device_id
+		AND tdi.product_id = tpi.product_id
+		AND
+		CHARACTER_LENGTH(tda.owner_code) > 4
+		AND tdc. STATUS = '2'
+		AND
+		tdc.create_time > DATE_SUB(sysdate(), INTERVAL 1 WEEK)
+		AND tpi.app_id =
+		#{appId,jdbcType=VARCHAR}
+		GROUP BY
+		tdic.price,
+		DATE_FORMAT(tdc.create_time, '%Y-%m-%d')
+		ORDER BY
+		tdc.create_time, '%Y-%m-%d' asc,
+		tdic.price DESC
+		]]>
+	</select>
+	<select id="fundTimesWeek" parameterType="com.yjyz.iot.stats.entity.StatsParm"
+		resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT
+		concat(weekofyear(tdc.create_time), '周') AS weekno,
+		tdic.price / 100 AS price,
+		count(tdc.device_id) AS count
+		FROM
+		t_dev_consume tdc,
+		t_dev_account tda,
+		t_dict_merchant tdm,
+		t_dict_charge
+		tdic,
+		t_dev_info tdi,
+		t_prod_info tpi
+		WHERE
+		tdc.device_id = tda.device_id
+		AND tdm.merchant_code = tda.owner_code
+		AND tdm.charge_type =
+		tdic.charge_type
+		AND tdc.chips = tdic.chips
+		AND tda.device_id =
+		tdi.device_id
+		AND tdi.product_id = tpi.product_id
+		AND
+		CHARACTER_LENGTH(tda.owner_code) > 4
+		AND tdc. STATUS = '2'
+		AND
+		tdc.create_time > DATE_SUB(sysdate(), INTERVAL 3 MONTH)
+		AND tpi.app_id
+		=#{appId,jdbcType=VARCHAR}
+		GROUP BY
+		tdic.price,
+		weekofyear(tdc.create_time)
+		ORDER BY
+		tdc.create_time asc,
+		tdic.price DESC
+		]]>
+	</select>
+	<select id="devSeller" parameterType="com.yjyz.iot.stats.entity.StatsParm"
+		resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT
+		count(tda.device_id) AS count,
+		tdm.buss_leader as seller
+		FROM
+		t_dev_account tda,
+		t_dict_merchant tdm,
+		t_dev_info tdi,
+		t_prod_info tpi
+		WHERE
+		tda.owner_code = tdm.merchant_code
+		AND tda.device_id = tdi.device_id
+		AND tdi.product_id = tpi.product_id
+		AND CHARACTER_LENGTH(tda.owner_code) > 4
+		AND tpi.app_id =#{appId,jdbcType=VARCHAR}
+		GROUP BY
+		tdm.buss_leader
+		]]>
+	</select>
+	<select id="devOnlineState" parameterType="com.yjyz.iot.stats.entity.StatsParm"
+		resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT
+		tdm.NAME as name,
+		sum(IF (
+		tda.last_time >= DATE_SUB(sysdate(), INTERVAL 500 MINUTE) ,
+		1,0))as online,
+		sum(IF (
+		tda.last_time >= DATE_SUB(sysdate(), INTERVAL 1 DAY) AND tda.last_time <
+		DATE_SUB(sysdate(), INTERVAL 500 MINUTE),
+		1,0)) as dayoff,
+		sum(IF (
+		tda.last_time >= DATE_SUB(sysdate(), INTERVAL 1 WEEK) AND tda.last_time <
+		DATE_SUB(sysdate(), INTERVAL 1 DAY) ,
+		1,0)) as weekoff,
+		sum(IF (
+		tda.last_time < DATE_SUB(sysdate(), INTERVAL 1 WEEK) ,
+		1,0))as longoff
+		FROM
+		t_dev_account tda,
+		t_dict_merchant tdm,
+		t_dev_info tdi,
+		t_prod_info tpi
+		WHERE
+		tda.owner_code = tdm.merchant_code
+		AND tda.device_id = tdi.device_id
+		AND tdi.product_id = tpi.product_id
+		AND CHARACTER_LENGTH(tda.owner_code) > 4
+		and tpi.app_id =#{appId,jdbcType=VARCHAR}
+		GROUP BY
+		tdm. NAME desc
+		]]>
+	</select>
+	<select id="fundSellerWeek" parameterType="com.yjyz.iot.stats.entity.StatsParm"
+		resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT
+		concat(weekofyear(tdc.create_time), '周') AS weekno,
+		tdm.buss_leader as seller,
+		SUM(tdc.total_free) / 100 AS free
+		FROM
+		t_dev_consume tdc,
+		t_dev_account tda,
+		t_dict_merchant tdm,
+		t_dev_info tdi,
+		t_prod_info tpi
+		WHERE
+		tdm.merchant_code = tda.owner_code
+		AND tdc.device_id = tda.device_id
+		AND tda.device_id = tdi.device_id
+		AND tdi.product_id = tpi.product_id
+		AND CHARACTER_LENGTH(tda.owner_code) > 4
+		AND tdc.status = '2'
+		AND tdc.create_time > DATE_SUB(sysdate(), INTERVAL 3 MONTH)
+		AND tpi.app_id = #{appId,jdbcType=VARCHAR}
+		GROUP BY
+		weekofyear(tdc.create_time),
+		tdm.buss_leader
+		ORDER BY
+		tdc.create_time asc,
+		tdm.buss_leader DESC
+		]]>
+	</select>
+	<select id="fundDevTop15" parameterType="com.yjyz.iot.stats.entity.StatsParm"
+		resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT
+		CONCAT(tdm. NAME, tda.position) AS dev_name,
+		sum(tdc.total_free) / 100 AS fund,
+		count(tdc.device_id) as count
+		FROM
+		t_dev_consume tdc,
+		t_dev_account tda,
+		t_dict_merchant tdm,
+		t_dev_info tdi,
+		t_prod_info tpi
+		WHERE
+		tdc.device_id = tda.device_id
+		AND tda.owner_code = tdm.merchant_code
+		AND tda.device_id = tdi.device_id
+		AND tdi.product_id = tpi.product_id
+		AND CHARACTER_LENGTH(tda.owner_code) > 4
+		AND tdc.status = '2'
+		and tpi.app_id = #{appId,jdbcType=VARCHAR}
+		GROUP BY
+		CONCAT(tdm. NAME, tda.position)
+		ORDER BY
+		sum(tdc.total_free) DESC
+		LIMIT 15
+		]]>
+	</select>
+	<select id="fundUserTop10" parameterType="com.yjyz.iot.stats.entity.StatsParm"
+		resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT
+		pcu.nickname as nickname,
+		sum(tdc.total_free) / 100 AS fund,
+		count(tdc.device_id) as count
+		FROM
+		t_pow_client_user pcu,
+		t_dev_consume tdc,
+		t_dev_account tda
+		WHERE
+		pcu.client_id = tdc.client_id
+		AND tdc.device_id = tda.device_id
+		AND CHARACTER_LENGTH(tda.owner_code) > 4
+		AND tdc.status = '2'
+		and pcu.app_id = #{appId,jdbcType=VARCHAR}
+		GROUP BY
+		pcu.nickname
+		ORDER BY
+		sum(tdc.total_free) DESC
+		LIMIT 10
+		]]>
+	</select>
+	<select id="userRegTypeWeek" parameterType="com.yjyz.iot.stats.entity.StatsParm"
+		resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT
+		concat(weekofyear(pcu.reg_date), '周') AS weekno,
+		sum(IF(pcu.type = '1', 1, 0)) AS wexin,
+		sum(IF(pcu.type = '2', 1, 0)) AS zhifubao,
+		sum(IF(pcu.type = '3', 1, 0)) AS app
+		FROM
+		t_pow_client_user pcu
+		WHERE
+		pcu.app_id = #{appId,jdbcType=VARCHAR}
+		GROUP BY
+		weekofyear(pcu.reg_date)
+		ORDER BY
+		pcu.reg_date asc
+		]]>
+	</select>
+
+	<select id="devExamMain" parameterType="com.yjyz.iot.stats.entity.StatsParm"
+		resultType="java.util.HashMap">
+		<![CDATA[
+			SELECT
+				'auto' AS type,
+				sum(IF(dem.is_pass = 1, 1, 0)) AS pass,
+				sum(IF(dem.is_pass IS NULL, 1, 0)) AS no_pass
+			FROM
+				(
+					SELECT
+						*
+					FROM
+						t_dev_exam_main tdem
+					GROUP BY
+						tdem.device_id
+					HAVING
+						tdem.stop_time = max(tdem.stop_time)
+				) dem,
+				t_dev_info tdi,
+				t_prod_info tpi
+			WHERE
+				dem.device_id = tdi.device_id
+			AND tdi.product_id = tpi.product_id
+			AND dem.type = 1
+			and tpi.app_id =#{appId,jdbcType=VARCHAR}
+			UNION
+				SELECT
+					'manu' AS type,
+					sum(IF(dem.is_pass = 1, 1, 0)) AS pass,
+					sum(IF(dem.is_pass IS NULL, 1, 0)) AS no_pass
+				FROM
+					(
+						SELECT
+							*
+						FROM
+							t_dev_exam_main tdem
+						GROUP BY
+							tdem.device_id
+						HAVING
+							tdem.stop_time = max(tdem.stop_time)
+					) dem,
+					t_dev_info tdi,
+					t_prod_info tpi
+				WHERE
+					dem.device_id = tdi.device_id
+				AND tdi.product_id = tpi.product_id
+				AND dem.type = 2
+				and tpi.app_id =#{appId,jdbcType=VARCHAR}
+		]]>
+	</select>
+		<select id="devExamItem" parameterType="com.yjyz.iot.stats.entity.StatsParm"
+		resultType="java.util.HashMap">
+		<![CDATA[
+				SELECT
+					'auto' AS type,
+					CASE
+				WHEN exam_item = 'DOOR' THEN
+					'舱门'
+				WHEN exam_item = 'Fan' THEN
+					'电机'
+				WHEN exam_item = 'PM25' THEN
+					'颗粒物'
+				WHEN exam_item = 'UV' THEN
+					'UV灯'
+				ELSE
+					exam_item
+				END as  item,
+				 sum(IF(ded.result >= 1, 1, 0)) AS pass,
+				 sum(IF(ded.result = 0, 1, 0)) AS nopass
+				FROM
+					t_dev_exam_detail ded,
+					(
+						SELECT
+							*
+						FROM
+							t_dev_exam_main tdem
+						GROUP BY
+							tdem.device_id
+						HAVING
+							tdem.stop_time = max(tdem.stop_time)
+					) dem,
+					t_dev_info tdi,
+					t_prod_info tpi
+				WHERE
+					dem.device_id = dem.device_id
+				AND dem.exam_ID = ded.exam_id
+				AND dem.device_id = tdi.device_id
+				AND tdi.product_id = tpi.product_id
+				AND exam_item != 'PM25S'
+				and tpi.app_id =#{appId,jdbcType=VARCHAR}
+				AND dem.type = 1
+				GROUP BY
+					exam_item
+				UNION
+					SELECT
+						'manu' AS type,
+						CASE
+					WHEN exam_item = 'HK' THEN
+						'高档键'
+					WHEN exam_item = 'MK' THEN
+						'中档键'
+					WHEN exam_item = 'LK' THEN
+						'低档键'
+					WHEN exam_item = 'QK' THEN
+						'静音键'
+					WHEN exam_item = 'MDK' THEN
+						'模式键'
+					WHEN exam_item = 'PWK' THEN
+						'电源键'
+					WHEN exam_item = 'TK' THEN
+						'定时键'
+					ELSE
+						exam_item
+					END  as  item,
+					sum(IF(ded.result >= 1, 1, 0)) AS pass,
+					sum(IF(ded.result = 0, 1, 0)) AS nopass
+				FROM
+					t_dev_exam_detail ded,
+					(
+						SELECT
+							*
+						FROM
+							t_dev_exam_main tdem
+						GROUP BY
+							tdem.device_id
+						HAVING
+							tdem.stop_time = max(tdem.stop_time)
+					) dem,
+					t_dev_info tdi,
+					t_prod_info tpi
+				WHERE
+					dem.device_id = dem.device_id
+				AND dem.exam_ID = ded.exam_id
+				AND dem.device_id = tdi.device_id
+				AND tdi.product_id = tpi.product_id
+				AND exam_item != 'PM25S'
+				and tpi.app_id =#{appId,jdbcType=VARCHAR}
+				AND dem.type = 2
+				GROUP BY
+					exam_item
+		]]>
+	</select>
+</mapper>

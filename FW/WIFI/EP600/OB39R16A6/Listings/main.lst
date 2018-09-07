@@ -1,0 +1,211 @@
+C51 COMPILER V9.52.0.0   MAIN                                                              12/25/2017 10:34:56 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\main.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\USER\IIC;.\USER\UART
+                    -;.\USER\TM1618;.\USER\Sensor;.\USER;.\USER\PWM;.\USER\DC_MOTOR;.\USER\timer;.\USER\inc;.\USER\EXINT;.\USER\touch_key;.\U
+                    -SER\SYS_RUN;.\USER\step_motor;.\USER\BUZZER;.\USER\UART;.\USER\common;.\USER\lib;.\USER\UV;.\USER\ION;.\USER\EEPROM;.\US
+                    -ER\TM1620;.\USER\charge) DEBUG OBJECTEXTEND PRINT(.\Listings\main.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <stdio.h>
+   2          #include <string.h>
+   3          #include "IIC.h"
+   4          #include "TM1620.h"
+   5          #include "sensor.h"
+   6          #include "SOFT_IIC.h"
+   7          #include "PWM.h"
+   8          #include "dc_motor.h"
+   9          #include "timer.h"
+  10          #include "global.h"
+  11          #include "INT1.h"
+  12          #include "step_motor.h"
+  13          #include "sys_run.h"
+  14          #include "buzzer.h"
+  15          #include "wifi_uart.h"
+  16          #include "debug_uart.h"
+  17          #include "soft_uart.h"
+  18          #include "ADC.h"
+  19          #include "UV.h"
+  20          #include "ION.h"
+  21          #include "global.h"
+  22          #include "charge.h"
+  23          #include "UART0.h"
+  24          
+  25          
+  26          /*
+  27          sprintfÐè×¢ÒâµÄµØ·½£º
+  28          1.¸ñÊ½»¯ÕûÊýÊ±£¬±ØÐë´«²Î unsigned int ¸ñÊ½
+  29          */
+  30          /*
+  31          ³ÌÐòÐè×¢ÒâÎÊÌâ£º
+  32          1.ÔÚÊ¹ÓÃlongÀàÐÍºÍºê¶¨ÒåÊ±ÈÝÒ×³öÏÖÎÊÌâ£¬¼ÆËã½á¹û²»¶Ô£¬ÈçÏÂÊ¾Àý
+  33          #define TEST_NUM   60000
+  34          unsigned long temp = 0;
+  35          temp = TEST_NUM + 10000;
+  36          
+  37          ¼ÆËã½á¹û±¾Ó¦¸ÃÊÇ70000 = 0x11170,µ«ÊÇÊµ¼ÊÔËËã³öÀ´µÄ½á¹ûÊÇ0xffff1170¡£
+  38          ºê¶¨ÒåµÄÊýÖµÈç¹ûÐ¡ÓÚ0xFFFF,ÓÃ¸Ãºê¶¨ÒåµÄÖµºÍÒ»¸öÐ¡ÓÚ0xFFFFµÄÊýÔËËã£¬Èç¹û½á¹û³¬¹ý0xFFFF£¬Ôò³öÏÖ´íÎó½á¹û¡£×ö³
+             -Ë·¨ÔËËãÒ»Ñù´æÔÚÕâÑùµÄÎÊÌâ
+  39          µ«ÊÇÈç¹û¶¨Òå 
+  40          #define TEST_NUM   70000  
+  41          ¼´ºê¶¨ÒåµÄÊýÖµ³¬¹ý 0xFFFF£¬¼ÆËã½á¹ûÊÇÕýÈ·µÄ¡£
+  42          
+  43          Èç¹ûÖ±½ÓÊ¹ÓÃ temp = 60000 + 10000; Ö±½ÓÊ¹ÓÃÊý×Ö½øÐÐ¼ÆËãÃ»ÓÐÎÊÌâ
+  44          
+  45          
+  46          ½â¾ö°ì·¨£º
+  47          temp = (TEST_NUM | 0x00) + 10000;  
+  48          ÕâÖÖÔËËã½á¹ûÕýÈ·
+  49          
+  50          
+  51          */
+C51 COMPILER V9.52.0.0   MAIN                                                              12/25/2017 10:34:56 PAGE 2   
+
+  52          
+  53          
+  54          void main(void)
+  55          {
+  56   1      
+  57   1        unsigned long times_1s = 0;
+  58   1      
+  59   1      //  unsigned char test = 0;
+  60   1      //  unsigned char debug_buff[30] = {0};
+  61   1      
+  62   1      
+  63   1        TM1620_Init();
+  64   1        
+  65   1        Key_IIC_PinConifg();
+  66   1        Start_Timer1();
+  67   1        Start_INT1();
+  68   1      
+  69   1        
+  70   1        PWM_Init();
+  71   1        PWM_Control(PWM7_NUM,PWM_ON);
+  72   1      
+  73   1        
+  74   1        
+  75   1        Step_Motor_Pin_Init();
+  76   1        Buzzer_PinConfig();
+  77   1        SENSOR_IIC_PinConifg();
+  78   1        Soft_UART_Init();
+  79   1      #ifdef WIFI_SOFT_UART
+                Wifi_Uart_Init();
+              #else
+  82   1        init_UART0();
+  83   1      #endif 
+  84   1        DEBUG_Uart_Init();
+  85   1        UV_Pin_Init();
+  86   1        ION_Pin_Init();
+  87   1      
+  88   1        
+  89   1        Buzzer_Power_On();
+  90   1        TM1620_DispalyData(SENSOR_PM25,0);
+  91   1        TM1620_LED_Control(LED_ALL,LED_OFF);
+  92   1        TM1620_LED_Control(LED_POWER,LED_ON);
+  93   1        TM1620_LED_Control(LED_SLEEP_MODE,LED_ON);
+  94   1        
+  95   1        //ÎªÁË±£Ö¤°²È«Æô¶¯±ØÐë½øÐÐ²ÖÃÅ¼ì²â£¬²ÖÃÅÈç¹û»µÁËÔò°´¼üÊ§Ð§
+  96   1        sys_init_check();
+  97   1        
+  98   1        charge_init();
+  99   1        
+ 100   1        while(1)
+ 101   1        {
+ 102   2         
+ 103   2      //      if(_test_timeflag(g_1min_flag))
+ 104   2      //      { 
+ 105   2      //          g_1min_flag = 0;
+ 106   2      //              
+ 107   2      //      }
+ 108   2            
+ 109   2            if(_test_timeflag(g_1s_flag))
+ 110   2            {
+ 111   3                g_1s_flag = 0;
+ 112   3                times_1s++;
+ 113   3              
+C51 COMPILER V9.52.0.0   MAIN                                                              12/25/2017 10:34:56 PAGE 3   
+
+ 114   3                display_pm_data(); 
+ 115   3                
+ 116   3                //ÊÖ»ú·¢ËÍÖ¸Áî¿ª²ÖÃÅÖ¸Áîºó£¬Èç¹û1·ÖÖÓÄÚ²»Ö§¸¶Ôò¹Ø±Õ²ÖÃÅ
+ 117   3                Check_If_Close_Door();
+ 118   3                
+ 119   3                if(is_sys_auto_check == 1)
+ 120   3                {
+ 121   4                    TM1620_DispalyData(2,sys_check_info.fan_check_fault_times);
+ 122   4                    //TM1620_DispalyData(2,sys_check_info.fg_count);
+ 123   4                  
+ 124   4                }
+ 125   3                
+ 126   3                //ÊÖ¶¯²âÊÔÊ±£¬Èç¹û3·ÖÖÓÄÚ²»Í¨¹ýAPPÍ£Ö¹£¬Ôò³ÌÐò×Ô¶¯Í£Ö¹
+ 127   3                if(is_sys_manual_check == 1)
+ 128   3                {
+ 129   4                    check_if_stop_manual_check();
+ 130   4                }
+ 131   3               
+ 132   3            }
+ 133   2        
+ 134   2            if(_test_timeflag(g_1ms_flag))
+ 135   2            {
+ 136   3                g_1ms_flag = 0;
+ 137   3                sys_run();
+ 138   3                DirectMotor();       
+ 139   3            }  
+ 140   2      
+ 141   2            if(_test_timeflag(g_2ms_flag))
+ 142   2            {
+ 143   3                g_2ms_flag = 0;
+ 144   3                TurnMotor();
+ 145   3            }        
+ 146   2            
+ 147   2            if(_test_timeflag(g_10ms_flag))
+ 148   2            {
+ 149   3                g_10ms_flag = 0;
+ 150   3                Scan_TouchPad();  
+ 151   3                Deal_Wifi_Uart_Data();         
+ 152   3            }   
+ 153   2      
+ 154   2            if(_test_timeflag(g_100ms_flag))
+ 155   2            {
+ 156   3                g_100ms_flag = 0;
+ 157   3              
+ 158   3                  
+ 159   3                if(is_sys_auto_check == 1)
+ 160   3                {
+ 161   4                    sys_dev_auto_check();
+ 162   4                }     
+ 163   3      
+ 164   3                Dcmoto_adj();   
+ 165   3                UV_Check();                
+ 166   3            }
+ 167   2            
+ 168   2            get_charge_info();
+ 169   2            
+ 170   2            if(cost_info.IsSelfChargeMode == 1)
+ 171   2            {  
+ 172   3                //µ±MCUºÍWIFIÄ£¿éÁ¬ÐøÍ¨Ñ¶´íÎó´ïµ½Ò»¶¨´ÎÊýºó£¬¿ÉÄÜÊÇwifiÄ£¿éÎÞ·¨Õý³£¹¤×÷ÁË£¬´ËÊ±MCU½øÈë×Ô¼Æ·ÑÄ£Ê½
+             -£¬Ö±µ½°Ñ·ÑÓÃÊ±¼äÓÃÍê
+ 173   3                mcu_self_charge();
+ 174   3            }
+C51 COMPILER V9.52.0.0   MAIN                                                              12/25/2017 10:34:56 PAGE 4   
+
+ 175   2           
+ 176   2        }
+ 177   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    284    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----       4
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

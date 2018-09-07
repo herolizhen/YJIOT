@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.device.dao.DeviceInfoMapper">
+	<resultMap id="BaseResultMap" type="com.yjyz.iot.device.entity.DeviceInfo">
+		<id column="device_id" jdbcType="VARCHAR" property="deviceId" />
+		<result column="device_pw" jdbcType="VARCHAR" property="devicePw" />
+		<result column="device_mac" jdbcType="VARCHAR" property="deviceMac" />
+		<result column="product_id" jdbcType="VARCHAR" property="productId" />
+		<result column="module_name" jdbcType="VARCHAR" property="moduleName" />
+		<result column="firmware" jdbcType="VARCHAR" property="firmware" />
+		<result column="firmware_type" jdbcType="VARCHAR" property="firmwareType" />
+		<result column="is_activate" jdbcType="BIT" property="isActivate" />
+		<result column="is_recovery" jdbcType="BIT" property="isRecovery" />
+		<result column="iot_version" jdbcType="VARCHAR" property="iotVersion" />
+		<result column="product_model" jdbcType="VARCHAR" property="productModel" />
+		<result column="device_name" jdbcType="VARCHAR" property="deviceName" />
+		<result column="activate_time" jdbcType="TIMESTAMP" property="activateTime" />
+		<result column="reg_ip" jdbcType="VARCHAR" property="regIp" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		device_id, device_pw, device_mac, product_id, module_name, firmware,
+		firmware_type,
+		is_activate, is_recovery, iot_version, product_model, device_name, activate_time,reg_ip
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_dev_info
+		where device_id = #{deviceId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from t_dev_info
+		where device_id = #{deviceId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.yjyz.iot.device.entity.DeviceInfo">
+		insert into t_dev_info (device_id, device_pw, device_mac,
+		product_id, module_name, firmware,
+		firmware_type, is_activate, is_recovery,
+		iot_version, product_model, device_name,
+		activate_time,reg_ip)
+		values (#{deviceId,jdbcType=VARCHAR}, #{devicePw,jdbcType=VARCHAR},
+		#{deviceMac,jdbcType=VARCHAR},
+		#{productId,jdbcType=VARCHAR}, #{moduleName,jdbcType=VARCHAR}, #{firmware,jdbcType=VARCHAR},
+		#{firmwareType,jdbcType=VARCHAR}, #{isActivate,jdbcType=BIT},
+		#{isRecovery,jdbcType=BIT},
+		#{iotVersion,jdbcType=VARCHAR}, #{productModel,jdbcType=VARCHAR}, #{deviceName,jdbcType=VARCHAR},
+		#{activateTime,jdbcType=TIMESTAMP}, #{regIp,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.yjyz.iot.device.entity.DeviceInfo">
+		insert into t_dev_info
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="deviceId != null">
+				device_id,
+			</if>
+			<if test="devicePw != null">
+				device_pw,
+			</if>
+			<if test="deviceMac != null">
+				device_mac,
+			</if>
+			<if test="productId != null">
+				product_id,
+			</if>
+			<if test="moduleName != null">
+				module_name,
+			</if>
+			<if test="firmware != null">
+				firmware,
+			</if>
+			<if test="firmwareType != null">
+				firmware_type,
+			</if>
+			<if test="isActivate != null">
+				is_activate,
+			</if>
+			<if test="isRecovery != null">
+				is_recovery,
+			</if>
+			<if test="iotVersion != null">
+				iot_version,
+			</if>
+			<if test="productModel != null">
+				product_model,
+			</if>
+			<if test="deviceName != null">
+				device_name,
+			</if>
+			<if test="activateTime != null">
+				activate_time,
+			</if>
+			<if test="regIp != null">
+				reg_ip,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="deviceId != null">
+				#{deviceId,jdbcType=VARCHAR},
+			</if>
+			<if test="devicePw != null">
+				#{devicePw,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceMac != null">
+				#{deviceMac,jdbcType=VARCHAR},
+			</if>
+			<if test="productId != null">
+				#{productId,jdbcType=VARCHAR},
+			</if>
+			<if test="moduleName != null">
+				#{moduleName,jdbcType=VARCHAR},
+			</if>
+			<if test="firmware != null">
+				#{firmware,jdbcType=VARCHAR},
+			</if>
+			<if test="firmwareType != null">
+				#{firmwareType,jdbcType=VARCHAR},
+			</if>
+			<if test="isActivate != null">
+				#{isActivate,jdbcType=BIT},
+			</if>
+			<if test="isRecovery != null">
+				#{isRecovery,jdbcType=BIT},
+			</if>
+			<if test="iotVersion != null">
+				#{iotVersion,jdbcType=VARCHAR},
+			</if>
+			<if test="productModel != null">
+				#{productModel,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceName != null">
+				#{deviceName,jdbcType=VARCHAR},
+			</if>
+			<if test="activateTime != null">
+				#{activateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="regIp != null">
+				#{regIp,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yjyz.iot.device.entity.DeviceInfo">
+		update t_dev_info
+		<set>
+			<if test="devicePw != null">
+				device_pw = #{devicePw,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceMac != null">
+				device_mac = #{deviceMac,jdbcType=VARCHAR},
+			</if>
+			<if test="productId != null">
+				product_id = #{productId,jdbcType=VARCHAR},
+			</if>
+			<if test="moduleName != null">
+				module_name = #{moduleName,jdbcType=VARCHAR},
+			</if>
+			<if test="firmware != null">
+				firmware = #{firmware,jdbcType=VARCHAR},
+			</if>
+			<if test="firmwareType != null">
+				firmware_type = #{firmwareType,jdbcType=VARCHAR},
+			</if>
+			<if test="isActivate != null">
+				is_activate = #{isActivate,jdbcType=BIT},
+			</if>
+			<if test="isRecovery != null">
+				is_recovery = #{isRecovery,jdbcType=BIT},
+			</if>
+			<if test="iotVersion != null">
+				iot_version = #{iotVersion,jdbcType=VARCHAR},
+			</if>
+			<if test="productModel != null">
+				product_model = #{productModel,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceName != null">
+				device_name = #{deviceName,jdbcType=VARCHAR},
+			</if>
+			<if test="activateTime != null">
+				activate_time = #{activateTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="regIp != null">
+				reg_ip = #{regIp,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where device_id = #{deviceId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yjyz.iot.device.entity.DeviceInfo">
+		update t_dev_info
+		set device_pw = #{devicePw,jdbcType=VARCHAR},
+		device_mac = #{deviceMac,jdbcType=VARCHAR},
+		product_id = #{productId,jdbcType=VARCHAR},
+		module_name = #{moduleName,jdbcType=VARCHAR},
+		firmware = #{firmware,jdbcType=VARCHAR},
+		firmware_type = #{firmwareType,jdbcType=VARCHAR},
+		is_activate = #{isActivate,jdbcType=BIT},
+		is_recovery = #{isRecovery,jdbcType=BIT},
+		iot_version = #{iotVersion,jdbcType=VARCHAR},
+		product_model = #{productModel,jdbcType=VARCHAR},
+		device_name = #{deviceName,jdbcType=VARCHAR},
+		activate_time = #{activateTime,jdbcType=TIMESTAMP},
+		reg_ip = #{regIp,jdbcType=TIMESTAMP}
+		where device_id = #{deviceId,jdbcType=VARCHAR}
+	</update>
+	<select id="selectByMAC" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_dev_info
+		where device_mac = #{deviceMac,jdbcType=VARCHAR}
+	</select>
+</mapper>

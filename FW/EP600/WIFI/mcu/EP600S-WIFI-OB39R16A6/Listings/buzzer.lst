@@ -1,0 +1,123 @@
+C51 COMPILER V9.52.0.0   BUZZER                                                            12/18/2017 15:06:02 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE BUZZER
+OBJECT MODULE PLACED IN .\Objects\buzzer.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\BUZZER\buzzer.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\USER\IIC;.\
+                    -USER\UART;.\USER\TM1618;.\USER\Sensor;.\USER;.\USER\PWM;.\USER\DC_MOTOR;.\USER\timer;.\USER\inc;.\USER\EXINT;.\USER\touc
+                    -h_key;.\USER\SYS_RUN;.\USER\step_motor;.\USER\BUZZER;.\USER\UART;.\USER\common;.\USER\lib;.\USER\UV;.\USER\ION;.\USER\EE
+                    -PROM;.\USER\TM1620;.\USER\charge) DEBUG OBJECTEXTEND PRINT(.\Listings\buzzer.lst) TABS(2) OBJECT(.\Objects\buzzer.obj)
+
+line level    source
+
+   1          #include <stdio.h>
+   2          #include "buzzer.h"
+   3          #include "PWM.h"
+   4          #include "timer.h"
+   5          #include "global.h"
+   6          #include "common.h"
+   7          #include "debug_uart.h"
+   8          
+   9          /*
+  10          0.1ms的定时器，对应的蜂鸣频率最高到 (1/(0.1*2))*1000 = 5000hz
+  11          
+  12          0.05ms的定时器，对应的蜂鸣频率最高到 (1/(0.05*2))*1000 = 10000hz
+  13          
+  14          */
+  15          
+  16          
+  17          //unsigned char buzzer_buff[30] = {0};
+  18          
+  19          
+  20          void Buzzer_PinConfig(void)
+  21          {
+  22   1          P0M0 &= ~(1 << 5);
+  23   1          P0M1 &= ~(1 << 5);  
+  24   1          
+  25   1          BUZZER_P_PIN = 0;
+  26   1      
+  27   1      }
+  28          
+  29          void BuzzerBeep(unsigned int timeMs,unsigned int frequency)
+  30          {  
+  31   1          gBuzzerTimes_cnt = timeMs * TIMER_BASE;
+  32   1          gBuzzerEdge_cnt = (TIMER_BASE * 1000 / 2)  / frequency;
+  33   1          BUZZER_P_PIN = 1;
+  34   1      
+  35   1      
+  36   1      }
+  37          
+  38          /*
+  39          void BuzzerOff(void)
+  40          {
+  41              BUZZER_P_PIN = 0;
+  42              gBuzzerTimes_cnt = 0;
+  43              gBuzzerEdge_cnt = 0;
+  44          }
+  45          */
+  46          
+  47          void Buzzer_Power_On(void)
+  48          {
+  49   1      //    mymemset(buzzer_buff,0,mystrlen(buzzer_buff));
+  50   1      //    sprintf(buzzer_buff,"Buzzer_Power_On\n");
+  51   1      //    DEBUG_Uart_Sendbytes(buzzer_buff,mystrlen(buzzer_buff));
+  52   1        
+C51 COMPILER V9.52.0.0   BUZZER                                                            12/18/2017 15:06:02 PAGE 2   
+
+  53   1          BuzzerBeep(210,tone_mi);
+  54   1          while(gBuzzerTimes_cnt) ;
+  55   1          BuzzerBeep(210,tone_ri);
+  56   1          while(gBuzzerTimes_cnt) ;
+  57   1          BuzzerBeep(205,tone_do);
+  58   1      //    while(gBuzzerTimes_cnt) ;
+  59   1      //    BuzzerBeep(100,tone_so);
+  60   1      }
+  61          
+  62          
+  63          void Buzzer_Power_Off(void)
+  64          {
+  65   1        
+  66   1      //    mymemset(buzzer_buff,0,mystrlen(buzzer_buff));
+  67   1      //    sprintf(buzzer_buff,"Buzzer_Power_Off\n");
+  68   1      //    DEBUG_Uart_Sendbytes(buzzer_buff,mystrlen(buzzer_buff));
+  69   1        
+  70   1          BuzzerBeep(210,tone_do);
+  71   1          while(gBuzzerTimes_cnt) ;
+  72   1          BuzzerBeep(210,tone_mi);
+  73   1          while(gBuzzerTimes_cnt) ;
+  74   1          BuzzerBeep(205,tone_so);
+  75   1      }
+  76          
+  77          void Buzzer_Speed(void)
+  78          {
+  79   1        
+  80   1      //    mymemset(buzzer_buff,0,mystrlen(buzzer_buff));
+  81   1      //    sprintf(buzzer_buff,"Buzzer_Speed\n");
+  82   1      //    DEBUG_Uart_Sendbytes(buzzer_buff,mystrlen(buzzer_buff));
+  83   1        
+  84   1          BuzzerBeep(205,tone_mi);
+  85   1          while(gBuzzerTimes_cnt) ;
+  86   1          BuzzerBeep(205,tone_do);
+  87   1      }
+  88          
+  89          //WIFI获取到付费筹码后响一声
+  90          void Buzzer_Get_Charge(void)
+  91          {
+  92   1          BuzzerBeep(210,tone_do);
+  93   1          while(gBuzzerTimes_cnt) ;
+  94   1          BuzzerBeep(210,tone_ri);
+  95   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    206    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

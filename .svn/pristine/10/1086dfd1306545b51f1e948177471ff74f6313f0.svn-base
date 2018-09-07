@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.notice.dao.NoticeConfigMapper">
+	<resultMap id="BaseResultMap" type="com.yjyz.iot.notice.entity.NoticeConfig">
+		<id column="app_id" jdbcType="VARCHAR" property="appId" />
+		<result column="ytx_appid" jdbcType="VARCHAR" property="ytxAppid" />
+		<result column="signature" jdbcType="VARCHAR" property="signature" />
+		<result column="ver_template_id" jdbcType="VARCHAR" property="verTemplateId" />
+		<result column="ver_template" jdbcType="VARCHAR" property="verTemplate" />
+		<result column="mes_template_id" jdbcType="VARCHAR" property="mesTemplateId" />
+		<result column="mes_template" jdbcType="VARCHAR" property="mesTemplate" />
+		<result column="voice_tel_no" jdbcType="VARCHAR" property="voiceTelNo" />
+		<result column="voice_wav" jdbcType="VARCHAR" property="voiceWav" />
+		<result column="voice_text" jdbcType="VARCHAR" property="voiceText" />
+		<result column="api_appid" jdbcType="VARCHAR" property="apiAppid" />
+		<result column="api_appkey" jdbcType="VARCHAR" property="apiAppkey" />
+		<result column="api_template" jdbcType="VARCHAR" property="apiTemplate" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		app_id, ytx_appid, signature, ver_template_id, ver_template, mes_template_id,
+		mes_template,
+		voice_tel_no, voice_wav, voice_text, api_appid, api_appkey, api_template
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_notice_config
+		where app_id = #{appId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from t_notice_config
+		where app_id = #{appId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.yjyz.iot.notice.entity.NoticeConfig">
+		insert into t_notice_config (app_id, ytx_appid, signature,
+		ver_template_id, ver_template, mes_template_id,
+		mes_template, voice_tel_no, voice_wav,
+		voice_text, api_appid, api_appkey,
+		api_template)
+		values (#{appId,jdbcType=VARCHAR}, #{ytxAppid,jdbcType=VARCHAR},
+		#{signature,jdbcType=VARCHAR},
+		#{verTemplateId,jdbcType=VARCHAR}, #{verTemplate,jdbcType=VARCHAR}, #{mesTemplateId,jdbcType=VARCHAR},
+		#{mesTemplate,jdbcType=VARCHAR}, #{voiceTelNo,jdbcType=VARCHAR},
+		#{voiceWav,jdbcType=VARCHAR},
+		#{voiceText,jdbcType=VARCHAR}, #{apiAppid,jdbcType=VARCHAR}, #{apiAppkey,jdbcType=VARCHAR},
+		#{apiTemplate,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.yjyz.iot.notice.entity.NoticeConfig">
+		insert into t_notice_config
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="appId != null">
+				app_id,
+			</if>
+			<if test="ytxAppid != null">
+				ytx_appid,
+			</if>
+			<if test="signature != null">
+				signature,
+			</if>
+			<if test="verTemplateId != null">
+				ver_template_id,
+			</if>
+			<if test="verTemplate != null">
+				ver_template,
+			</if>
+			<if test="mesTemplateId != null">
+				mes_template_id,
+			</if>
+			<if test="mesTemplate != null">
+				mes_template,
+			</if>
+			<if test="voiceTelNo != null">
+				voice_tel_no,
+			</if>
+			<if test="voiceWav != null">
+				voice_wav,
+			</if>
+			<if test="voiceText != null">
+				voice_text,
+			</if>
+			<if test="apiAppid != null">
+				api_appid,
+			</if>
+			<if test="apiAppkey != null">
+				api_appkey,
+			</if>
+			<if test="apiTemplate != null">
+				api_template,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="appId != null">
+				#{appId,jdbcType=VARCHAR},
+			</if>
+			<if test="ytxAppid != null">
+				#{ytxAppid,jdbcType=VARCHAR},
+			</if>
+			<if test="signature != null">
+				#{signature,jdbcType=VARCHAR},
+			</if>
+			<if test="verTemplateId != null">
+				#{verTemplateId,jdbcType=VARCHAR},
+			</if>
+			<if test="verTemplate != null">
+				#{verTemplate,jdbcType=VARCHAR},
+			</if>
+			<if test="mesTemplateId != null">
+				#{mesTemplateId,jdbcType=VARCHAR},
+			</if>
+			<if test="mesTemplate != null">
+				#{mesTemplate,jdbcType=VARCHAR},
+			</if>
+			<if test="voiceTelNo != null">
+				#{voiceTelNo,jdbcType=VARCHAR},
+			</if>
+			<if test="voiceWav != null">
+				#{voiceWav,jdbcType=VARCHAR},
+			</if>
+			<if test="voiceText != null">
+				#{voiceText,jdbcType=VARCHAR},
+			</if>
+			<if test="apiAppid != null">
+				#{apiAppid,jdbcType=VARCHAR},
+			</if>
+			<if test="apiAppkey != null">
+				#{apiAppkey,jdbcType=VARCHAR},
+			</if>
+			<if test="apiTemplate != null">
+				#{apiTemplate,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yjyz.iot.notice.entity.NoticeConfig">
+		update t_notice_config
+		<set>
+			<if test="ytxAppid != null">
+				ytx_appid = #{ytxAppid,jdbcType=VARCHAR},
+			</if>
+			<if test="signature != null">
+				signature = #{signature,jdbcType=VARCHAR},
+			</if>
+			<if test="verTemplateId != null">
+				ver_template_id = #{verTemplateId,jdbcType=VARCHAR},
+			</if>
+			<if test="verTemplate != null">
+				ver_template = #{verTemplate,jdbcType=VARCHAR},
+			</if>
+			<if test="mesTemplateId != null">
+				mes_template_id = #{mesTemplateId,jdbcType=VARCHAR},
+			</if>
+			<if test="mesTemplate != null">
+				mes_template = #{mesTemplate,jdbcType=VARCHAR},
+			</if>
+			<if test="voiceTelNo != null">
+				voice_tel_no = #{voiceTelNo,jdbcType=VARCHAR},
+			</if>
+			<if test="voiceWav != null">
+				voice_wav = #{voiceWav,jdbcType=VARCHAR},
+			</if>
+			<if test="voiceText != null">
+				voice_text = #{voiceText,jdbcType=VARCHAR},
+			</if>
+			<if test="apiAppid != null">
+				api_appid = #{apiAppid,jdbcType=VARCHAR},
+			</if>
+			<if test="apiAppkey != null">
+				api_appkey = #{apiAppkey,jdbcType=VARCHAR},
+			</if>
+			<if test="apiTemplate != null">
+				api_template = #{apiTemplate,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where app_id = #{appId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yjyz.iot.notice.entity.NoticeConfig">
+		update t_notice_config
+		set ytx_appid = #{ytxAppid,jdbcType=VARCHAR},
+		signature = #{signature,jdbcType=VARCHAR},
+		ver_template_id = #{verTemplateId,jdbcType=VARCHAR},
+		ver_template = #{verTemplate,jdbcType=VARCHAR},
+		mes_template_id = #{mesTemplateId,jdbcType=VARCHAR},
+		mes_template = #{mesTemplate,jdbcType=VARCHAR},
+		voice_tel_no = #{voiceTelNo,jdbcType=VARCHAR},
+		voice_wav = #{voiceWav,jdbcType=VARCHAR},
+		voice_text = #{voiceText,jdbcType=VARCHAR},
+		api_appid = #{apiAppid,jdbcType=VARCHAR},
+		api_appkey = #{apiAppkey,jdbcType=VARCHAR},
+		api_template = #{apiTemplate,jdbcType=VARCHAR}
+		where app_id = #{appId,jdbcType=VARCHAR}
+	</update>
+</mapper>

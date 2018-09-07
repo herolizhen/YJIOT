@@ -1,0 +1,313 @@
+C51 COMPILER V9.52.0.0   TOUCH_KEY                                                         12/18/2017 15:06:02 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE TOUCH_KEY
+OBJECT MODULE PLACED IN .\Objects\touch_key.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\touch_key\touch_key.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\USER\
+                    -IIC;.\USER\UART;.\USER\TM1618;.\USER\Sensor;.\USER;.\USER\PWM;.\USER\DC_MOTOR;.\USER\timer;.\USER\inc;.\USER\EXINT;.\USE
+                    -R\touch_key;.\USER\SYS_RUN;.\USER\step_motor;.\USER\BUZZER;.\USER\UART;.\USER\common;.\USER\lib;.\USER\UV;.\USER\ION;.\U
+                    -SER\EEPROM;.\USER\TM1620;.\USER\charge) DEBUG OBJECTEXTEND PRINT(.\Listings\touch_key.lst) TABS(2) OBJECT(.\Objects\touc
+                    -h_key.obj)
+
+line level    source
+
+   1          #include <stdio.h>
+   2          #include "touch_key.h"
+   3          #include "SOFT_IIC.h"
+   4          #include "timer.h"
+   5          #include "global.h"
+   6          #include "debug_uart.h"
+   7          #include "common.h"
+   8          
+   9          
+  10          KEY_INFO_Typedef  key_info;
+  11          
+  12          
+  13          #define KEY_IIC_DELAY_COUNT  10
+  14          //const unsigned char KEY_IIC_DELAY_COUNT = 10;
+  15          
+  16          void key_i2c_delay(void)
+  17          {
+  18   1        unsigned char i = 0;
+  19   1        for(i = 0;i < KEY_IIC_DELAY_COUNT;i++);
+  20   1      }
+  21          
+  22          
+  23          void Key_IIC_PinConifg(void)
+  24          {
+  25   1           
+  26   1          KEY_IIC_PxM0 &= ~((1 << KEY_IIC_SDA_PORTBIT) | (1 << KEY_IIC_SCL_PORTBIT));
+  27   1          KEY_IIC_PxM1 &= ~((1 << KEY_IIC_SDA_PORTBIT) | (1 << KEY_IIC_SCL_PORTBIT));
+  28   1        
+  29   1          KEY_IIC_SCL_PIN = 1;
+  30   1          KEY_IIC_SDA_PIN = 1;
+  31   1      }
+  32          
+  33          
+  34          
+  35          void Set_KEY_SDA_Pin_Mode(unsigned char mode)
+  36          {
+  37   1          if(mode == PIN_INPUT)
+  38   1          {
+  39   2              //PIN设置为输入时，PxM0对应的位置0，PxM1对应的位置1
+  40   2              KEY_IIC_PxM0 &= ~(1 << KEY_IIC_SDA_PORTBIT);
+  41   2              KEY_IIC_PxM1 |= (1 << KEY_IIC_SDA_PORTBIT);
+  42   2          }
+  43   1          else if(mode == PIN_OUTPUT)
+  44   1          {      
+  45   2              KEY_IIC_PxM0 &= ~(1 << KEY_IIC_SDA_PORTBIT);
+  46   2              KEY_IIC_PxM1 &= ~(1 << KEY_IIC_SDA_PORTBIT);
+  47   2          }
+  48   1      }
+  49            
+  50          void Set_KEY_SCL_Pin_Mode(unsigned char mode)
+  51          {
+C51 COMPILER V9.52.0.0   TOUCH_KEY                                                         12/18/2017 15:06:02 PAGE 2   
+
+  52   1          if(mode == PIN_INPUT)
+  53   1          {
+  54   2              //PIN设置为输入时，PxM0对应的位置0，PxM1对应的位置1
+  55   2              KEY_IIC_PxM0 &= ~(1 << KEY_IIC_SCL_PORTBIT);
+  56   2              KEY_IIC_PxM1 |= ((1 << KEY_IIC_SCL_PORTBIT));
+  57   2          }
+  58   1          else if(mode == PIN_OUTPUT)
+  59   1          {      
+  60   2              KEY_IIC_PxM0 &= ~(1 << KEY_IIC_SCL_PORTBIT);
+  61   2              KEY_IIC_PxM1 &= ~(1 << KEY_IIC_SCL_PORTBIT);     
+  62   2          }
+  63   1      
+  64   1      }
+  65          
+  66          
+  67          void Key_IIC_SDA_1(void)
+  68          {
+  69   1          KEY_IIC_SDA_PIN = 1;
+  70   1      }
+  71          
+  72          void Key_IIC_SDA_0(void)
+  73          {
+  74   1          KEY_IIC_SDA_PIN = 0;
+  75   1      }
+  76          
+  77          void Key_IIC_SCL_1(void)
+  78          {
+  79   1          KEY_IIC_SCL_PIN = 1;
+  80   1      }
+  81          void Key_IIC_SCL_0(void)
+  82          {
+  83   1          KEY_IIC_SCL_PIN = 0;
+  84   1      }
+  85          
+  86          
+  87          unsigned char Key_IIC_SDA_READ(void)
+  88          {
+  89   1          return (KEY_IIC_SDA_PIN ? 1 : 0);
+  90   1      }
+  91          
+  92          
+  93          
+  94          void Get_Key_Status(unsigned char *key_status)
+  95          {
+  96   1          const unsigned char readaddr = 0x17;
+  97   1          unsigned char res = 1;
+  98   1        
+  99   1          IIC_Operations.IIC_NUM = TOUCH_KEY_IIC;
+ 100   1          IIC_Operations.Set_SDA_Pin_Mode = Set_KEY_SDA_Pin_Mode;
+ 101   1          IIC_Operations.Set_SCL_Pin_Mode = Set_KEY_SCL_Pin_Mode;
+ 102   1          IIC_Operations.i2c_delay = key_i2c_delay;
+ 103   1          IIC_Operations.SDA_1 = Key_IIC_SDA_1;
+ 104   1          IIC_Operations.SDA_0 = Key_IIC_SDA_0;
+ 105   1          IIC_Operations.SCL_1 = Key_IIC_SCL_1;
+ 106   1          IIC_Operations.SCL_0 = Key_IIC_SCL_0;
+ 107   1          IIC_Operations.I2C_SDA_READ = Key_IIC_SDA_READ;
+ 108   1        
+ 109   1          
+ 110   1          res = I2C_WriteBytes(OB39A08T1_ADDRESS,&readaddr,1);
+ 111   1          if(res == 0)
+ 112   1          {
+ 113   2              I2C_ReadBytes(OB39A08T1_ADDRESS,key_status,3);
+C51 COMPILER V9.52.0.0   TOUCH_KEY                                                         12/18/2017 15:06:02 PAGE 3   
+
+ 114   2          }
+ 115   1          
+ 116   1      }
+ 117          
+ 118          unsigned char Scan_TouchPad(void)
+ 119          {
+ 120   1          static unsigned char wifi_key_count_times = 0;
+ 121   1          unsigned char whichkey = 0;
+ 122   1          unsigned char temp_status0,temp_status1 = 0;
+ 123   1          static unsigned char last_status0,last_status1 = 0;
+ 124   1        
+ 125   1          //unsigned char debug_buff[20] = {0};
+ 126   1        
+ 127   1          unsigned char key_status[3] = {0};
+ 128   1          
+ 129   1          //如果上电后检测到仓门坏了，则按键不起作用
+ 130   1          //如果仓门正在工作则按键不起作用
+ 131   1          if(IsStepMotorBusy)
+ 132   1          //if(IsStepMotorBusy || IsSysFault)
+ 133   1          {
+ 134   2              return 0xFF;
+ 135   2          }
+ 136   1          
+ 137   1          Get_Key_Status(key_status);
+ 138   1        
+ 139   1          temp_status0 = key_status[2];
+ 140   1          temp_status1 = key_status[1];
+ 141   1        
+ 142   1          //POWER按键和其他按键不能同时按下
+ 143   1          if((temp_status0 == 0 && temp_status1 == 0) || (temp_status0 != 0 && temp_status1 != 0))
+ 144   1          {
+ 145   2              last_status0 = 0;
+ 146   2              last_status1 = 0;
+ 147   2            
+ 148   2              wifi_key_count_times = 0;
+ 149   2      
+ 150   2              Clear_Touch_Info();
+ 151   2              return 0;
+ 152   2          }
+ 153   1          
+ 154   1          if(temp_status0 != 0)
+ 155   1          {
+ 156   2              if(temp_status0 != last_status0)
+ 157   2              {
+ 158   3                  key_info.IsCount = 1;
+ 159   3                  key_info.count_times = 0;
+ 160   3                  key_info.IsTouchedKey = 0;
+ 161   3                  key_info.WhichKey = KEY_NONE;
+ 162   3              }
+ 163   2          }
+ 164   1          
+ 165   1          if(temp_status1 != 0)
+ 166   1          {
+ 167   2              if(temp_status1 != last_status1)
+ 168   2              {
+ 169   3                  key_info.IsCount = 1;
+ 170   3                  key_info.count_times = 0;
+ 171   3                  key_info.IsTouchedKey = 0;
+ 172   3                  key_info.WhichKey = KEY_NONE;
+ 173   3              }
+ 174   2          }
+ 175   1          
+C51 COMPILER V9.52.0.0   TOUCH_KEY                                                         12/18/2017 15:06:02 PAGE 4   
+
+ 176   1          if(key_info.count_times >= (KEY_TOUCH_MS_TIMES * TIMER_BASE))
+ 177   1          {
+ 178   2              //一个按键计数完毕后停止计数，防止一直按着一个按键不松开
+ 179   2              if(temp_status1 != KEY_WIFI_VALUE)
+ 180   2              {
+ 181   3                  key_info.IsCount = 0;
+ 182   3                  key_info.count_times = 0;
+ 183   3                
+ 184   3                  //如果不是按下wifi组合键，先把wifi计数清零
+ 185   3                  wifi_key_count_times = 0;
+ 186   3              }
+ 187   2              else
+ 188   2              {
+ 189   3                  //如果按下的是WIFI按键，则从0重新开始计数，直到检测到按下2秒钟以后再停止
+ 190   3                  key_info.count_times = 0;
+ 191   3              }
+ 192   2      
+ 193   2              
+ 194   2              if(temp_status0 != 0)
+ 195   2              {
+ 196   3                  if(temp_status0 == KEY_POWER_VALUE)
+ 197   3                  {
+ 198   4                      key_info.IsTouchedKey = 1;
+ 199   4                      key_info.WhichKey = KEY_POWER;
+ 200   4                  }
+ 201   3                  else
+ 202   3                  {
+ 203   4                      key_info.IsTouchedKey = 0;
+ 204   4                      key_info.WhichKey = KEY_NONE;
+ 205   4                  }
+ 206   3                  
+ 207   3                  wifi_key_count_times = 0;
+ 208   3              }
+ 209   2              
+ 210   2              if(temp_status1 != 0)
+ 211   2              {         
+ 212   3                  if(temp_status1 == KEY_SPEED_VALUE)
+ 213   3                  {
+ 214   4                      key_info.IsTouchedKey = 1;
+ 215   4                      key_info.WhichKey = KEY_SPEED;
+ 216   4                  }
+ 217   3                  else if(temp_status1 == KEY_TIMER_VALUE)
+ 218   3                  {
+ 219   4                      key_info.IsTouchedKey = 1;
+ 220   4                      key_info.WhichKey = KEY_TIMER;
+ 221   4                  }
+ 222   3                  else if(temp_status1 == KEY_MODE_VALUE)
+ 223   3                  {
+ 224   4                      key_info.IsTouchedKey = 1;
+ 225   4                      key_info.WhichKey = KEY_MODE;
+ 226   4                  }    
+ 227   3                  else if(temp_status1 == KEY_WIFI_VALUE)
+ 228   3                  {
+ 229   4                    
+ 230   4                      wifi_key_count_times += 1;
+ 231   4      //                mymemset(debug_buff,0,mystrlen(debug_buff));
+ 232   4      //                sprintf(debug_buff,"wifi_times:%d\n",(unsigned int)wifi_key_count_times);  
+ 233   4      //                DEBUG_Uart_Sendbytes(debug_buff,mystrlen(debug_buff));  
+ 234   4                    
+ 235   4                      if(wifi_key_count_times >= (2000 / KEY_TOUCH_MS_TIMES))
+ 236   4                      {
+ 237   5                          key_info.IsTouchedKey = 1;
+C51 COMPILER V9.52.0.0   TOUCH_KEY                                                         12/18/2017 15:06:02 PAGE 5   
+
+ 238   5                          key_info.WhichKey = KEY_WIFI;
+ 239   5                        
+ 240   5                          //停止中断中的计数
+ 241   5                          key_info.IsCount = 0;
+ 242   5                          key_info.count_times = 0;
+ 243   5                          //此处wifi_key_count_times不清零，防止一直按着组合键不松开，松开按键后再清零
+ 244   5                      }
+ 245   4                    
+ 246   4                      
+ 247   4      //                key_info.IsTouchedKey = 1;
+ 248   4      //                key_info.WhichKey = KEY_WIFI;
+ 249   4      
+ 250   4                  }              
+ 251   3                  else
+ 252   3                  {
+ 253   4                      key_info.IsTouchedKey = 0;
+ 254   4                      key_info.WhichKey = KEY_NONE;            
+ 255   4                  }
+ 256   3                  
+ 257   3      
+ 258   3              }
+ 259   2                 
+ 260   2          }
+ 261   1              
+ 262   1          last_status0 = temp_status0;    
+ 263   1          last_status1 = temp_status1;
+ 264   1          
+ 265   1          return key_info.WhichKey;
+ 266   1      }
+ 267          
+ 268          
+ 269          void Clear_Touch_Info(void)
+ 270          {
+ 271   1          key_info.IsCount = 0;
+ 272   1          key_info.count_times = 0;
+ 273   1          key_info.IsTouchedKey = 0;
+ 274   1          key_info.WhichKey = KEY_NONE;
+ 275   1      }
+ 276          
+ 277          
+ 278          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    615    ----
+   CONSTANT SIZE    =      3    ----
+   XDATA SIZE       =      9      10
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

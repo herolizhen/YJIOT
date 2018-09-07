@@ -1,0 +1,25 @@
+Designator Footprint               Mid X         Mid Y         Ref X         Ref Y         Pad X         Pad Y TB      Rotation Comment        
+
+LD1        LED1                    102mm       14.25mm         102mm       14.25mm         102mm       15.52mm  T          0.00 ON/OFF         
+LD2        LED1                     77mm       14.25mm          77mm       14.25mm          77mm       15.52mm  T          0.00 SPEED          
+LD3        LED1                     52mm       14.25mm          52mm       14.25mm          52mm       15.52mm  T        360.00 TIMER          
+LD4        LED1                     27mm       14.25mm          27mm       14.25mm          27mm       15.52mm  T          0.00 MODE           
+K1         KEY_1                  99.2mm         6.7mm         102mm       14.25mm        99.2mm         6.7mm  T          0.00 KEY-1          
+K2         KEY_1                  74.2mm         6.7mm          77mm       14.25mm        74.2mm         6.7mm  T          0.00 KEY-1          
+K3         KEY_1                  49.2mm         6.7mm          52mm       14.25mm        49.2mm         6.7mm  T          0.00 KEY-1          
+K4         KEY_1                  24.2mm         6.7mm          27mm       14.25mm        24.2mm         6.7mm  T          0.00 KEY-1          
+J2         SIP4                  39.37mm       3.045mm       43.18mm       3.045mm       43.18mm       3.045mm  T        180.00 CON4           
+J1         YT2.54-4P             8.639mm      21.432mm      12.389mm      21.432mm      12.389mm      21.432mm  T        360.00 CON4           
+Designator PIC_AIRFACTORY-1500     -30.734mm     -64.135mm    118.0022mm      21.559mm     -30.734mm     -64.135mm  T        360.00 Comment        
+C1         0805_C               67.761mm      11.018mm      67.761mm      12.161mm      67.761mm      12.161mm  B        270.00 224            
+C2         0805_C               63.951mm      11.018mm      63.951mm       9.875mm      63.951mm       9.875mm  B         90.00 104            
+R1         0805_R               93.218mm       6.601mm      94.361mm       6.601mm      94.361mm       6.601mm  B        180.00 1K             
+R2         0805_R               70.371mm       7.871mm      70.371mm       6.728mm      70.371mm       6.728mm  B         90.00 1K             
+R3         0805_R               59.328mm      11.018mm      59.328mm       9.875mm      59.328mm       9.875mm  B         90.00 1K             
+R4         0805_R               35.452mm       7.716mm      34.309mm       7.716mm      34.309mm       7.716mm  B        360.00 1K             
+R5         0805_R               35.452mm       15.52mm      36.595mm       15.52mm      36.595mm       15.52mm  B        180.00 331            
+R7         0805_R               71.393mm      20.346mm      71.393mm      21.489mm      71.393mm      21.489mm  B        270.00 331            
+R8         0805_R               93.218mm       15.52mm      92.075mm       15.52mm      92.075mm       15.52mm  B        360.00 331            
+U1         SOP16                64.586mm     18.5745mm      69.031mm      15.717mm      69.031mm      15.717mm  B         90.00 OB39A08T1      
+R6         0805_R               57.804mm      20.346mm      57.804mm      21.489mm      57.804mm      21.489mm  B        270.00 331            
+

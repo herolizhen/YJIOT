@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.device.dao.DevControlMapper">
+	<resultMap id="BaseResultMap" type="com.yjyz.iot.device.entity.DevControl">
+		<id column="id" jdbcType="VARCHAR" property="id" />
+		<result column="device_id" jdbcType="VARCHAR" property="deviceId" />
+		<result column="cmd" jdbcType="VARCHAR" property="cmd" />
+		<result column="status" jdbcType="VARCHAR" property="status" />
+		<result column="dtime" jdbcType="TIMESTAMP" property="dtime" />
+		<result column="op_user" jdbcType="VARCHAR" property="opUser" />
+		<result column="parm" jdbcType="VARCHAR" property="parm" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, device_id, cmd, status, dtime, op_user, parm
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_dev_control
+		where id = #{id,jdbcType=VARCHAR}
+	</select>
+
+	<select id="selectLastStatusByDid" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		SELECT
+		y.*
+		FROM
+		t_dev_control y,
+		(
+		SELECT
+		tc.cmd AS cmd,
+		tc.dtime AS dtime
+		FROM
+		t_dev_control tc
+		WHERE
+		tc. STATUS = '0' and
+		tc.device_id =  #{deviceId,jdbcType=VARCHAR}
+		GROUP BY
+		tc.cmd
+		) d
+		WHERE
+		y.dtime = d.dtime
+		AND y.cmd = d.cmd
+		AND y. STATUS = '0'
+		AND y.device_id =  #{deviceId,jdbcType=VARCHAR};
+	</select>
+
+	<update id="updateStatusByDid" parameterType="java.lang.String">
+		update
+		t_dev_control
+		set status = '1'
+		where status = '0' 
+		and device_id = #{deviceId,jdbcType=VARCHAR}
+	</update>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		t_dev_control
+		where id = #{id,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.yjyz.iot.device.entity.DevControl">
+		insert into t_dev_control (id,
+		device_id, cmd,
+		status, dtime, op_user,
+		parm)
+		values
+		(#{id,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR},
+		#{cmd,jdbcType=VARCHAR},
+		#{status,jdbcType=VARCHAR},
+		#{dtime,jdbcType=TIMESTAMP}, #{opUser,jdbcType=VARCHAR},
+		#{parm,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.yjyz.iot.device.entity.DevControl">
+		insert into t_dev_control
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="deviceId != null">
+				device_id,
+			</if>
+			<if test="cmd != null">
+				cmd,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="dtime != null">
+				dtime,
+			</if>
+			<if test="opUser != null">
+				op_user,
+			</if>
+			<if test="parm != null">
+				parm,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceId != null">
+				#{deviceId,jdbcType=VARCHAR},
+			</if>
+			<if test="cmd != null">
+				#{cmd,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="dtime != null">
+				#{dtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="opUser != null">
+				#{opUser,jdbcType=VARCHAR},
+			</if>
+			<if test="parm != null">
+				#{parm,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yjyz.iot.device.entity.DevControl">
+		update t_dev_control
+		<set>
+			<if test="deviceId != null">
+				device_id = #{deviceId,jdbcType=VARCHAR},
+			</if>
+			<if test="cmd != null">
+				cmd = #{cmd,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=VARCHAR},
+			</if>
+			<if test="dtime != null">
+				dtime = #{dtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="opUser != null">
+				op_user = #{opUser,jdbcType=VARCHAR},
+			</if>
+			<if test="parm != null">
+				parm = #{parm,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yjyz.iot.device.entity.DevControl">
+		update
+		t_dev_control
+		set device_id = #{deviceId,jdbcType=VARCHAR},
+		cmd =
+		#{cmd,jdbcType=VARCHAR},
+		status = #{status,jdbcType=VARCHAR},
+		dtime =
+		#{dtime,jdbcType=TIMESTAMP},
+		op_user = #{opUser,jdbcType=VARCHAR},
+		parm
+		= #{parm,jdbcType=VARCHAR}
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+</mapper>

@@ -1,0 +1,61 @@
+﻿@using YJIOT.ShareAirAPP.ViewModel
+@using YJIOT.ShareAirAPP.Models
+@model ShareProcessViewModel
+<div id="longtable" class="app-content">
+    <div class="weui-cells__title">登录验证</div>
+    <div class="weui-cells weui-cells_form">
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">用户名</label></div>
+            <div class="weui-cell__bd">
+                <input id="input-username" class="weui-input" type="text" placeholder="请输入用户名" value=""/>
+            </div>
+        </div>
+        <div class="weui-cell">
+            <div class="weui-cell__hd"><label class="weui-label">密码</label></div>
+            <div class="weui-cell__bd">
+                <input id="input-password" class="weui-input" type="password" placeholder="请输入密码" value=""/>
+            </div>
+        </div>
+    </div>
+    @using (Html.BeginForm("Operation", "Manage", FormMethod.Post, new { id = "OperationForm" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.OpenID)
+        @Html.HiddenFor(m => m.DevicePwd)
+    }
+    <div class="weui-btn-area">
+        <a onclick="onSubmit()" class="weui-btn weui-btn_primary">登录</a>
+    </div>
+</div>
+@section Style{
+    <style>
+        #longtable {
+            width: 50%;
+            height: auto;
+            position: absolute;
+            top: 30%;
+            left: 30%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+}
+@section Script{
+    <script type="text/javascript">
+        function onSubmit() {
+            var username = $('#input-username').val();
+            var password = $('#input-password').val();
+            if ($app.isNull(username)) {
+                $.toptip('请输入用户名', 3000, 'error');
+                return;
+            }
+            if ($app.isNull(password)) {
+                $.toptip('请输入密码', 3000, 'error');
+                return;
+            }
+            $('#OpenID').val(username);
+            $('#DevicePwd').val(password);
+            $('#OperationForm').submit();
+        }
+    </script>
+}

@@ -1,0 +1,179 @@
+package com.yjyz.iot.ota.action;
+
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.yjyz.iot.comm.ConstParm;
+import com.yjyz.iot.comm.RetInfoDto;
+import com.yjyz.iot.ota.entity.OTAFileInfo;
+import com.yjyz.iot.ota.service.IOTAFileService;
+import com.yjyz.iot.security.utils.ClientJwtUtil;
+
+@RestController
+@RequestMapping("/otaFile")
+public class OTAFileController {
+	@Autowired
+	private IOTAFileService otaFileService;
+
+	@Autowired
+	ClientJwtUtil jwtUtil;
+	private static Log log = LogFactory.getLog(OTAFileController.class);
+
+	@Transactional
+	@RequestMapping(value = "/selectByProduceId", method = RequestMethod.POST)
+	public RetInfoDto selectByProduceId(@RequestBody OTAFileInfo dto, @RequestHeader String Authorization) {
+		RetInfoDto info = new RetInfoDto();
+		try {
+			jwtUtil.parseToken(Authorization);
+		} catch (Exception e) {
+			info.meta.put("message", "access token is wrong!");
+			info.meta.put("code", ConstParm.ERR_CODE_JWT);
+			return info;
+		}
+
+		try {
+			List<OTAFileInfo> listOTAFile = this.otaFileService.selectByProduceId(dto.getProductId());
+			if (listOTAFile.size() == 0) {
+				info.meta.put("message", "selectByProduceId data is null.");
+				info.meta.put("code", ConstParm.ERR_NO_OTAFILE);
+			} else {
+				info.meta.put("code", ConstParm.SUCESS_CODE);
+				info.data.put("listOTAFile", listOTAFile);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			info.meta.put("message", "selectByProduceId fail.");
+			info.meta.put("code", ConstParm.ERR_OTAFILE_SELECT);
+		}
+		return info;
+	}
+
+	@Transactional
+	@RequestMapping(value = "/delete", method = RequestMethod.POST)
+	public RetInfoDto delete(@RequestBody OTAFileInfo dto, @RequestHeader String Authorization) {
+		RetInfoDto info = new RetInfoDto();
+		try {
+			jwtUtil.parseToken(Authorization);
+		} catch (Exception e) {
+			info.meta.put("message", "access token is wrong!");
+			info.meta.put("code", ConstParm.ERR_CODE_JWT);
+			return info;
+		}
+
+		try {
+			boolean isOk = this.otaFileService.deleteByPrimaryKey(dto.getId());
+			if (isOk) {
+				info.meta.put("code", ConstParm.SUCESS_CODE);
+			} else {
+				info.meta.put("message", "delete fail.");
+				info.meta.put("code", ConstParm.ERR_NO_OTAFILE);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			info.meta.put("message", "delete fail.");
+			info.meta.put("code", ConstParm.ERR_OTAFILE_DELETE);
+		}
+		return info;
+	}
+
+	@Transactional
+	@RequestMapping(value = "/insert", method = RequestMethod.POST)
+	public RetInfoDto insert(@RequestBody OTAFileInfo dto,
+			@RequestParam(value = "fileField", required = true) MultipartFile file,
+			@RequestHeader String Authorization) {
+		RetInfoDto info = new RetInfoDto();
+		try {
+			jwtUtil.parseToken(Authorization);
+		} catch (Exception e) {
+			info.meta.put("message", "access token is wrong!");
+			info.meta.put("code", ConstParm.ERR_CODE_JWT);
+			return info;
+		}
+
+		try {
+			OTAFileInfo otaFile = this.otaFileService.insert(dto, file);
+			if (otaFile == null) {
+				info.meta.put("message", "insert fail.");
+				info.meta.put("code", ConstParm.ERR_NO_OTAFILE);
+			} else {
+				info.meta.put("code", ConstParm.SUCESS_CODE);
+				info.data.put("otaFile", otaFile);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			info.meta.put("message", "delete fail.");
+			info.meta.put("code", ConstParm.ERR_OTAFILE_INSERT);
+		}
+		return info;
+	}
+
+	@Transactional
+	@RequestMapping(value = "/select", method = RequestMethod.POST)
+	public RetInfoDto select(@RequestBody OTAFileInfo dto, @RequestHeader String Authorization) {
+		RetInfoDto info = new RetInfoDto();
+		try {
+			jwtUtil.parseToken(Authorization);
+		} catch (Exception e) {
+			info.meta.put("message", "access token is wrong!");
+			info.meta.put("code", ConstParm.ERR_CODE_JWT);
+			return info;
+		}
+
+		try {
+			OTAFileInfo otaFile = this.otaFileService.selectByPrimaryKey(dto.getId());
+			if (otaFile == null) {
+				info.meta.put("message", "select fail.");
+				info.meta.put("code", ConstParm.ERR_NO_OTAFILE);
+			} else {
+				info.meta.put("code", ConstParm.SUCESS_CODE);
+				info.data.put("otaFile", otaFile);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			info.meta.put("message", "delete fail.");
+			info.meta.put("code", ConstParm.ERR_OTAFILE_SELECT);
+		}
+		return info;
+	}
+
+	@Transactional
+	@RequestMapping(value = "/update", method = RequestMethod.POST)
+	public RetInfoDto update(@RequestBody OTAFileInfo dto, @RequestHeader String Authorization) {
+		RetInfoDto info = new RetInfoDto();
+		try {
+			jwtUtil.parseToken(Authorization);
+		} catch (Exception e) {
+			info.meta.put("message", "access token is wrong!");
+			info.meta.put("code", ConstParm.ERR_CODE_JWT);
+			return info;
+		}
+
+		try {
+			boolean isOk = this.otaFileService.updateByPrimaryKey(dto);
+			if (isOk) {
+				info.meta.put("code", ConstParm.SUCESS_CODE);
+			} else {
+				info.meta.put("message", "update fail.");
+				info.meta.put("code", ConstParm.ERR_NO_OTAFILE);
+
+			}
+		} catch (Exception e) {
+			log.error(e);
+			info.meta.put("message", "delete fail.");
+			info.meta.put("code", ConstParm.ERR_OTAFILE_UPDATE);
+		}
+		return info;
+	}
+
+}

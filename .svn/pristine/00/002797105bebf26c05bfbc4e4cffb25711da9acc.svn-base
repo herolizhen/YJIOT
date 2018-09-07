@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.security.dao.PowUserRoleMapper">
+	<resultMap id="BaseResultMap" type="com.yjyz.iot.security.entity.PowUserRoleKey">
+		<id column="role_id" jdbcType="VARCHAR" property="roleId" />
+		<id column="username" jdbcType="VARCHAR" property="username" />
+	</resultMap>
+	<delete id="deleteByPrimaryKey" parameterType="com.yjyz.iot.security.entity.PowUserRoleKey">
+		delete from t_pow_user_role
+		where role_id = #{roleId,jdbcType=VARCHAR}
+		and username = #{username,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.yjyz.iot.security.entity.PowUserRoleKey">
+		insert into t_pow_user_role (role_id, username)
+		values (#{roleId,jdbcType=VARCHAR}, #{username,jdbcType=VARCHAR})
+	</insert>
+	<select id="selectRoleByUser" parameterType="com.yjyz.iot.security.entity.PowUserRoleKey"
+		resultType="com.yjyz.iot.security.entity.PowRole">
+		select pr.*
+		from t_pow_user_role pur,t_pow_role pr
+		where pur.role_id = pr.role_id
+		and pur.username #{username,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectUserByRole" parameterType="com.yjyz.iot.security.entity.PowUserRoleKey"
+		resultType="com.yjyz.iot.security.entity.PowSysUser">
+		select psu.*
+		from t_pow_user_role pur,t_pow_sys_user psu
+		where pur.username = psu.username
+		and pur.username #{username,jdbcType=VARCHAR}
+	</select>
+	<insert id="insertSelective" parameterType="com.yjyz.iot.security.entity.PowUserRoleKey">
+		insert into t_pow_user_role
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="roleId != null">
+				role_id,
+			</if>
+			<if test="username != null">
+				username,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="roleId != null">
+				#{roleId,jdbcType=VARCHAR},
+			</if>
+			<if test="username != null">
+				#{username,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+</mapper>

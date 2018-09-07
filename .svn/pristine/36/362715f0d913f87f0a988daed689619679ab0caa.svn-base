@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<appSettings>
+  <!--MVC配置-->
+  <add key="webpages:Version" value="3.0.0.0" />
+  <add key="webpages:Enabled" value="false" />
+  <add key="ClientValidationEnabled" value="false" />
+  <add key="UnobtrusiveJavaScriptEnabled" value="false" />
+  <add key="vs:EnableBrowserLink" value="false" />
+  <!--微信配置-->
+  <add key="Tencent:Timeout" value="3000"/><!--微信访问超时（秒）-->
+  <add key="Tencent:APPToken" value="AsDZqRwjcm"/><!--微信公众平台令牌-->
+  <add key="Tencent:APPID" value="wxe427f2443ad5fca8"/><!--微信公众平台应用ID-->
+  <add key="Tencent:MCHID" value="1384201202"/><!--商户号-->
+  <add key="Tencent:MCHKEY" value="cdc8d70ab187418781e6e23a2de27f54"/><!--商户支付密钥-->
+  <add key="Tencent:APPSECRET" value="13aefc40d9fdbfba1c84fd0266752420"/><!--公众号开发者身份的密码-->
+  <add key="Tencent:EncodingAESKey" value="2f71XSXEJwztfF3BN0vQmkOofFOMMLVn353w4YdVXLY"/><!--消息加解密密钥-->
+  <add key="Tencent:NOTIFY_URL" value="https://www.yjiot.net/WeChatMessage.aspx"/><!--支付结果通知url-->
+  <add key="Tencent:AAUTHURL" value="https://www.yjiot.net/WeChat/Index"/><!--微信登录回调url-->
+  <add key="Tencent:COMMODITY" value="一方净土-共享好空气"/><!--微信商品描述-->
+  <add key="Tencent:JSSDKURL" value="https://www.yjiot.net/WeChat/Index"/><!--微信支付JSSDK界面url-->
+  <add key="Tencent:JSSDKAPILIST" value="chooseWXPay"/><!--微信支付JSSDK界面url-->
+  <!--支付宝配置-->
+  <add key="Alipay:COMMODITY" value="一方净土-共享好空气"/><!--商品描述-->
+  <add key="Alipay:Timeout" value="3000"/><!--访问超时（秒）-->
+  <add key="Alipay:APPID" value="2017082408354266"/><!--应用ID-->
+  <add key="Alipay:APP_PUBLIC_KEY" value="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsFfidRIKQGw5J5eA63UuEjQHdm7IK5IOuvSKLKh4yb0ZD9qHY2p7VB5tyDvrI1aR44+MCKkcvywPxILUbe+0JciwUHU+JZIJGIBe270gJmsI1Ug/JgyS8G+fwdIp8BWyKZI3Fe28DPf8d6IQxwXw5ArIs/6lXk2VS0mBs5Jn3RhY88EEDQCKgpFtIwejzTsm7CWizwaTKub0/brpBwkoqNnU90NMmdTKUo2XXqD03AoR4sMe4FgHH2CVjMdR1jFLDa5PyK2kyxh3AxCrZZ4ioeSYK8O+nIP5qRislSc8p0yQJXnFHVw3SZB6TCLcVi04idCzcZaGeW0/7Zae+ClNowIDAQAB"/> <!--应用公钥-->
+  <add key="Alipay:APP_PRIVATE_KEY" value="MIIEpAIBAAKCAQEAsFfidRIKQGw5J5eA63UuEjQHdm7IK5IOuvSKLKh4yb0ZD9qHY2p7VB5tyDvrI1aR44+MCKkcvywPxILUbe+0JciwUHU+JZIJGIBe270gJmsI1Ug/JgyS8G+fwdIp8BWyKZI3Fe28DPf8d6IQxwXw5ArIs/6lXk2VS0mBs5Jn3RhY88EEDQCKgpFtIwejzTsm7CWizwaTKub0/brpBwkoqNnU90NMmdTKUo2XXqD03AoR4sMe4FgHH2CVjMdR1jFLDa5PyK2kyxh3AxCrZZ4ioeSYK8O+nIP5qRislSc8p0yQJXnFHVw3SZB6TCLcVi04idCzcZaGeW0/7Zae+ClNowIDAQABAoIBAQCc2J5oiHIr2NaBO4UEaIZg1Hwqv+A0uMV3Thg0HmjI7vOCoVk4eLZXHHWC2qCLHu3F3KCt91TFSPiBTeiKG+E8liMUfSOYoSqL62nzwmT9JsiFg6v/OMHdLzuGVlrM209LIGz0iS5wzoV1FuYbT1JyUpEvX3hQx2rZuvis8rSE9i9aQ4mi8LuwbYNKJInI7lRusSZpjC1gNAzEfgqhWBRzskylL4Rgc5crsUNPAhi00lmu6FZ+ZZ14XdMf30AYJ6x+Gr8dyxwLooScwdlMaL5e7JbWWQtewHnDNOrJMwq2DEJn5rYXgF/1WMjgDUUY9LT0F2hJN4FHie9htzTI8w7RAoGBAOEBJmVsfsIcalJDLH+oun6Thg4bxxF1GOOnlZFGyfzdfFeJ/A/7KBCKG7J7pnn6tNTuTHSyPmmbeY5gjsGuztdNF8C8wNOxFFdR4qn4JT7fqbHWcV/KQKNLNL1uycStef3eQqfyQPb0GEQ+U9KQ08dd2A6b+yZL8Ewq7MJdnsPZAoGBAMiiruj1tJjaZ/a1tqVfVqT6RKzmbVJkRkQRVi24WyXAl+K6vCkW/dEaG5U1zQNsu0UFfqNwnN4zl+0HqYzOOD+4P0NIMBKptSQt5RSGuGL+aje0PcmXHHIy398wkEOd7xSo9k8mafwXb+als5NqmVRSvFkHqAWTVQAujIOIovvbAoGBAIG7YwMZsmCDd74koxScGaN/tcyOsZHcPVSNvMw9z5qvrdDfa2lfe7NFnkCj0NIF/pvDJmwmlZvYnBa+j7EW9IXpGmfzrQ6hzEOooBM2U2tUFIjIRyhe+jPs2eTbaxSunWcF7tLc+B4rkY5PjY8cGC+caUXLI9zp7gxMt6Q9zJvJAoGAH4IM3eDYP7js4r2etVHHlZkH9+8n8+xzbHUch4mQJtmcAKs6qWlG6vOiqUgNriABONGoFZq1x99qWHr/kXFBPCB/Lt3DTur/23KpqxONGV7C54SSv3nPqc97gN1rinLe/Oub4soxkrlLhXk4PkpbUfa8RW8CX/3HN4QX5QAsOEkCgYBHMUwVjEoav7lxlhuDVZf3sVQyMHg7MFIwcGbAAKQbwDyqWDLm4hVylSlQzSGs3Sq4Yy2M31hHXt3gVXxhTLKUUZVscUu9yhdKqnxaV48LrW8CNMcfbtXpd9uJ7m6xtH/wsbe36UV9p+ReEThkt8rzHbWe21EYFt6dC3B1k8HBBg=="/><!--应用私钥-->
+  <add key="Alipay:ALIPAY_PUBLIC_KEY" value="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoYSJjI+yDFvlZww+Jn2thCB6u8Az/xvyZ1iNf40DkaGI9DYt/XSpL7zDxerkK1bCHSH/q9DMUSGEKEvYobZgYsyT62Il5rW8gGuUkIRiXf3TLzSM27IfP+mKwALuIWTskD7pfdhOSm9NhRFP4Zx/XOmHkDn76FXtJak3YfMnYgHGbCfUfXt97w5DvOlWa9m7U14Utz+XE6qh3Y/4qY0HI0D4JQBINSQDQMM/Haja+kKJyzcM/FX97TIL9btjwcbikTl8MX88m67t6DaDqh67xOrGwaZCTztBqkWe9zzwM2HZ3vPvatKPH8xApxU1T9MzSY4mTGDFvUyJdfNQRmDi5QIDAQAB"/><!--支付KEY-->
+  <add key="Alipay:AAUTHURL" value="https://www.yjiot.net/Alipay/Index"/><!--登录回调URL-->
+  <add key="Alipay:NOTIFY_URL" value="https://www.yjiot.net/AlipayMessage.aspx"/><!--支付通知-->
+  <add key="Alipay:QuitUrl" value="https://www.yjiot.net/html5/alipayquit.html"/><!--取消支付回调-->
+  <!--IOT配置-->
+  <add key="IOT:Host" value="https://www.yjiot.net"/>
+  <add key="IOT:MQTTHOST" value="io.bjyjyz.com"/>
+  <add key="IOT:MQTTPATH" value="/mqtt"/>
+  <add key="IOT:MQTTPORT" value="443"/>
+  <add key="IOT:MQTTTOPIC" value="d2c.{0}.status"/>
+  <add key="IOT:PostRegister" value="https://io.bjyjyz.com/YJIOT/client/register"/><!--微信用户注册-->
+  <add key="IOT:PostGetDevInfo" value="https://io.bjyjyz.com/YJIOT/client/getDevInfo"/><!--获取设备信息-->
+  <add key="IOT:PostGetChargeInfo" value="https://io.bjyjyz.com/YJIOT/client/getChargeInfo"/><!--获取设备最近消费信息和消费套餐-->
+  <add key="IOT:PostPreBill" value="https://io.bjyjyz.com/YJIOT/client/preBill"/><!--下单，预缴费-->
+  <add key="IOT:PostConsume" value="https://io.bjyjyz.com/YJIOT/client/consume"/><!--确认缴费-->
+  <add key="IOT:PostDevInfoByOrerNo" value="https://io.bjyjyz.com/YJIOT/client/getDevInfoByOrerNo"/><!--确认缴费-->
+<!--应用配置-->
+  <add key="USE:CUETIMEOUT" value="60"/><!--应用消费提示超时（分钟）-->
+  <add key="USE:EXPIRESTIME" value="40"/><!--应用Token到期盈余时长（分钟）-->
+  <add key="USE:DebugException" value="C:\Users\Public\Documents\ShareAirAPP\Exception"/><!--异常信息输出目录-->
+</appSettings>

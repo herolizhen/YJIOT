@@ -1,0 +1,814 @@
+C51 COMPILER V9.52.0.0   WIFI_UART                                                         10/19/2017 17:07:45 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE WIFI_UART
+OBJECT MODULE PLACED IN .\Objects\wifi_uart.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\UART\wifi_uart.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\USER\IIC;.
+                    -\USER\UART;.\USER\TM1618;.\USER\Sensor;.\USER;.\USER\PWM;.\USER\DC_MOTOR;.\USER\timer;.\USER\inc;.\USER\EXINT;.\USER\tou
+                    -ch_key;.\USER\SYS_RUN;.\USER\step_motor;.\USER\BUZZER;.\USER\UART;.\USER\common;.\USER\lib;.\USER\UV;.\USER\ION;.\USER\E
+                    -EPROM;.\USER\TM1620;.\USER\charge) DEBUG OBJECTEXTEND PRINT(.\Listings\wifi_uart.lst) TABS(2) OBJECT(.\Objects\wifi_uart
+                    -.obj)
+
+line level    source
+
+   1          #include <stdio.h>
+   2          #include "wifi_uart.h"
+   3          #include "global.h"
+   4          #include "TM1618.h"
+   5          #include "common.h"
+   6          #include "dc_motor.h"
+   7          #include "UV.h"
+   8          #include "ION.h"
+   9          #include "sys_run.h"
+  10          #include "debug_uart.h"
+  11          #include "TM1620.h"
+  12          #include "sys_run.h"
+  13          #include "buzzer.h"
+  14          #include "step_motor.h"
+  15          #include "timer.h"
+  16          #include "UART0.h"
+  17          
+  18          
+  19          union{
+  20            
+  21            unsigned char b[4];
+  22            float f;
+  23            
+  24          }cfloat;
+  25          
+  26          
+  27          #ifdef WIFI_SOFT_IIC
+              void Wifi_Uart_Init(void)
+              {
+                 //TXDÉèÎªÊä³ö
+                 WIFI_UART_PxM0 &= ~(1 << WIIF_UART_TXD_PORTBIT);
+                 WIFI_UART_PxM1 &= ~(1 << WIIF_UART_TXD_PORTBIT); 
+                
+                 //RXDÉèÎªÊäÈë
+              //   WIFI_UART_PxM0 &= ~(1 << WIFI_UART_RXD_PORTBIT);
+              //   WIFI_UART_PxM1 |= (1 << WIFI_UART_RXD_PORTBIT); 
+                
+                 WIFI_UART_PxM0 &= ~(1 << WIFI_UART_RXD_PORTBIT);
+                 WIFI_UART_PxM1 &= ~(1 << WIFI_UART_RXD_PORTBIT); 
+                
+                 WIFI_UART_TXD_PIN = 1;
+                 WIFI_UART_RXD_PIN = 1;
+                
+                 mymemset(U2RxBuffer,0,U2RxBuff_MAXSIZE);
+                 
+              }
+              #endif
+  48          
+  49          
+  50          
+  51          #ifdef WIFI_SOFT_IIC    //Ä£ÄâIIC
+C51 COMPILER V9.52.0.0   WIFI_UART                                                         10/19/2017 17:07:45 PAGE 2   
+
+              void Wifi_Uart_Sendbytes(unsigned char *sendbuff,unsigned char sendnum)
+              {
+                  unsigned char i = 0;
+                
+                  if(sendnum + U2LdPtr > U2TxBuff_MAXSIZE)
+                  {
+                      return;
+                  }
+                  for(i = 0;i < sendnum;i++)
+                  {
+                      U2TxBuffer[i + U2LdPtr] = sendbuff[i];
+                  }
+                  U2LdPtr += sendnum;
+                  if(IsU2TxBusy == 0)
+                  {
+                      U2TxBitCount = 10;
+                      U2TxRate = 3;
+                  }
+              
+              }
+              #else  //Ó²¼þIIC
+  73          void Wifi_Uart_Sendbytes(unsigned char *sendbuff,unsigned char sendnum)
+  74          {
+  75   1          unsigned char i = 0;
+  76   1          
+  77   1          for(i = 0;i < sendnum;i++)
+  78   1          {
+  79   2              UART0_TX(sendbuff[i]);
+  80   2          }
+  81   1      }
+  82          
+  83          #endif
+  84          
+  85          
+  86          
+  87          unsigned char Wifi_Uart_ReceiveOnePackage(unsigned char *reveivebuff,unsigned char receive_num)
+  88          {
+  89   1          unsigned char i = 0;
+  90   1          unsigned char max_receive_num = 0;
+  91   1        
+  92   1       #ifdef WIFI_SOFT_IIC  //Ä£ÄâIIC    
+                  if(IsU2RxBusy)
+                  {
+                      return 0;
+                  }
+                
+                  if(receive_num > U2RxBuff_MAXSIZE)
+                  {
+                      max_receive_num = U2RxBuff_MAXSIZE;
+                  }
+                  else
+                  {
+                      max_receive_num = receive_num;
+                  }
+                   
+                  while(i < U2RxPtr)
+                  {
+                      reveivebuff[i] = U2RxBuffer[i];
+                      i += 1;
+                  }
+                  
+                  mymemset(U2RxBuffer,0,i);
+C51 COMPILER V9.52.0.0   WIFI_UART                                                         10/19/2017 17:07:45 PAGE 3   
+
+                  U2RxPtr = 0;
+               #else
+ 116   1          
+ 117   1      //    if(receive_num > U0RxBuff_MAXSIZE)
+ 118   1      //    {
+ 119   1      //        max_receive_num = U0RxBuff_MAXSIZE;
+ 120   1      //    }
+ 121   1      //    else
+ 122   1      //    {
+ 123   1      //        max_receive_num = receive_num;
+ 124   1      //    }
+ 125   1           
+ 126   1          while(i < U0RxPtr)
+ 127   1          {
+ 128   2              reveivebuff[i] = U0RxBuffer[i];
+ 129   2              i += 1;
+ 130   2          }
+ 131   1          
+ 132   1          mymemset(U0RxBuffer,0,i);
+ 133   1          U0RxPtr = 0;  
+ 134   1       #endif    
+ 135   1             
+ 136   1          return i;
+ 137   1      
+ 138   1      }
+*** WARNING C280 IN LINE 87 OF USER\UART\wifi_uart.c: 'receive_num': unreferenced local variable
+ 139          
+ 140          
+ 141          
+ 142          void Deal_Wifi_Uart_Data(void)
+ 143          {
+ 144   1          static unsigned char wifi_data_buff[WIFI_DATA_BUFF_SIZE] = {0};
+ 145   1          static unsigned char wifi_buff_index = 0;
+ 146   1          unsigned char get_wifi_data_num = 0;
+ 147   1          unsigned char i,j = 0;
+ 148   1          //unsigned char num = 0;
+ 149   1          unsigned char framelength = 0;
+ 150   1          unsigned char index_temp = 0;
+ 151   1          //unsigned char debug_buff[100] = {0};
+ 152   1        
+ 153   1          //½ÓÊÕµÄÊý¾Ý³¤¶È±£Ö¤²»Ô½½ç
+ 154   1          get_wifi_data_num = Wifi_Uart_ReceiveOnePackage(wifi_data_buff + wifi_buff_index,(WIFI_DATA_BUFF_SIZE 
+             -- wifi_buff_index));
+ 155   1          
+ 156   1          if(get_wifi_data_num > 0)
+ 157   1          {
+ 158   2      //        mymemset(debug_buff,0,100);
+ 159   2      //        sprintf(debug_buff,"get data:%x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x %x\n",(uns
+             -igned int)wifi_data_buff[0],(unsigned int)wifi_data_buff[1],(unsigned int)wifi_data_buff[2],(unsigned int)wifi_data_buff
+             -[3],
+ 160   2      //                   (unsigned int)wifi_data_buff[4],(unsigned int)wifi_data_buff[5],(unsigned int)wifi_da
+             -ta_buff[6],(unsigned int)wifi_data_buff[7],(unsigned int)wifi_data_buff[8],(unsigned int)wifi_data_buff[9],
+ 161   2      //                   (unsigned int)wifi_data_buff[10],(unsigned int)wifi_data_buff[11],(unsigned int)wifi_
+             -data_buff[12],(unsigned int)wifi_data_buff[13],(unsigned int)wifi_data_buff[14],(unsigned int)wifi_data_buff[15],
+ 162   2      //                   (unsigned int)wifi_data_buff[16],(unsigned int)wifi_data_buff[17],(unsigned int)wifi_
+             -data_buff[18],(unsigned int)wifi_data_buff[19]);
+ 163   2      //        DEBUG_Uart_Sendbytes(debug_buff,mystrlen(debug_buff));
+ 164   2          }
+ 165   1      
+ 166   1          
+ 167   1          if(get_wifi_data_num == 0)
+ 168   1          {
+C51 COMPILER V9.52.0.0   WIFI_UART                                                         10/19/2017 17:07:45 PAGE 4   
+
+ 169   2              return;
+ 170   2          }
+ 171   1          
+ 172   1          wifi_buff_index += get_wifi_data_num;
+ 173   1          index_temp = wifi_buff_index;
+ 174   1          
+ 175   1          for(i = 0;i < wifi_buff_index;i++)
+ 176   1          {
+ 177   2              if(wifi_data_buff[i] == 0x2A && i != 0)
+ 178   2              {
+ 179   3                         
+ 180   3                  framelength = wifi_data_buff[i-1];
+ 181   3                
+ 182   3      //            mymemset(debug_buff,0,100);
+ 183   3      //            sprintf(debug_buff,"get data:");
+ 184   3      //            for(num = 0;num < framelength + 1;num++)
+ 185   3      //            {
+ 186   3      //                sprintf(debug_buff + 9 + num * 3,"%x ",(unsigned int)wifi_data_buff[i-1 + num]);
+ 187   3      //            }
+ 188   3      //            sprintf(debug_buff + 9 + num * 3 + 1,"\n");
+ 189   3      //            DEBUG_Uart_Sendbytes(debug_buff,mystrlen(debug_buff));
+ 190   3      
+ 191   3                  //Õý³£Çé¿öÏÂ´¦ÀíÊý¾ÝÖ¡
+ 192   3                  if( (i + framelength) <= wifi_buff_index)
+ 193   3                  //if( i < wifi_buff_index)
+ 194   3                  {
+ 195   4                    
+ 196   4                     
+ 197   4                      //ÕýÈ·Êý¾ÝÖ¡£¬¶øÇÒÊý¾Ýµ½×îºóÁË£¬ºóÃæÃ»ÓÐÓÐÐ§Êý¾ÝÁË
+ 198   4                      //deal with data
+ 199   4                     //do something
+ 200   4                      if(wifi_data_buff[i + framelength - 1] == 0x23)           
+ 201   4                      {
+ 202   5      //                    mymemset(debug_buff,0,40);
+ 203   5      //                    sprintf(debug_buff,"get data:");
+ 204   5      //                    DEBUG_Uart_Sendbytes(debug_buff,mystrlen(debug_buff));
+ 205   5      //                  
+ 206   5      //                    mymemset(debug_buff,0,40);
+ 207   5      //                  sprintf(debug_buff,"%x %x %x %x %x %x %x %x %x %x %x %x %x\n",(unsigned int)wifi_data_
+             -buff[i-1],(unsigned int)wifi_data_buff[i],(unsigned int)wifi_data_buff[i+1],
+ 208   5      //                             (unsigned int)wifi_data_buff[i+2],(unsigned int)wifi_data_buff[i+3],(unsign
+             -ed int)wifi_data_buff[i+4],(unsigned int)wifi_data_buff[i+5],(unsigned int)wifi_data_buff[i+6],
+ 209   5      //                               (unsigned int)wifi_data_buff[i+7],(unsigned int)wifi_data_buff[i+8],(unsi
+             -gned int)wifi_data_buff[i+9],
+ 210   5      //                                     (unsigned int)wifi_data_buff[i+10],(unsigned int)wifi_data_buff[i+1
+             -1]);
+ 211   5      //                    DEBUG_Uart_Sendbytes(debug_buff,mystrlen(debug_buff));
+ 212   5                        
+ 213   5                          deal_frame_data(wifi_data_buff + i -1);
+ 214   5                        
+ 215   5                          //·ÀÖ¹¶àÖ¡Êý¾ÝµÄ¿ÉÄÜ
+ 216   5                          i += framelength;
+ 217   5                          if(i < wifi_buff_index)
+ 218   5                          {
+ 219   6                              //ºóÃæ»¹ÓÐÊý¾Ý£¬Ìø³ö´Ë´ÎÑ­»·£¬¼ÌÐø´¦ÀíÊý¾Ý
+ 220   6                              continue;
+ 221   6                              
+ 222   6                          }
+ 223   5                          else if(i == wifi_buff_index)
+ 224   5                          {
+ 225   6                              //´¦ÀíÍêÊý¾ÝÁË
+ 226   6                              mymemset(wifi_data_buff,0,wifi_buff_index);
+C51 COMPILER V9.52.0.0   WIFI_UART                                                         10/19/2017 17:07:45 PAGE 5   
+
+ 227   6                              wifi_buff_index = 0;                    
+ 228   6                          }   
+ 229   5                          else
+ 230   5                          {
+ 231   6                              //Êý¾ÝÃ»ÓÐ½ÓÊÕÍê,°ÑÊý¾Ý°áµ½×îÇ°Ãæ£¬·ÀÖ¹Òç³ö
+ 232   6                              //Êý¾ÝÃ»ÓÐ½ÓÊÕÍê£¬¶øÇÒÓÐÐ§Êý¾Ý²»ÔÚ wifi_data_buff Êý¾ÝµÄÆðÊ¼Î»ÖÃ,°ÑÊý¾Ý°áÔËµ½Êý×éÆ
+             -ðÊ¼Î»ÖÃ£¬·ÀÖ¹Êý¾Ý½ÓÊÕÊý¾ÝÂú
+ 233   6                              for(j = 0;j < (wifi_buff_index - i + 1);j++)
+ 234   6                              {
+ 235   7                                  wifi_data_buff[j] = wifi_data_buff[i - 1 + j];
+ 236   7                                  wifi_buff_index = wifi_buff_index - i + 1;
+ 237   7                              
+ 238   7                              }
+ 239   6                              mymemset(wifi_data_buff + wifi_buff_index,0,index_temp - wifi_buff_index);
+ 240   6                              
+ 241   6                          }                      
+ 242   5                      }
+ 243   4                      else
+ 244   4                      {
+ 245   5                          //½ÓÊÕµ½ÁË´íÎóÖ¡
+ 246   5      //                    mymemset(debug_buff,0,40);
+ 247   5      //                    sprintf(debug_buff,"err data:i=%d ",(unsigned int)i);
+ 248   5      //                    DEBUG_Uart_Sendbytes(debug_buff,mystrlen(debug_buff));
+ 249   5      //                    
+ 250   5      //                    mymemset(debug_buff,0,40);
+ 251   5      //                  
+ 252   5      //                    sprintf(debug_buff,"%x %x %x %x %x %x %x %x %x %x %x %x %x\n",(unsigned int)wifi_dat
+             -a_buff[i-1],(unsigned int)wifi_data_buff[i],(unsigned int)wifi_data_buff[i+1],
+ 253   5      //                             (unsigned int)wifi_data_buff[i+2],(unsigned int)wifi_data_buff[i+3],(unsign
+             -ed int)wifi_data_buff[i+4],(unsigned int)wifi_data_buff[i+5],(unsigned int)wifi_data_buff[i+6],
+ 254   5      //                               (unsigned int)wifi_data_buff[i+7],(unsigned int)wifi_data_buff[i+8],(unsi
+             -gned int)wifi_data_buff[i+9],
+ 255   5      //                                     (unsigned int)wifi_data_buff[i+10],(unsigned int)wifi_data_buff[i+1
+             -1]);
+ 256   5      //                    DEBUG_Uart_Sendbytes(debug_buff,mystrlen(debug_buff));
+ 257   5                                   
+ 258   5                                   
+ 259   5                        
+ 260   5                      }
+ 261   4      
+ 262   4                  }
+ 263   3                  
+ 264   3              }
+ 265   2              
+ 266   2              //Èç¹û½ÓÊÜbuffÂú£¬¶øÇÒÃ»ÓÐÕýÈ·µÄÊý¾ÝÖ¡£¬ÔòbuffÇå¿Õ£¬wifi_buff_indexÇåÁã£¬·ñÔòÒòÎªbuffÂúÁË¾Í²»ÔÙ½ÓÊ
+             -ÜÊý¾ÝÁË¡£ÖØÖÃbuffºóÖØÐÂ½ÓÊÕ¡£
+ 267   2              if(i >= WIFI_DATA_BUFF_SIZE)       
+ 268   2              {
+ 269   3                  mymemset(wifi_data_buff,0,wifi_buff_index);
+ 270   3                  wifi_buff_index = 0;   
+ 271   3              }
+ 272   2          }
+ 273   1          
+ 274   1      
+ 275   1      }
+ 276          
+ 277          
+ 278          void deal_frame_data(unsigned char *framebuffer)
+ 279          {
+ 280   1          unsigned char framelength = 0;
+ 281   1          //unsigned char debug_send_buff[30] = {0};
+ 282   1        
+C51 COMPILER V9.52.0.0   WIFI_UART                                                         10/19/2017 17:07:45 PAGE 6   
+
+ 283   1          framelength = framebuffer[0];
+ 284   1          if(framebuffer[1] == 0x2A && framebuffer[framelength] == 0x23)
+ 285   1          {
+ 286   2              if(framebuffer[3] == 0x41)
+ 287   2              {
+ 288   3                  f_0x41_data();
+ 289   3      //            mymemset(wifi_send_buff,0,30);
+ 290   3      //            sprintf(wifi_send_buff,"get 0x45 data\n");
+ 291   3      //            DEBUG_Uart_Sendbytes(wifi_send_buff,mystrlen(wifi_send_buff));
+ 292   3              }
+ 293   2              else if(framebuffer[3] == 0x44)
+ 294   2              {
+ 295   3                  f_0x44_data();
+ 296   3              }        
+ 297   2              else if(framebuffer[3] == 0x45)
+ 298   2              {           
+ 299   3      //            mymemset(debug_send_buff,0,30);
+ 300   3      //            sprintf(debug_send_buff,"get 0x45 data\n");
+ 301   3      //            DEBUG_Uart_Sendbytes(debug_send_buff,mystrlen(debug_send_buff));
+ 302   3                  f_0x45_data(framebuffer);
+ 303   3              }
+ 304   2      
+ 305   2              else if(framebuffer[3] == 0x49)
+ 306   2              {
+ 307   3      //            mymemset(debug_send_buff,0,30);
+ 308   3      //            sprintf(debug_send_buff,"get 0x49 data\n");
+ 309   3      //            DEBUG_Uart_Sendbytes(debug_send_buff,mystrlen(debug_send_buff));
+ 310   3                  f_0x49_data(framebuffer);
+ 311   3              }
+ 312   2              else if(framebuffer[3] == 0x66)
+ 313   2              {
+ 314   3      //            mymemset(debug_send_buff,0,30);
+ 315   3      //            sprintf(debug_send_buff,"get 0x66 data\n");
+ 316   3      //            DEBUG_Uart_Sendbytes(debug_send_buff,mystrlen(debug_send_buff));
+ 317   3              }
+ 318   2          }      
+ 319   1      
+ 320   1      }
+ 321          
+ 322          #define SENSOR_NUM      4
+ 323          #define BUFF_SIZE_0x41  (8 + SENSOR_NUM * 5)
+ 324          //°´4¸öÖ¸±êµÄÊýÖµ·¢ËÍ PM2.5  PM1.0 PM10ºÍHCHO£¬ÒÔºó»»´«¸ÐÆ÷ºó¾Í²»ÓÃÔÙÐÞ¸Ä³ÌÐò
+ 325          void f_0x41_data(void)
+ 326          {
+ 327   1          unsigned char sendbuff[BUFF_SIZE_0x41] = {0};
+ 328   1          unsigned char i,j = 0;
+ 329   1          unsigned char sensor_key = 0;
+ 330   1          
+ 331   1          sendbuff[0] = BUFF_SIZE_0x41 - 1;
+ 332   1          sendbuff[1] = 0x2A;
+ 333   1          sendbuff[2] = device_id;
+ 334   1          sendbuff[3] = 0x41;
+ 335   1          sendbuff[4] = 0x04;
+ 336   1          
+ 337   1          for(i = 0;i < SENSOR_NUM;i++)
+ 338   1          {
+ 339   2              if(i == 0)
+ 340   2              {
+ 341   3                  //cfloat.f = PM25_value;
+ 342   3                  cfloat.f = display_pm_value;
+ 343   3                  sensor_key = 'P';
+ 344   3              }
+C51 COMPILER V9.52.0.0   WIFI_UART                                                         10/19/2017 17:07:45 PAGE 7   
+
+ 345   2              else if(i == 1)
+ 346   2              {
+ 347   3                  cfloat.f = PM1_value;
+ 348   3                  sensor_key = 'Z';
+ 349   3              }
+ 350   2              else if(i == 2)
+ 351   2              {
+ 352   3                  cfloat.f = PM10_value;
+ 353   3                  sensor_key = 'O';
+ 354   3              }
+ 355   2              else if(i == 3)
+ 356   2              {
+ 357   3                  cfloat.f = HCHO_value;
+ 358   3                  sensor_key = 'J';
+ 359   3              }
+ 360   2              
+ 361   2              sendbuff[5 + i * 5] = sensor_key;
+ 362   2              sendbuff[6 + i * 5] = cfloat.b[0];
+ 363   2              sendbuff[7 + i * 5] = cfloat.b[1];
+ 364   2              sendbuff[8 + i * 5] = cfloat.b[2];
+ 365   2              sendbuff[9 + i * 5] = cfloat.b[3];               
+ 366   2          }
+ 367   1          
+ 368   1          sendbuff[BUFF_SIZE_0x41 - 3] = 0x00;
+ 369   1          sendbuff[BUFF_SIZE_0x41 - 2] = 0x00;
+ 370   1          sendbuff[BUFF_SIZE_0x41 - 1] = 0x23;
+ 371   1          
+ 372   1          Wifi_Uart_Sendbytes(sendbuff,BUFF_SIZE_0x41);    
+ 373   1      }
+ 374          
+ 375          void f_0x44_data(void)
+ 376          {
+ 377   1          unsigned char sendbuff[10] = {0x09,0x2A,0x00,0x44,0x00,0x00,0x01,0x00,0x00,0x23};
+ 378   1          sendbuff[6] = device_id;
+ 379   1          Wifi_Uart_Sendbytes(sendbuff,10);  
+ 380   1      }
+ 381          
+ 382          
+ 383          #define BUFF_SIZE_AF  19
+ 384          void f_0x45_data(unsigned char *framebuff)
+ 385          {
+ 386   1          unsigned char child_cmd = 0;
+ 387   1          unsigned char buff_0xAF[BUFF_SIZE_AF] = {0};
+ 388   1          //unsigned char debug_buff[30] = {0};
+ 389   1        
+ 390   1          child_cmd = framebuff[4];
+ 391   1      
+ 392   1          if(child_cmd <= 0x0A)
+ 393   1          {
+ 394   2              if(cost_info.IsCostType == 1 && cost_info.IsHavetime == 0 && child_cmd != 0x0A)
+ 395   2              //if((cost_info.IsCostType == 1 && cost_info.IsHavetime == 0) || sys_mode == STANDBY)
+ 396   2              {
+ 397   3                  //ÔÚ¼Æ·ÑÄ£Ê½ÏÂÈç¹û·ÑÓÃÊ±¼äÓÃÍê»òÕßÉè±¸´¦ÓÚ´ý»ú×´Ì¬ÏÂ·ç»ú¡¢UVºÍ¸ºÑõÀë×ÓµÄ¿ØÖÆÊ§Ð§
+ 398   3                  return;
+ 399   3              }
+ 400   2              switch (child_cmd)
+ 401   2              {
+ 402   3                case 0x00:
+ 403   3                  break;
+ 404   3                case 0x01:
+ 405   3                case 0x02:
+ 406   3                case 0x03:
+C51 COMPILER V9.52.0.0   WIFI_UART                                                         10/19/2017 17:07:45 PAGE 8   
+
+ 407   3                case 0x04:
+ 408   3                  if(cost_info.IsCostType == 1 && cost_info.IsHavetime == 1 && sys_mode == STANDBY)
+ 409   3                  {
+ 410   4                      sys_start();
+ 411   4                      break;
+ 412   4                  }
+ 413   3                  Set_DC_Motor_Speed(child_cmd);
+ 414   3                  TM1820_LED_Control(child_cmd + 1,LED_ON);
+ 415   3                  break;
+ 416   3                case 0x05:
+ 417   3                  UV_Off();
+ 418   3                  break;
+ 419   3                case 0x06:            
+ 420   3                  UV_On();
+ 421   3                  break;  
+ 422   3                case 0x07:
+ 423   3                  ION_Off();
+ 424   3                  break;
+ 425   3                case 0x08:
+ 426   3                  ION_On();            
+ 427   3                  break;
+ 428   3                case 0x09:
+ 429   3                  //¹Ø±Õ²ÖÃÅ
+ 430   3                  break;
+ 431   3                case 0x0A:
+ 432   3                  //´ò¿ª²ÖÃÅ
+ 433   3                  if(Is_Door_Open == 0)
+ 434   3                  {
+ 435   4                      Door_Open();
+ 436   4                      Is_Door_Open = 1;
+ 437   4                      door_open_time = get_sys_stime();
+ 438   4                  } 
+ 439   3      
+ 440   3      //            mymemset(debug_buff,0,30);
+ 441   3      //            sprintf(debug_buff,"door open\n");
+ 442   3      //            DEBUG_Uart_Sendbytes(debug_buff,mystrlen(debug_buff));             
+ 443   3                  break;
+ 444   3      
+ 445   3                default:
+ 446   3                  break;                       
+ 447   3              }
+ 448   2              Wifi_Uart_Sendbytes(framebuff,framebuff[0] + 1);          
+ 449   2                      
+ 450   2          }
+ 451   1          else if(child_cmd >= 0x10 && child_cmd <= 0x13)
+ 452   1          {
+ 453   2              switch (child_cmd)
+ 454   2              {
+ 455   3                  case 0x10:
+ 456   3                  if(sys_mode == RUNNING)
+ 457   3                  {
+ 458   4                      sys_stop();
+ 459   4                  }            
+ 460   3                  break;
+ 461   3                case 0x11:
+ 462   3                  if(sys_mode == STANDBY)
+ 463   3                  {
+ 464   4                      sys_start();
+ 465   4                  }           
+ 466   3                  break;
+ 467   3                case 0x12:
+ 468   3                  //ÊÖ¶¯Ä£Ê½
+C51 COMPILER V9.52.0.0   WIFI_UART                                                         10/19/2017 17:07:45 PAGE 9   
+
+ 469   3                  run_mode = 0;  
+ 470   3                  break;
+ 471   3                case 0x13:
+ 472   3                  //×Ô¶¯Ä£Ê½
+ 473   3                  run_mode = 1;
+ 474   3                  break; 
+ 475   3                default:
+ 476   3                  break;            
+ 477   3              }
+ 478   2              Wifi_Uart_Sendbytes(framebuff,framebuff[0] + 1);    
+ 479   2          }
+ 480   1          else if(child_cmd == 0xAF )
+ 481   1          {
+ 482   2              buff_0xAF[0] = BUFF_SIZE_AF - 1;
+ 483   2              buff_0xAF[1] = 0x2A;
+ 484   2              buff_0xAF[2] = device_id;
+ 485   2              buff_0xAF[3] = 0x45;
+ 486   2              buff_0xAF[4] = 0xAF;
+ 487   2              buff_0xAF[5] = sys_mode;
+ 488   2              buff_0xAF[6] = run_mode;
+ 489   2              buff_0xAF[7] = speed_dang;
+ 490   2              buff_0xAF[8] = (unsigned char)IsUVOn;
+ 491   2              buff_0xAF[9] = (unsigned char)Is_ION_On;
+ 492   2              buff_0xAF[10] = cost_info.IsCostType;
+ 493   2              buff_0xAF[11] = cost_info.IsHavetime;
+ 494   2              buff_0xAF[12] = cost_info.left_time_month;
+ 495   2              buff_0xAF[13] = cost_info.left_time_day;
+ 496   2              buff_0xAF[14] = cost_info.left_time_hour;
+ 497   2              buff_0xAF[15] = cost_info.left_time_min;
+ 498   2              buff_0xAF[16] = 0x00;
+ 499   2              buff_0xAF[17] = 0x00;
+ 500   2              buff_0xAF[18] = 0x23;
+ 501   2              Wifi_Uart_Sendbytes(buff_0xAF,BUFF_SIZE_AF);
+ 502   2          }
+ 503   1      
+ 504   1      }
+ 505          
+ 506          
+ 507          void f_0x49_data(unsigned char *framebuff)
+ 508          {
+ 509   1          unsigned char send_num = 0;
+ 510   1          unsigned long add_time = 0;
+ 511   1          unsigned long temptime = 0;
+ 512   1          
+ 513   1          if(framebuff[4] == 0x03)
+ 514   1          {
+ 515   2              wifi_easylink_cmd();
+ 516   2          }
+ 517   1          else if(framebuff[4] == 0x05)
+ 518   1          {
+ 519   2              //updata_cost_time(framebuff);
+ 520   2          }
+ 521   1          else if(framebuff[4] == 0x06)
+ 522   1          {
+ 523   2              f_0x49_06_data(framebuff);
+ 524   2          }
+ 525   1          else if(framebuff[4] == 0x07)
+ 526   1          {
+ 527   2              Buzzer_Get_Charge();
+ 528   2          }
+ 529   1          else if(framebuff[4] == 0x08)
+ 530   1          {
+C51 COMPILER V9.52.0.0   WIFI_UART                                                         10/19/2017 17:07:45 PAGE 10  
+
+ 531   2              //Éè±¸×Ô¼ì
+ 532   2              sys_dev_selfcheck();
+ 533   2          }
+ 534   1          
+ 535   1      }
+ 536          
+ 537          
+ 538          
+ 539          /*
+ 540          void updata_cost_time(unsigned char *framebuff)
+ 541          {
+ 542              unsigned long add_time = 0;
+ 543              unsigned long temptime = 0;
+ 544            
+ 545              if(framebuff[4] == 0x05)
+ 546              {
+ 547                  if(framebuff[5] == 1)
+ 548                  {
+ 549                      //Èç¹ûÉè±¸´¦ÓÚ¼Æ·Ñ×´Ì¬£¬¶øÇÒÉè±¸»¹ÓÐÊ£ÓàÊ±¼ä£¬ÊÇ·ñ°ÑÊ±¼ä¼ÓÒ»Æð
+ 550                      if(cost_info.IsCostType == 1 && cost_info.IsHavetime == 1)
+ 551                      {
+ 552                          add_time = framebuff[6] * MONTH_TO_MIN + framebuff[7] * DAY_TO_MIN + framebuff[8] * HOUR_T
+             -O_MIN + framebuff[9];
+ 553                          cost_info.lefttime += add_time;
+ 554                          cost_info.left_time_month = cost_info.lefttime / MONTH_TO_MIN;
+ 555                          temptime = cost_info.lefttime % MONTH_TO_MIN;
+ 556                          cost_info.left_time_day = temptime / DAY_TO_MIN;
+ 557                          temptime = temptime % DAY_TO_MIN;
+ 558                          cost_info.left_time_hour = temptime / HOUR_TO_MIN;
+ 559                          temptime = temptime % HOUR_TO_MIN;
+ 560                          cost_info.left_time_min = temptime;              
+ 561                      }
+ 562                      else
+ 563                      {
+ 564                          if((framebuff[6] | framebuff[7] | framebuff[8] | framebuff[9]) == 0)
+ 565                          {
+ 566                              cost_info.IsHavetime = 0;
+ 567                          }
+ 568                          else
+ 569                          {
+ 570                              cost_info.IsHavetime = 1;
+ 571                          }
+ 572                          cost_info.IsCostType = framebuff[5];
+ 573                          cost_info.left_time_month = framebuff[6];
+ 574                          cost_info.left_time_day = framebuff[7];
+ 575                          cost_info.left_time_hour = framebuff[8];
+ 576                          cost_info.left_time_min = framebuff[9];
+ 577                          cost_info.lefttime = cost_info.left_time_month * MONTH_TO_MIN + cost_info.left_time_day * 
+             -DAY_TO_MIN + cost_info.left_time_hour * HOUR_TO_MIN + cost_info.left_time_min;
+ 578                      }
+ 579                  }
+ 580                  else if(framebuff[5] == 0)
+ 581                  {
+ 582                      cost_info.IsCostType = 0;
+ 583                      cost_info.IsHavetime = 0;
+ 584                      cost_info.left_time_month = 0;
+ 585                      cost_info.left_time_day = 0;
+ 586                      cost_info.left_time_hour = 0;
+ 587                      cost_info.left_time_min = 0;
+ 588                      cost_info.lefttime = 0;            
+ 589                  }
+ 590                  
+C51 COMPILER V9.52.0.0   WIFI_UART                                                         10/19/2017 17:07:45 PAGE 11  
+
+ 591              }
+ 592              
+ 593              Wifi_Uart_Sendbytes(framebuff,(framebuff[0] + 1));
+ 594          }
+ 595          */
+ 596          
+ 597          void f_0x49_06_data(unsigned char *framebuff)
+ 598          { 
+ 599   1          static unsigned char left_0min_times = 0;
+ 600   1          //unsigned char debug_buff[50] = {0};
+ 601   1          unsigned int temp = 0;
+ 602   1          
+ 603   1          union{
+ 604   1          
+ 605   1            unsigned char b[4];
+ 606   1            unsigned long l;
+ 607   1          
+ 608   1          }clong;
+ 609   1          
+ 610   1          clong.l = 0;
+ 611   1        
+ 612   1          cost_info.IsCostType = framebuff[5];
+ 613   1          
+ 614   1          if(cost_info.IsCostType == 0)
+ 615   1          {
+ 616   2              //´ËÊ±ÊÕµ½µÄÃüÁîÊÇÈ¡Ïû¼Æ·ÑÄ£Ê½
+ 617   2              cost_info.IsHavetime = 0;
+ 618   2              cost_info.lefttime = 0;
+ 619   2              cost_info.lefttime_bak = 0;
+ 620   2              cost_info.IsChargeStart = 0;
+ 621   2              cost_info.IsChargeStart = 0;
+ 622   2              goto exit;
+ 623   2          }
+ 624   1          
+ 625   1          cost_info.lefttime_bak = cost_info.lefttime;
+ 626   1          
+ 627   1          //²»ÄÜÖ±½Ó°ÑÍ¨¹ýºê¶¨ÒåÔËËãµÄ½á¹û¸³Öµ¸ø cost_info.lefttime£¬·ñÔò¼ÆËã½á¹û²»¶Ô£»ÏÈ°Ñºê¶¨Òå¸³Öµ¸øÁÙÊ±±äÁ¿£
+             -¬È»ºóÔÙ¼ÆËã¸³Öµ
+ 628   1          temp = MONTH_TO_MIN;
+ 629   1          cost_info.lefttime = (((unsigned long)framebuff[6]) & 0xFF) * temp;
+ 630   1          temp = DAY_TO_MIN;
+ 631   1          cost_info.lefttime += (((unsigned long)framebuff[7]) & 0xFF) * temp;
+ 632   1          temp = HOUR_TO_MIN;
+ 633   1          cost_info.lefttime += (((unsigned long)framebuff[8]) & 0xFF) * temp;
+ 634   1          cost_info.lefttime += ((unsigned long)framebuff[9]) & 0xFF;
+ 635   1          
+ 636   1          
+ 637   1          //cost_info.lefttime = (((unsigned long)framebuff[6]) & 0xFF) * MONTH_TO_MIN + (((unsigned long)frameb
+             -uff[7]) & 0xFF) * DAY_TO_MIN + (((unsigned long)framebuff[8]) & 0xFF) * HOUR_TO_MIN  + ((unsigned long)framebuff[9]) & 0
+             -xFF;
+ 638   1      
+ 639   1          //cost_info.lefttime = ((unsigned long)framebuff[6]) * MONTH_TO_MIN + ((unsigned long)framebuff[7]) * 
+             -DAY_TO_MIN + ((unsigned long)framebuff[8]) * HOUR_TO_MIN  + ((unsigned long)framebuff[9]);
+ 640   1          if(cost_info.IsCostType == 1 && cost_info.lefttime_bak == 0 && cost_info.lefttime > 0)
+ 641   1          {
+ 642   2              cost_info.IsChargeStart = 1;
+ 643   2          }
+ 644   1          
+ 645   1          if(cost_info.lefttime == 0)
+ 646   1          {
+ 647   2              left_0min_times += 1;
+ 648   2          }
+C51 COMPILER V9.52.0.0   WIFI_UART                                                         10/19/2017 17:07:45 PAGE 12  
+
+ 649   1          else
+ 650   1          {
+ 651   2              left_0min_times = 0;
+ 652   2          }
+ 653   1          //µ±½ÓÊÕµ½2´Î»òÕß3´Î ¼Æ·ÑÊ±¼äÎª0»òÕßÏû·ÑÕß³ä·ÑµÄÏûÏ¢ºóÔÙ½øÐÐ²Ù×÷£¬·ÀÖ¹´®¿Ú½ÓÊÕµ½µÄÊý¾Ý´íÎó¶ø³öÏÖÎó¶¯×÷
+ 654   1          //5ÃëÖÓ»ñÈ¡Ò»´ÎÊý¾Ý£¬2-3´ÎµÄÍ¨Ñ¶Ê±¼äÒ²¾ÍÑÓ³Ù4-6Ãë£¬Ã»ÓÐ¶à´óÓ°Ïì
+ 655   1          if(cost_info.lefttime == 0 && left_0min_times >= 3)
+ 656   1          {
+ 657   2              cost_info.IsHavetime = 0;
+ 658   2          }
+ 659   1          else if(cost_info.lefttime > 0 && cost_info.lefttime_bak > 0)
+ 660   1          {
+ 661   2              cost_info.IsHavetime = 1;
+ 662   2          }
+ 663   1          
+ 664   1      exit:
+ 665   1          cost_info.IsGetChargeInfo = 1;
+ 666   1          
+ 667   1      //    mymemset(debug_buff,0,mystrlen(debug_buff));
+ 668   1      //    sprintf(debug_buff,"charge buff:%d %d %d %d %d\n",((unsigned int)framebuff[5] & 0xFF),((unsigned int
+             -)framebuff[6] & 0xFF),((unsigned int)framebuff[7] & 0xFF),((unsigned int)framebuff[8] & 0xFF),((unsigned int)framebuff[9
+             -] & 0xFF));  
+ 669   1      //    DEBUG_Uart_Sendbytes(debug_buff,mystrlen(debug_buff)); 
+ 670   1      //    
+ 671   1      
+ 672   1      //    
+ 673   1      //    
+ 674   1      //    mymemset(debug_buff,0,mystrlen(debug_buff));
+ 675   1      //    sprintf(debug_buff,"get charge lefttime:0x%x\n",(unsigned int)cost_info.lefttime);  
+ 676   1      //    DEBUG_Uart_Sendbytes(debug_buff,mystrlen(debug_buff));  
+ 677   1      
+ 678   1      
+ 679   1          //clong.l = cost_info.lefttime;
+ 680   1          //clong.l = 0xFFFF;
+ 681   1          //clong.l = ((unsigned long)framebuff[6] & 0xFF) * MONTH_TO_MIN;
+ 682   1      //    clong.l = framebuff[6];
+ 683   1      //    clong.l = clong.l * MONTH_TO_MIN;
+ 684   1      //    temp = MONTH_TO_MIN;
+ 685   1      //    clong.l = ((unsigned long)framebuff[6] & 0xFF) * temp;;
+ 686   1          
+ 687   1      //    mymemset(debug_buff,0,mystrlen(debug_buff));
+ 688   1      //    sprintf(debug_buff,"buff:0x%x 0x%x 0x%x 0x%x\n",(unsigned int)clong.b[0],(unsigned int)clong.b[1],(u
+             -nsigned int)clong.b[2],(unsigned int)clong.b[3]);  
+ 689   1      //    DEBUG_Uart_Sendbytes(debug_buff,mystrlen(debug_buff));     
+ 690   1        
+ 691   1      }
+ 692          
+ 693          //WIFIÄ£¿é¿ØÖÆÉè±¸×Ô¼ì
+ 694          //void f_0x49_07_data(unsigned char *framebuff)
+ 695          //{
+ 696          
+ 697          //}
+ 698          
+ 699          
+ 700          void get_wifi_charge_cmd(void)
+ 701          {
+ 702   1          unsigned char sendbuff[8] = {0};
+ 703   1          
+ 704   1          sendbuff[0] = 0x07;
+ 705   1          sendbuff[1] = 0x2A;
+ 706   1          sendbuff[2] = device_id;
+ 707   1          sendbuff[3] = 0x49;
+C51 COMPILER V9.52.0.0   WIFI_UART                                                         10/19/2017 17:07:45 PAGE 13  
+
+ 708   1          sendbuff[4] = 0x06;
+ 709   1          sendbuff[5] = 0x00;
+ 710   1          sendbuff[6] = 0x00;
+ 711   1          sendbuff[7] = 0x23;
+ 712   1          
+ 713   1          Wifi_Uart_Sendbytes(sendbuff,8);  
+ 714   1          cost_info.IsGetChargeInfo = 0;
+ 715   1      }
+ 716          
+ 717          
+ 718          
+ 719          
+ 720          
+ 721          void wifi_easylink_cmd(void)
+ 722          {
+ 723   1          unsigned char sendbuff[8] = {0};
+ 724   1          
+ 725   1          sendbuff[0] = 0x07;
+ 726   1          sendbuff[1] = 0x2A;
+ 727   1          sendbuff[2] = device_id;
+ 728   1          sendbuff[3] = 0x49;
+ 729   1          sendbuff[4] = 0x02;
+ 730   1          sendbuff[5] = 0x00;
+ 731   1          sendbuff[6] = 0x00;
+ 732   1          sendbuff[7] = 0x23;
+ 733   1          
+ 734   1          Wifi_Uart_Sendbytes(sendbuff,8);  
+ 735   1      }
+ 736          
+ 737          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   2326    ----
+   CONSTANT SIZE    =     73    ----
+   XDATA SIZE       =     86     118
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

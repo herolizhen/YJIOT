@@ -1,0 +1,75 @@
+package com.yjyz.iot.device.entity;
+
+import java.util.Date;
+
+public class DevTestMain {
+    private String testId;
+
+    private String deviceId;
+
+    private String testType;
+
+    private Date testDate;
+
+    private String opUser;
+
+    private Boolean isPass;
+
+    private String testMemo;
+
+    public String getTestId() {
+        return testId;
+    }
+
+    public void setTestId(String testId) {
+        this.testId = testId == null ? null : testId.trim();
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId == null ? null : deviceId.trim();
+    }
+
+    public String getTestType() {
+        return testType;
+    }
+
+    public void setTestType(String testType) {
+        this.testType = testType == null ? null : testType.trim();
+    }
+
+    public Date getTestDate() {
+        return testDate;
+    }
+
+    public void setTestDate(Date testDate) {
+        this.testDate = testDate;
+    }
+
+    public String getOpUser() {
+        return opUser;
+    }
+
+    public void setOpUser(String opUser) {
+        this.opUser = opUser == null ? null : opUser.trim();
+    }
+
+    public Boolean getIsPass() {
+        return isPass;
+    }
+
+    public void setIsPass(Boolean isPass) {
+        this.isPass = isPass;
+    }
+
+    public String getTestMemo() {
+        return testMemo;
+    }
+
+    public void setTestMemo(String testMemo) {
+        this.testMemo = testMemo == null ? null : testMemo.trim();
+    }
+}

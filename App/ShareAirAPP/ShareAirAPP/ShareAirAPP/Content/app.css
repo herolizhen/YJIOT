@@ -1,0 +1,122 @@
+﻿body{
+    background:#F8F8F8;
+}
+.app-background{
+    background:#F8F8F8;
+}
+.app-content {
+    min-width: 300px;
+    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    word-break: break-all;
+    background:#F8F8F8;
+}
+.app-content-bottom{
+    padding-bottom:30px;
+}
+.app-icon{
+    margin:0;
+    padding:0;
+    width:16px;
+    height:16px;
+    vertical-align:middle;
+}
+.app-font-color{
+    color:#13B8F5;
+}
+.app-center{
+    text-align:center;
+}
+.aui-radio,
+.aui-checkbox {
+    width: 22px;
+    height: 22px;
+    background-color: #ffffff;
+    border: solid 1px #dddddd;
+    -webkit-border-radius: 0.6rem;
+    border-radius: 11px;
+    font-size: 18px;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+    cursor: default;
+    -webkit-appearance: none;
+    -webkit-user-select: none;
+            user-select: none;
+    -webkit-transition: background-color ease 0.1s;
+            transition: background-color ease 0.1s;
+}
+.aui-checkbox {
+    border-radius: 0.1rem;
+}
+.aui-radio:checked,
+.aui-radio.aui-checked,
+.aui-checkbox:checked,
+.aui-checkbox.aui-checked {
+    background-color: #03a9f4;
+    border: solid 1px #03a9f4;
+    text-align: center;
+    background-clip: padding-box;
+}
+.aui-radio:checked:before,
+.aui-radio.aui-checked:before,
+.aui-checkbox:checked:before,
+.aui-checkbox.aui-checked:before,
+.aui-radio:checked:after,
+.aui-radio.aui-checked:after,
+.aui-checkbox:checked:after,
+.aui-checkbox.aui-checked:after {
+    content: '';
+    width: 0.5rem;
+    height: 0.3rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -0.25rem;
+    margin-top: -0.25rem;
+    background: transparent;
+    border: 1px solid #ffffff;
+    border-top: none;
+    border-right: none;
+    z-index: 2;
+    -webkit-border-radius: 0;
+            border-radius: 0;
+    -webkit-transform: rotate(-45deg);
+            transform: rotate(-45deg);
+}
+.aui-radio:disabled,
+.aui-radio.aui-disabled,
+.aui-checkbox:disabled,
+.aui-checkbox.aui-disabled {
+    background-color: #dddddd;
+    border: solid 1px #dddddd;
+}
+.aui-radio:disabled:before,
+.aui-radio.aui-disabled:before,
+.aui-radio:disabled:after,
+.aui-radio.aui-disabled:after,
+.aui-checkbox:disabled:before,
+.aui-checkbox.aui-disabled:before,
+.aui-checkbox:disabled:after,
+.aui-checkbox.aui-disabled:after {
+    content: '';
+    width: 0.5rem;
+    height: 0.3rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -0.25rem;
+    margin-top: -0.25rem;
+    background: transparent;
+    border: 1px solid #ffffff;
+    border-top: none;
+    border-right: none;
+    z-index: 2;
+    -webkit-border-radius: 0;
+            border-radius: 0;
+    -webkit-transform: rotate(-45deg);
+            transform: rotate(-45deg);
+}

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.device.dao.DevRealTimeMapper">
+	<resultMap id="mySqlTableStru" type="com.yjyz.iot.device.entity.DevRealTime">
+		<result column="Field" jdbcType="VARCHAR" property="colField" />
+		<result column="Type" jdbcType="VARCHAR" property="colType" />
+		<result column="Null" jdbcType="VARCHAR" property="colNull" />
+		<result column="Key" jdbcType="VARCHAR" property="colKey" />
+		<result column="Default" jdbcType="VARCHAR" property="colDefault" />
+		<result column="Extra" jdbcType="VARCHAR" property="colExtra" />
+	</resultMap>
+	<select id="existTable" parameterType="java.lang.String"
+		resultType="Integer">
+		select count(1) from INFORMATION_SCHEMA.TABLES where
+		TABLE_SCHEMA='YJIOT' and TABLE_NAME=#{tableName,jdbcType=VARCHAR}
+	</select>
+
+	<update id="dropTable" parameterType="com.yjyz.iot.device.entity.DevRealTime">
+		drop table ${tableName}
+	</update>
+
+	<update id="createTable" parameterType="com.yjyz.iot.device.entity.DevRealTime">
+		create table
+		${tableName}
+		(
+		${colDefString})
+	</update>
+
+	<select id="getTableCols" parameterType="com.yjyz.iot.device.entity.DevRealTime"
+		resultMap="mySqlTableStru">
+		show columns from ${tableName}
+	</select>
+
+	<insert id="insertData" parameterType="com.yjyz.iot.device.entity.DevRealTime">
+		insert into ${tableName} ${insertString}
+	</insert>
+	<select id="selectLast" parameterType="com.yjyz.iot.device.entity.DevRealTime"
+		resultType="java.util.HashMap">
+		select *
+		from ${tableName}
+		where dtime = (select max(dtime) from ${tableName})
+	</select>
+	<select id="getDayStats" parameterType="com.yjyz.iot.device.entity.DevRealTime"
+		resultType="java.util.HashMap">
+		SELECT ${colDefString}
+		HOUR(dtime) as dtime
+		FROM ${tableName}
+		where dtime > DATE_SUB(sysdate(), interval 1 day)
+		group by HOUR(dtime)
+	</select>
+	<select id="getWeekStats" parameterType="com.yjyz.iot.device.entity.DevRealTime"
+		resultType="java.util.HashMap">
+		SELECT ${colDefString}
+		DATE_FORMAT(dtime, '%Y-%m-%d') as
+		dtime
+		FROM ${tableName}
+		WHERE
+		dtime > DATE_SUB(sysdate(), INTERVAL 1
+		WEEK)
+		GROUP BY
+		DATE_FORMAT(dtime, '%Y-%m-%d')
+	</select>
+	<select id="getMonthStats" parameterType="com.yjyz.iot.device.entity.DevRealTime"
+		resultType="java.util.HashMap">
+		SELECT ${colDefString}
+		DATE_FORMAT(dtime, '%Y-%m-%d') as
+		dtime
+		FROM ${tableName}
+		WHERE
+		dtime > DATE_SUB(sysdate(), INTERVAL 1
+		MONTH)
+		GROUP BY
+		DATE_FORMAT(dtime, '%Y-%m-%d')
+	</select>
+	<select id="getYearStats" parameterType="com.yjyz.iot.device.entity.DevRealTime"
+		resultType="java.util.HashMap">
+		SELECT ${colDefString}
+		DATE_FORMAT(dtime, '%Y-%m') as
+		dtime
+		FROM ${tableName}
+		WHERE
+		dtime > DATE_SUB(sysdate(), INTERVAL 1
+		YEAR)
+		GROUP BY
+		DATE_FORMAT(dtime, '%Y-%m')
+	</select>
+
+</mapper>

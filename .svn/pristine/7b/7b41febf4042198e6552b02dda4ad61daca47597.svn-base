@@ -1,0 +1,73 @@
+C51 COMPILER V9.52.0.0   DEBUG_UART                                                        01/11/2018 14:22:49 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE DEBUG_UART
+OBJECT MODULE PLACED IN .\Objects\debug_uart.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\UART\debug_uart.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(..\project;
+                    -.\USER\BUZZER;.\USER\charge;.\USER\common;.\USER\DC_MOTOR;.\USER\EEPROM;.\USER\EXINT;.\USER\IIC;.\USER\inc;.\USER\ION;.\
+                    -USER\M26;.\USER\PWM;.\USER\Sensor;.\USER\step_motor;.\USER\SYS_RUN;.\USER\timer;.\USER\TM1620;.\USER\touch_key;.\USER\UA
+                    -RT;.\USER\UV;.\USER\LVI) DEBUG OBJECTEXTEND PRINT(.\Listings\debug_uart.lst) TABS(2) OBJECT(.\Objects\debug_uart.obj)
+
+line level    source
+
+   1          #include "debug_uart.h"
+   2          #include "global.h"
+   3          
+   4          
+   5          
+   6          void DEBUG_Uart_Init(void)
+   7          {
+   8   1      
+   9   1         DEBUG_UART_PxM0 &= ~(1 << DEBUG_UART_TXD_PORTBIT);
+  10   1         DEBUG_UART_PxM1 &= ~(1 << DEBUG_UART_TXD_PORTBIT); 
+  11   1        
+  12   1         DEBUG_UART_PxM0 &= ~(1 << DEBUG_UART_RXD_PORTBIT);
+  13   1         DEBUG_UART_PxM1 &= ~(1 << DEBUG_UART_RXD_PORTBIT); 
+  14   1        
+  15   1         DEBUG_UART_TXD_PIN = 1;
+  16   1         DEBUG_UART_RXD_PIN = 1;
+  17   1      
+  18   1      #ifdef DEBUG_UART_RX  
+                 mymemset(U3RxBuffer,0,U3RxBuff_MAXSIZE);
+              #endif   
+  21   1      }
+  22          
+  23          void DEBUG_Uart_Sendbytes(unsigned char *sendbuff,unsigned char sendnum)
+  24          {
+  25   1          unsigned char i = 0;
+  26   1        
+  27   1          if(sendnum + U3LdPtr > U3TxBuff_MAXSIZE)
+  28   1          {
+  29   2              return;
+  30   2          }
+  31   1          for(i = 0;i < sendnum;i++)
+  32   1          {
+  33   2              U3TxBuffer[i + U3LdPtr] = sendbuff[i];
+  34   2          }
+  35   1          U3LdPtr += sendnum;
+  36   1          if(IsU3TxBusy == 0)
+  37   1          {
+  38   2              U3TxBitCount = 10;
+  39   2              U3TxRate = 3;
+  40   2          }
+  41   1      
+  42   1      }
+  43          
+  44          
+  45          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    143    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----       5
+   PDATA SIZE       =   ----    ----
+C51 COMPILER V9.52.0.0   DEBUG_UART                                                        01/11/2018 14:22:49 PAGE 2   
+
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

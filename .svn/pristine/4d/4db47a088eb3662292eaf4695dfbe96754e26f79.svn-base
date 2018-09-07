@@ -1,0 +1,17 @@
+package com.yjyz.iot.device.dao;
+
+import com.yjyz.iot.device.entity.DevTestMain;
+
+public interface DevTestMainMapper {
+    int deleteByPrimaryKey(String testId);
+
+    int insert(DevTestMain record);
+
+    int insertSelective(DevTestMain record);
+
+    DevTestMain selectByPrimaryKey(String testId);
+
+    int updateByPrimaryKeySelective(DevTestMain record);
+
+    int updateByPrimaryKey(DevTestMain record);
+}

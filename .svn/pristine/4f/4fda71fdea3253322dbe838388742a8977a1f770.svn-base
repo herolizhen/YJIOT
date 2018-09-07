@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.security.dao.PowResourceMapper">
+	<resultMap id="BaseResultMap" type="com.yjyz.iot.security.entity.PowResource">
+		<id column="res_id" jdbcType="VARCHAR" property="resId" />
+		<result column="res_name" jdbcType="VARCHAR" property="resName" />
+		<result column="res_detail" jdbcType="VARCHAR" property="resDetail" />
+		<result column="app_id" jdbcType="VARCHAR" property="appId" />
+		<result column="res_type" jdbcType="VARCHAR" property="resType" />
+	</resultMap>
+
+	<resultMap id="SysUserResultMap" type="com.yjyz.iot.security.entity.PowSysUser">
+		<id column="app_id" jdbcType="VARCHAR" property="appId" />
+		<id column="username" jdbcType="VARCHAR" property="username" />
+		<result column="password" jdbcType="VARCHAR" property="password" />
+		<result column="realname" jdbcType="VARCHAR" property="realname" />
+		<result column="nickname" jdbcType="VARCHAR" property="nickname" />
+		<result column="sex" jdbcType="VARCHAR" property="sex" />
+		<result column="address" jdbcType="VARCHAR" property="address" />
+		<result column="company" jdbcType="VARCHAR" property="company" />
+		<result column="job" jdbcType="VARCHAR" property="job" />
+		<result column="createtime" jdbcType="TIMESTAMP" property="createtime" />
+		<result column="status" jdbcType="VARCHAR" property="status" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		res_id, res_name, res_detail, app_id, res_type
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_pow_resource
+		where res_id = #{resId,jdbcType=VARCHAR}
+	</select>
+	<select id="selectUserByResource" parameterType="com.yjyz.iot.security.entity.PowResource"
+		resultMap="SysUserResultMap">
+		select psu.*
+		from t_pow_sys_user psu,t_pow_user_role
+		pur,t_pow_role_resource
+		prr,t_pow_resource pr
+		where psu.username = pur.username and
+		psu.app_id = pur.app_id and
+		pur.role_id = prr.role_id and
+		prr.res_id = pr.res_id and
+		pr.res_id  = #{resId,jdbcType=VARCHAR} and
+		psu.app_id = #{appId,jdbcType=VARCHAR}
+	</select>
+
+	<select id="selectByAppId" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_pow_resource
+		where app_id = #{appId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from t_pow_resource
+		where res_id = #{resId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.yjyz.iot.security.entity.PowResource">
+		insert into t_pow_resource (res_id, res_name, res_detail,
+		app_id, res_type)
+		values (#{resId,jdbcType=VARCHAR}, #{resName,jdbcType=VARCHAR},
+		#{resDetail,jdbcType=VARCHAR},
+		#{appId,jdbcType=VARCHAR}, #{resType,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.yjyz.iot.security.entity.PowResource">
+		insert into t_pow_resource
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="resId != null">
+				res_id,
+			</if>
+			<if test="resName != null">
+				res_name,
+			</if>
+			<if test="resDetail != null">
+				res_detail,
+			</if>
+			<if test="appId != null">
+				app_id,
+			</if>
+			<if test="resType != null">
+				res_type,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="resId != null">
+				#{resId,jdbcType=VARCHAR},
+			</if>
+			<if test="resName != null">
+				#{resName,jdbcType=VARCHAR},
+			</if>
+			<if test="resDetail != null">
+				#{resDetail,jdbcType=VARCHAR},
+			</if>
+			<if test="appId != null">
+				#{appId,jdbcType=VARCHAR},
+			</if>
+			<if test="resType != null">
+				#{resType,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yjyz.iot.security.entity.PowResource">
+		update t_pow_resource
+		<set>
+			<if test="resName != null">
+				res_name = #{resName,jdbcType=VARCHAR},
+			</if>
+			<if test="resDetail != null">
+				res_detail = #{resDetail,jdbcType=VARCHAR},
+			</if>
+			<if test="appId != null">
+				app_id = #{appId,jdbcType=VARCHAR},
+			</if>
+			<if test="resType != null">
+				res_type = #{resType,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where res_id = #{resId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yjyz.iot.security.entity.PowResource">
+		update t_pow_resource
+		set res_name = #{resName,jdbcType=VARCHAR},
+		res_detail = #{resDetail,jdbcType=VARCHAR},
+		app_id = #{appId,jdbcType=VARCHAR},
+		res_type = #{resType,jdbcType=VARCHAR}
+		where res_id = #{resId,jdbcType=VARCHAR}
+	</update>
+</mapper>

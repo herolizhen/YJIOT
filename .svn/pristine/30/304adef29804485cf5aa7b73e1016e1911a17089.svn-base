@@ -1,0 +1,112 @@
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%
+	String path = request.getContextPath();
+	System.out.println(path);
+	String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+			+ path + "/";
+	System.out.println(basePath);
+%>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>YJIOT MQTT WebSocket TEST</title>
+<script type="text/javascript"
+	src="<%=basePath%>js/jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src='<%=basePath%>js/mqttws31.js'></script>
+<script type="text/javascript" src='<%=basePath%>js/ws.js'></script>
+<script>
+
+	$(document).ready(function() {
+		var supported = ("WebSocket" in window);
+		if (!supported) {
+			var msg = "Your browser does not support Web Sockets. This example will not work properly.<br>";
+			msg += "Please use a Web Browser with Web Sockets support (WebKit or Google Chrome).";
+			$("#connect").html(msg);
+		}
+	});
+</script>
+</head>
+<body>
+
+	<div class="white_box">
+		<div class="header">
+			<div class="header_l">
+				<div class="header_r">YJIOT</div>
+				<dt>&nbsp;</dt>
+				<dt>&nbsp;</dt>
+			</div>
+		</div>
+		<div id='connect' size="1000">
+
+
+			<input id='connect_port' placeholder="Server Port"
+				style="display:none" size='60' value="61614"> <label
+				for=connect_clientId style="display:none">Client ID</label> <input
+				id='connect_clientId' placeholder="Client ID" style="display:none"
+				size='60' value="clientId_12345"> <input id='destination'
+				placeholder="Destination" style="display:none" size='60'
+				value="/d2c.7c8b7d2f-82bd-407e-abf3-6bf9af6d0f40.status">
+
+			<dl>
+				<dt>
+					<label for=connect_host>connect_host</label>
+				</dt>
+				<dd>
+					<input name=url id='connect_host' value='118.178.233.12' size='60'>
+				</dd>
+			</dl>
+
+			<dl>
+				<dt>
+					<label for=connect_userName>userName</label>
+				</dt>
+				<dd>
+					<input id='connect_userName' placeholder="userName" size='60'>
+				</dd>
+			</dl>
+
+			<dl>
+				<dt>
+					<label for=connect_password>password</label>
+				</dt>
+				<dd>
+					<input id='connect_password' placeholder="password" size='60'>
+				</dd>
+				<dt>&nbsp;</dt>
+				<dt>&nbsp;</dt>
+
+			</dl>
+			<div id="connect">
+				<form id='connect_form'>
+					<input type=submit id='connect_submit' value="Connect">
+				</form>
+
+			</div>
+		</div>
+		<div id="disconnect">
+			<form id='disconnect_form'>
+				<input type=submit id='disconnect_submit' value="Disconnect">
+			</form>
+		</div>
+		<div id="messages"></div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,67 @@
+@charset "utf-8";
+/* CSS Document */
+
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,textarea,p,blockquote,th,td,input,select,textarea,button {margin:0;padding:0}  
+fieldset,img {border:0 none}  
+dl,ul,ol,menu,li {list-style:none}  
+blockquote, q {quotes: none}   
+blockquote:before, blockquote:after,q:before, q:after {content:'';content:none} 
+input,select,textarea,button {vertical-align:middle} 
+button {border:0 none; cursor:pointer}  
+body,th,td,input,select,textarea,button {font-size:12px;line-height:1 ;font-family:"微软雅黑"; color:#FFFFFF;} 
+a {color:#FFFFFF;text-decoration:none} 
+a:active, a:hover {text-decoration:none; color:#FFFFFF;}  
+address,caption,cite,code,dfn,em,var {font-style:normal;font-weight:normal} 
+caption {display:none;}   
+table {width:100%;border-collapse:collapse;border-spacing:0;table-layout:fixed;}  
+img{vertical-align:top}  
+a {outline: none;}
+body{
+	background:url(../images/bg_ph.svg) no-repeat center center fixed;
+	
+}
+.registerBg{
+	position:absolute;
+	width:100%;
+	height:100%;
+	z-index:-1;
+	background-size:100% 100%;
+	-webkit-background-size:100% 100%;
+	-moz-background-size:100% 100%;
+	-o-background-size:100% 100%;
+	}
+	
+/*登录界面*/
+.photograph{
+	margin:3em auto 2em auto;
+	text-align:center;
+	width:140px;
+	height:144px;
+	border:7px solid #FFFFFF;
+	border-radius:50%;
+	overflow:hidden;
+	}
+.photograph span{ display:inline-block; font-size:18px; font-weight:900; color:#FFFFFF; line-height:20px; }
+.photographImg{ margin:2em 0;}
+.form-group{position:relative;}
+.login_btn{display:block; background:#3872f6; color:#fff; font-size:15px; width:100%; line-height:50px; border-radius:3px; border:none; }
+.login_input{width:100%; border:1px solid #bdc3c7; border-radius:3px; line-height:40px; padding:2px 5px 2px 30px; background:#bdc3c7;}
+.icon_font{position:absolute; bottom:15px; left:10px; font-size:18px; color:#3872f6;}
+.mg-t20{margin-top:20px;}
+
+.onceWord{width:100%;}
+.once{ display:inline-block; width:50%; float:left; font-size:14px; color:#FFFFFF;}
+.forget{ display:inline-block; width:50%; float:right; text-align:right; font-size:14px; color:#FFFFFF;}
+
+.register-a{ margin:7em auto 3em auto; width:100%; text-align:center;}
+.register-aa{ display:inline-block; border-bottom:1px solid #FFFFFF; margin:4px 0px; width:25%;}
+.register-ab{ display:inline-block; margin:0px auto; width:37%; text-align:center; font-size:13px; }
+.register-ac{ display:inline-block; border-bottom:1px solid #FFFFFF; margin:4px 0px; width:25%;}
+.register-ad{  margin-right:2em;}
+
+/*---------登录界面---------*/
+
+/*注册界面*/
+.zhuce{ margin:15em auto 0 auto; text-align:center; overflow:hidden;}
+
+

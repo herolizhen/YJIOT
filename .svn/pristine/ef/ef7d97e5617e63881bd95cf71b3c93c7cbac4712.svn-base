@@ -1,0 +1,114 @@
+package com.yjyz.iot.dict.service.impl;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
+import com.yjyz.iot.dict.dao.DictChargeMapper;
+import com.yjyz.iot.dict.dao.DictMerchantMapper;
+import com.yjyz.iot.dict.entity.DictCharge;
+import com.yjyz.iot.dict.entity.DictChargeKey;
+import com.yjyz.iot.dict.entity.DictMerchant;
+import com.yjyz.iot.dict.service.IDictService;
+
+@Service("dictService")
+public class DictServiceImpl implements IDictService {
+	@Resource
+	DictChargeMapper dictChargeDao;
+	@Resource
+	DictMerchantMapper dictMerchantDao;
+
+	@Override
+	public DictCharge addCharge(DictCharge charge) throws Exception {
+		// charge.setChargeType(UUID.randomUUID().toString());
+		int ret = this.dictChargeDao.insertSelective(charge);
+		if (ret == 1) {
+			return charge;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public boolean delCharge(DictCharge charge) throws Exception {
+		DictChargeKey key = new DictChargeKey();
+		key.setChargeType(charge.getChargeType());
+		key.setDispNo(charge.getDispNo());
+		int ret = this.dictChargeDao.deleteByPrimaryKey(key);
+		if (ret == 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean updCharge(DictCharge charge) throws Exception {
+		int ret = this.dictChargeDao.updateByPrimaryKeySelective(charge);
+		if (ret == 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public List<DictCharge> selChargeByType(DictCharge charge) throws Exception {
+		return this.dictChargeDao.selectByType(charge.getChargeType());
+
+	}
+
+	@Override
+	public List<DictCharge> selChargeAll() throws Exception {
+		return this.dictChargeDao.selectAll();
+	}
+
+	@Override
+	public DictMerchant addMerchant(DictMerchant merchant) throws Exception {
+		
+		//merchant.setMerchantCode(UUID.randomUUID().toString());
+		if(merchant.getMerchantCode() == null)
+		{
+			return null ;
+		}
+		int ret = this.dictMerchantDao.insertSelective(merchant);
+		if (ret == 1) {
+			return merchant;
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public boolean delMerchant(DictMerchant merchant) throws Exception {
+
+		int ret = this.dictMerchantDao.deleteByPrimaryKey(merchant.getMerchantCode());
+		if (ret == 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean updMerchant(DictMerchant merchant) throws Exception {
+		int ret = this.dictMerchantDao.updateByPrimaryKeySelective(merchant);
+		if (ret == 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public List<DictMerchant> selMerchantAll() throws Exception {
+		return this.dictMerchantDao.selectAll();
+	}
+
+	@Override
+	public List<DictMerchant> selMerchantByName(String name) throws Exception {
+		return this.dictMerchantDao.selectByName("%"+name+"%");
+	}
+}

@@ -1,0 +1,607 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link
+	href="https://cdn.staticfile.org/flat-ui/2.3.0/css/vendor/bootstrap/css/bootstrap.min.css"
+	rel="stylesheet" />
+<link href="../compontents/bootstarp/css/flat-ui.css" rel="stylesheet" />
+<link
+	href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"
+	rel="stylesheet" />
+<link href="https://cdn.bootcss.com/metisMenu/2.7.1/metisMenu.min.css"
+	rel="stylesheet" />
+<script
+	src="https://cdn.staticfile.org/flat-ui/2.3.0/js/vendor/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/flat-ui/2.3.0/js/flat-ui.min.js"></script>
+<script src="https://cdn.bootcss.com/metisMenu/2.7.1/metisMenu.min.js"></script>
+<script src="https://cdn.bootcss.com/echarts/3.5.4/echarts.min.js"></script>
+<script src="../compontents/mqtt/js/stomp.min.js?v=1.0.0"></script>
+<script src="../compontents/iot/js/query.js"></script>
+<script src="../compontents/iot/js/config.js?v=1.0.0"></script>
+<script src="../compontents/iot/js/api.js?v=1.0.0"></script>
+<script src="../compontents/iot/js/iot.js?v=1.0.0"></script>
+<script src="../compontents/iot/js/power.js?v=1.0.0"></script>
+<script src="../compontents/iot/js/ota.js?v=1.0.0"></script>
+<script src="../compontents/iot/js/stats.js?v=1.0.0"></script>
+<script src="../compontents/iot/js/dict.js?v=1.0.0"></script>
+<script src="../compontents/iot/js/device.js?v=1.0.0"></script>
+<script src="../compontents/iot/js/client.js?v=1.0.0"></script>
+<script src="../compontents/iot/js/notice.js?v=1.0.0"></script>
+<script src="../compontents/iot/js/clientPower.js?v=1.0.0"></script>
+<script src="../frame/content/js/main.js?v=1.0.0"></script>
+<style>
+</style>
+<style>
+.frame-navbar {
+	margin: 0;
+	padding: 0;
+}
+
+.frame-func-menu {
+	background: #ffffff;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	height: 100%;
+	/* border-right: solid 1px #2A2A2A; */
+	text-align: center;
+}
+
+.frame-box {
+	height: 100px;
+	padding: 0;
+	margin: 0;
+	padding-left: 5px;
+}
+</style>
+<style>
+.sidebar-nav {
+	height: 100%;
+	background: #ebeef3;
+}
+
+.sidebar-nav ul {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+	background: #ebeef3;
+}
+
+.sidebar-nav .metismenu {
+	background: #ebeef3;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: column;
+	flex-direction: column;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+.sidebar-nav .metismenu li+li {
+	margin-top: 5px;
+}
+
+.sidebar-nav .metismenu li:first-child {
+	margin-top: 5px;
+}
+
+.sidebar-nav .metismenu li:last-child {
+	margin-bottom: 5px;
+}
+
+.sidebar-nav .metismenu>li {
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	-ms-flex-direction: column;
+	flex-direction: column;
+	position: relative;
+}
+
+.sidebar-nav .metismenu a {
+	position: relative;
+	display: block;
+	padding: 13px 15px;
+	color: black;
+	outline-width: 0;
+	transition: all .3s ease-out;
+}
+
+.sidebar-nav .metismenu .disabled {
+	color: #C6C6C6;
+	cursor: not-allowed;
+	/*background-color: #bdc3c7;
+                                    filter: alpha(opacity=70);
+                                    opacity: .7;*/
+}
+
+.sidebar-nav .metismenu ul a {
+	padding: 10px 15px 10px 30px;
+}
+
+.sidebar-nav .metismenu ul ul a {
+	padding: 10px 15px 10px 45px;
+}
+
+.sidebar-nav
+
+ 
+
+.metismenu
+
+ 
+
+a
+
+
+:hover
+
+
+:not
+
+ 
+
+(
+.disabled
+
+ 
+
+),
+.sidebar-nav
+
+ 
+
+.metismenu
+
+ 
+
+a
+
+
+:focus
+
+
+:not
+
+
+	
+
+(
+.disabled
+
+ 
+
+),
+.sidebar-nav
+
+ 
+
+.metismenu
+
+ 
+
+a
+
+
+:active
+
+
+:not
+
+ 
+
+(
+.disabled
+
+ 
+
+)
+{
+color
+
+
+:
+
+ 
+
+#ffffff
+
+
+;
+text-decoration
+
+
+:
+
+ 
+
+none
+
+
+;
+font-weight
+
+
+:
+
+ 
+
+bold
+
+
+;
+background-color
+
+
+:
+
+ 
+
+#028cfd
+
+
+;
+}
+.sidebar-nav .metismenu .active>a, .sidebar-nav .metismenu .active>a:hover,
+	.sidebar-nav .metismenu .active>a:focus {
+	color: #028cfd; /*字体颜色 */
+	background-color: transparent;
+}
+
+body {
+	font-family: "华文细黑";
+	width: 100%;
+	height: auto;
+	background: #f7f7f7;
+}
+
+.logo {
+	margin-left: 1px;
+	background: url(login_pc/images/logo.png) no-repeat;
+	height: 50px;
+	margin-top: 20px;
+}
+</style>
+<style>
+.dropdown>a, .dropdown>a:hover, .dropdown>a:focus {
+	color: #028cfd !important;
+}
+
+.dropdown-menu {
+	top: 45px !important;
+	background: #ebeef3;
+}
+
+.dropdown-menu li a {
+	color: #000000;
+}
+
+.dropdown-menu li a:hover, .dropdown-menu li a:focus, .dropdown-menu li a:active
+	{
+	color: #FFFFFF;
+	text-decoration: none;
+	font-weight: bold;
+	background-color: #028cfd;
+}
+</style>
+<title>亿享云</title>
+</head>
+
+<body>
+	<div id="content-frame" class="container-fluid">
+		<div id="content-frame-navbar" class="row">
+			<!-- Static navbar -->
+			<div
+				class="navbar  navbar-default  navbar-lg navbar-static-top frame-navbar"
+				role="navigation">
+				<div class="">
+					<div class="navbar-header navbar-left ">
+						<button type="button" class="navbar-toggle" data-toggle="collapse"
+							data-target=".navbar-collapse">
+							<span class="sr-only">Toggle navigation</span>
+						</button>
+						<a id="navbar-ctrl-menu" href="#" onclick="ui_main.ctrlMenu(this)"
+							class="navbar-brand"> <span class="fa fa-outdent"
+							aria-hidden="true"></span>
+						</a> <span class="navbar-brand "
+							style="width: 180px ;color:#028cfd ;font-size: 32px;margin-left: 15px">亿享云</span>
+					</div>
+					<div class="navbar-collapse collapse">
+						<ul id="content-menu" class="nav navbar-nav ">
+							<li onclick="ui_main.onMenu(this)" id="AuthorityManagement">
+								<a href="#"> <span class="fa fa-superpowers"
+									style="font-size: 24px"></span>权限管理
+							</a>
+							</li>
+							<li onclick="ui_main.onMenu(this)" id="ProductionManagement">
+								<a href="#"> <span class="fa fa-product-hunt"
+									style="font-size: 24px"></span>生产管理
+							</a>
+							</li>
+							<li onclick="ui_main.onMenu(this)" id="MochaITOM"><a
+								href="#"><span class="fa fa-wrench" style="font-size: 24px"></span>运维管理</a>
+							</li>
+							<li onclick="ui_main.onMenu(this)" id="OperationManagement">
+								<a href="#"> <span class="fa fa-area-chart"
+									style="font-size: 24px"></span>运营管理
+							</a>
+							</li>
+							<li onclick="ui_main.onMenu(this)" id="SystemConfiguration">
+								<a href="#"> <span class="fa fa-gear"
+									style="font-size: 24px"></span>系统配置
+							</a>
+							</li>
+						</ul>
+						<ul class="nav navbar-nav  navbar-right">
+							<li class="dropdown"><a href="#" class="dropdown-toggle"
+								data-toggle="dropdown"> <span id="CurrAppName" style=""></span><b
+									class="caret"></b>
+							</a>
+								<ul class="dropdown-menu" id="appMenu"></ul></li>
+							<li><a> <span id='CurrUserName'></span>
+							</a></li>
+							<li onclick="longOut()"><a href="#"> <span
+									class="fa fa-power-off" style="color:#FF0000;">注销</span>
+							</a></li>
+						</ul>
+					</div>
+					<!--/.nav-collapse -->
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div id="frame-left" class="col-md-2 frame-func-menu">
+				<aside class="sidebar-nav" id="func-menu">
+					<div id="func-AuthorityManagement">
+						<ul class="metismenu">
+							<li style="background-color: #028cfd;"><a
+								aria-expanded="false" href="#"> <span
+									class="fa fa-superpowers"
+									style="color: #ffffff;	font-weight:bold;">权限管理</span> <span
+									class="caret"></span>
+							</a>
+								<ul aria-expanded="false">
+									<li data-key="30828dbd-8139-4814-be61-e0c2a6ddb547"
+										onclick="ui_main.onFunc(this)"><a href="#"> <span
+											class="fa fa-user-o"></span> 用户管理
+									</a></li>
+									<li data-key="23ffa15f-090e-4083-952a-d9b343f20039"
+										onclick="ui_main.onFunc(this)"><a href="#"> <span
+											class="fa fa-user-circle-o"></span> 角色管理
+									</a></li>
+									<li data-key="12ec6252-a888-400e-b0d9-6a6e78dcf166"
+										onclick="ui_main.onFunc(this)"><a href="#"> <span
+											class="fa fa-window-restore"></span> 资源管理
+									</a></li>
+									<li data-key="97a6132b-efe3-40de-b18e-d68f8e671605"
+										onclick="ui_main.onFunc(this)"><a href="#"> <span
+											class="fa fa-television"></span>应用管理
+									</a></li>
+									<li data-key="9a1b95db-ec70-40cf-b14d-7f6a5feaa5ca"
+										onclick="ui_main.onFunc(this)"><a href="#"> <span
+											class="fa fa-plug"></span> 产品管理
+									</a></li>
+
+								</ul></li>
+						</ul>
+					</div>
+					<div id="func-OperationManagement">
+						<ul class="metismenu">
+							<li><a aria-expanded="false" href="#"> <span
+									class="fa fa-area-chart"></span> 统计分析 <span class="caret"></span>
+							</a>
+								<ul aria-expanded="false">
+									<li id='d05cf8e1-8c95-4e99-91ab-5fe411cb68cd'
+										data-key="d05cf8e1-8c95-4e99-91ab-5fe411cb68cd"
+										onclick="ui_main.onFunc(this)"><a href="#"> <span
+											class="fa  fa-bar-chart-o"></span> 总体分析
+									</a></li>
+									<li data-key="997b7708-f7ed-4947-83fa-20d1f058c7ac"
+										onclick="ui_main.onFunc(this)"><a href="#"> <span
+											class="fa  fa-calendar"></span> 消费明细
+									</a></li>
+									<li data-key="f8b24c94-84d4-4360-a06f-c75b5cc4abb0"
+										onclick="ui_main.onFunc(this)"><a href="#"> <span
+											class="fa  fa-fire "></span> 商户收入
+									</a></li>
+									<li data-key="b5b311c6-a41c-49c1-b56e-6ac41b318d0f"
+										onclick="ui_main.onFunc(this)"><a href="#"> <span
+											class="fa    fa-institution"></span> 商户台账
+									</a></li>
+									<li data-key="f998d539-af92-460e-a319-679f716ebb3c"
+										onclick="ui_main.onFunc(this)"><a href="#"> <span
+											class="fa    fa-flag"></span> 设备台账
+									</a></li>
+									<li data-key="2a2e4251-2fe2-4153-8fdf-07977a79f830"
+										onclick="ui_main.onFunc(this)"><a href="#"> <span
+											class="fa fa-file-text"></span> 问题反馈
+									</a></li>
+
+
+								</ul></li>
+						</ul>
+					</div>
+					<div id="func-ProductionManagement">
+						<ul class="metismenu">
+							<li><a aria-expanded="false" href="#"> <span
+									class="fa fa-product-hunt"></span> 生产管理 <span class="caret"></span>
+							</a>
+								<ul aria-expanded="false">
+									<li data-key="d1838cd5-18f1-4e8d-87d2-da8e2712b1bb"
+										onclick="ui_main.onFunc(this)"><a href="#"><span
+											class="fa    fa-ambulance"></span> 物流管理 </a></li>
+								</ul></li>
+						</ul>
+					</div>
+					<div id="func-MochaITOM">
+						<ul class="metismenu">
+							<li><a aria-expanded="false" href="#"> <span
+									class="fa fa-wrench"></span> 运维管理 <span class="caret"></span>
+							</a>
+								<ul aria-expanded="false">
+									<li data-key="df1cb26e-651d-4893-84ca-85878d05a477"
+										onclick="ui_main.onFunc(this)"><a href="#"> <span
+											class="fa  fa-flag"></span> 设备信息
+									</a></li>
+									<li data-key="3bc169ff-9984-4f08-a21e-f1959d5384d6"
+										onclick="ui_main.onFunc(this)"><a href="#"> <span
+											class="fa fa-institution"></span> 商户信息
+									</a></li>
+								</ul></li>
+						</ul>
+					</div>
+					<div id="func-SystemConfiguration">
+						<ul class="metismenu">
+							<li><a aria-expanded="false" href="#"> <span
+									class="fa fa-wrench"></span> 字典管理 <span class="caret"></span>
+							</a>
+								<ul aria-expanded="false">
+									<li data-key="2dfec22e-cdac-4d36-a3d0-8a2c6aa29a33"
+										onclick="ui_main.onFunc(this)"><a href="#"> <span
+											class="fa  fa-flag"></span> 缴费定义
+									</a></li>
+									<li data-key="3a5f9d40-a86a-4b36-92d0-f9a86770c414"
+										onclick="ui_main.onFunc(this)"><a href="#"> <span
+											class="fa    fa-align-left"></span>商户维护
+									</a></li>
+								</ul></li>
+						</ul>
+					</div>
+				</aside>
+			</div>
+			<div id="frame-right" class="col-md-10	frame-box">
+				<iframe id="func-frame" src="" name="func-frame" width="100%"
+					height="100%" frameborder="0"></iframe>
+			</div>
+		</div>
+	</div>
+	<!--loading -->
+	<div class="modal fade bs-example-modal-lg" id="input-loading"
+		tabindex="-1" role="dialog" aria-labelledby="loading-modal-title">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="loading-modal-title"></h4>
+				</div>
+				<div id="loading-modal-body" class="modal-body">...</div>
+			</div>
+		</div>
+	</div>
+	<!--loading -->
+	<!--对话框 -->
+	<div class="modal fade bs-example-modal-sm" id="alert-dialog"
+		tabindex="-1" role="dialog" aria-labelledby="alert-dialog-modal-title">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title" id="alert-dialog-modal-title"></h4>
+				</div>
+				<div id="alert-dialog-modal-body" class="modal-body"></div>
+				<div class="modal-footer">
+					<button id="modal-dialog-close" onclick="onWarning()" type="button"
+						class="btn btn-warning">关闭</button>
+					<button id="modal-dialog-ok" onclick="onPrimary()" type="button"
+						class="btn btn-primary">确定</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--对话框 -->
+</body>
+</html>
+<script>
+	function frameInitialize(w) {
+		w.$cfg = window.parent.$cfg;
+		w.$iot = window.parent.$iot;
+		w.$pow = window.parent.$pow;
+		w.$ota = window.parent.$ota;
+		w.$stats = window.parent.$stats;
+		w.$dict = window.parent.$dict;
+		w.$dev = window.parent.$dev;
+		w.$query = window.parent.$query;
+		w.$client = window.parent.$client;
+		w.$notice = window.parent.$notice;
+		w.$clientPower = window.parent.$clientPower;
+	}
+	function onPrimary() {
+		ui_main.closeAlert(true);
+	}
+	function onWarning() {
+		ui_main.closeAlert(false);
+	}
+</script>
+<script type="text/javascript">
+	//初始化应用列表
+	function initAppMenu() {
+		var app = $api.getApps();
+		if ($api.isNull(app) || $api.isNull(app.applist)) {
+			main.openAlert('提示', '用户状态有误 ，请联系管理员核实后再次登陆!', function() {
+				window.location.href = 'index.html';
+			});
+		}
+		var applist = app.applist;
+		$('#appMenu').empty();
+		var appid = $api.getCurrApp();
+		$.each(applist, function(i, app) {
+			var tmp = '<li class="li_app" onclick="changeApp(this)" data-key="' + app.appId + '" data-name="' + app.appName + '"><a href="#">' + app.appName + '</a></li>';
+			$("#appMenu").append(tmp);
+			if (app.appId == appid) {
+				$('#CurrAppName').text(app.appName);
+			}
+		});
+	}
+	function changeApp(li) {
+		var name = $(li).attr('data-name');
+		var id = $(li).attr('data-key');
+		$('#CurrAppName').text(name);
+		$api.saveCurrApp(id);
+		Initialize();
+	}
+	//退出登录
+	function longOut() {
+		var user = $api.getToken();
+		var uname = !$api.isNull(user) ? user.username : '';
+		$api.ui_openAlert('友情提示', '尊敬的用户' + uname + ',	您真的要退出登陆吗？', function(tag) {
+			if (tag) {
+				$api.clearToken();
+				window.document.location.href = 'index.html';
+			}
+		});
+	}
+</script>
+<script type="text/javascript">
+	/*加载默认的功能*/
+	function openMacroAnalysis() {
+		window.setTimeout(function() {
+			ui_main.onMenu(window.document.getElementById('OperationManagement'));
+			ui_main.onFunc(window.document.getElementById('d05cf8e1-8c95-4e99-91ab-5fe411cb68cd'));
+			ui_main.closeNavbarFunc();
+		}, 300);
+	}
+</script>
+<script type="text/javascript">
+    $(function () {
+        Initialize();
+    });
+    function Initialize() {
+        var user = $api.getToken();
+        if (!$api.isNull(user)) {
+            $('#CurrUserName').text('尊敬的用户:' + user.username + '欢迎您！');
+        } else {
+            $api.clearToken();
+            window.document.location.href = 'index.html';
+            return;
+        }
+        initAppMenu();
+        ui_main.Initialize(function () {
+            openMacroAnalysis();
+        });
+    }
+</script>

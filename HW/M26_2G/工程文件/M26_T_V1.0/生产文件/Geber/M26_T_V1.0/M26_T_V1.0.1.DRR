@@ -1,0 +1,21 @@
+---------------------------------------------------------------------------
+NCDrill File Report For: M26_T_V1.0.1.PcbDoc   2017/10/23  13:35:14
+---------------------------------------------------------------------------
+
+Layer Pair : Top Layer to Bottom Layer
+ASCII RoundHoles File : M26_T_V1-RoundHoles.TXT
+ASCII SlotHoles File : M26_T_V1-SlotHoles.TXT
+EIA File   : M26_T_V1.0.1.DRL
+
+Tool         Hole Size           Hole Type     Hole Count Plated       Tool Travel
+---------------------------------------------------------------------------
+T1        12mil (0.3048mm)         Round          46               10.92 Inch (277.38 mm)
+T2        27.56mil (0.70002mm)     Slot           3                1.59 Inch (40.35 mm)
+T3        28mil (0.7112mm)         Round          1                1.50 Inch (38.00 mm)
+T4        30mil (0.762mm)          Round          3                2.94 Inch (74.55 mm)
+T5        35mil (0.889mm)          Round          2                1.06 Inch (27.02 mm)
+T6        40mil (1.016mm)          Round          48               10.20 Inch (259.11 mm)
+---------------------------------------------------------------------------
+Totals                                            103              28.21 Inch (716.41 mm)
+
+Total Processing Time (hh:mm:ss) : 00:00:00

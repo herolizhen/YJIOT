@@ -1,0 +1,224 @@
+C51 COMPILER V9.52.0.0   LED                                                               09/18/2017 11:41:21 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE LED
+OBJECT MODULE PLACED IN .\Objects\led.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\User\led\led.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\User;..\User\led;..
+                    -\User\touch;..\User\timer;..\User\inc) DEBUG OBJECTEXTEND PRINT(.\Listings\led.lst) TABS(2) OBJECT(.\Objects\led.obj)
+
+line level    source
+
+   1          #include "led.h"
+   2          #include "touch.h"
+   3          
+   4          extern KEY_INFO_Typedef key_info;
+   5          
+   6          LED_BLINK_Typedef led_blink_info;
+   7          
+   8          
+   9          #define DELAY_NUM  100000
+  10          static void led_blink_delay(unsigned int num)
+  11          {
+  12   1          unsigned int i = 0;
+  13   1          for(i = 0;i < num;i++);
+  14   1      }
+  15          
+  16          void Led_Pin_Config(void)
+  17          {
+  18   1          LED_PIN_PxM0 &= ~((1 << LED_POWER_PORTBIT) | (1 << LED_SPEED_PORTBIT) | (1 << LED_TIMER_PORTBIT) | (1 
+             -<< LED_MODE_PORTBIT));
+  19   1          LED_PIN_PxM1 &= ~((1 << LED_POWER_PORTBIT) | (1 << LED_SPEED_PORTBIT) | (1 << LED_TIMER_PORTBIT) | (1 
+             -<< LED_MODE_PORTBIT));
+  20   1        
+  21   1          LED_POWER_PIN = 1;
+  22   1          LED_SPEED_PIN = 1;
+  23   1          LED_TIMER_PIN = 1;
+  24   1          LED_MODE_PIN = 1;
+  25   1      
+  26   1      
+  27   1      }
+  28          
+  29          /*
+  30          void LedBlink(unsigned char pinnum)
+  31          {   
+  32              if(pinnum > 3)
+  33              {
+  34                  return;
+  35              }
+  36            
+  37              switch(pinnum)
+  38              {
+  39                case LED_MODE_PORTBIT:
+  40                  LED_MODE_PIN = 1;
+  41                  break;
+  42                case LED_TIMER_PORTBIT:
+  43                  LED_TIMER_PIN = 1;
+  44                  break;
+  45                case LED_SPEED_PORTBIT:
+  46                  LED_SPEED_PIN = 1;
+  47                  break;
+  48                case LED_POWER_PORTBIT:
+  49                  LED_POWER_PIN = 1;
+  50                  break;
+  51                default:
+  52                  break;   
+C51 COMPILER V9.52.0.0   LED                                                               09/18/2017 11:41:21 PAGE 2   
+
+  53              }
+  54              
+  55              led_blink_delay(DELAY_NUM);
+  56              
+  57              switch(pinnum)
+  58              {
+  59                case LED_MODE_PORTBIT:
+  60                  LED_MODE_PIN = 0;
+  61                  break;
+  62                case LED_TIMER_PORTBIT:
+  63                  LED_TIMER_PIN = 0;
+  64                  break;
+  65                case LED_SPEED_PORTBIT:
+  66                  LED_SPEED_PIN = 0;
+  67                  break;
+  68                case LED_POWER_PORTBIT:
+  69                  LED_POWER_PIN = 0;
+  70                  break;
+  71                default:
+  72                  break;   
+  73              }
+  74              
+  75              led_blink_delay(DELAY_NUM);
+  76              
+  77          }
+  78          */
+  79          
+  80          
+  81          void LedBlink(void)
+  82          {
+  83   1          if(key_info.IsTouchedKey == 1)
+  84   1          {
+  85   2              if(key_info.WhichKey == KEY_MODE)
+  86   2              {
+  87   3                  LED_MODE_PIN = 1;
+  88   3      //            LED_TIMER_PIN = 0;
+  89   3      //            LED_SPEED_PIN = 0;
+  90   3      //            LED_POWER_PIN = 0;
+  91   3              }
+  92   2              else if(key_info.WhichKey == KEY_TIMER)
+  93   2              {
+  94   3                  LED_TIMER_PIN = 1;
+  95   3      //            LED_MODE_PIN = 0;
+  96   3      //            LED_SPEED_PIN = 0;
+  97   3      //            LED_POWER_PIN = 0;
+  98   3              }
+  99   2              else if(key_info.WhichKey == KEY_SPEED)
+ 100   2              {
+ 101   3                  LED_SPEED_PIN = 1;
+ 102   3                
+ 103   3      //            LED_MODE_PIN = 0;
+ 104   3      //            LED_TIMER_PIN = 0;
+ 105   3      //            LED_POWER_PIN = 0;
+ 106   3              }
+ 107   2              else if(key_info.WhichKey == KEY_POWER)
+ 108   2              {
+ 109   3      //            LED_MODE_PIN = 0;
+ 110   3      //            LED_TIMER_PIN = 0;
+ 111   3      //            LED_SPEED_PIN = 0;
+ 112   3                  LED_POWER_PIN = 1;
+ 113   3              }
+ 114   2              else
+C51 COMPILER V9.52.0.0   LED                                                               09/18/2017 11:41:21 PAGE 3   
+
+ 115   2              {
+ 116   3                  return;
+ 117   3              }
+ 118   2              
+ 119   2              led_blink_info.IsLedBlink = 1;
+ 120   2              led_blink_info.ledcount_1ms_times = 0;
+ 121   2              led_blink_info.blinktimes = 0;
+ 122   2              
+ 123   2              key_info.IsTouchedKey = 0;
+ 124   2              if( key_info.lastkey != key_info.WhichKey)
+ 125   2              {
+ 126   3                  Led_Control(key_info.lastkey,LED_ON);
+ 127   3              }
+ 128   2              key_info.lastkey = key_info.WhichKey;
+ 129   2              
+ 130   2          }
+ 131   1          
+ 132   1          if(led_blink_info.IsLedBlink == 1)
+ 133   1          {
+ 134   2              if(led_blink_info.blinktimes < LED_BLINK_TIMES)
+ 135   2              {
+ 136   3                  if(led_blink_info.ledstate == LED_OFF)
+ 137   3                  {
+ 138   4                      Led_Control(key_info.lastkey,LED_OFF);
+ 139   4                      led_blink_info.blinktimes++;
+ 140   4                  }
+ 141   3                  if(led_blink_info.ledstate == LED_ON)
+ 142   3                  {
+ 143   4                      Led_Control(key_info.lastkey,LED_ON);
+ 144   4                      led_blink_info.ledcount_1ms_times = 0;
+ 145   4                  }               
+ 146   3              }
+ 147   2              else
+ 148   2              {
+ 149   3                  led_blink_info.IsLedBlink = 0;
+ 150   3                  led_blink_info.ledcount_1ms_times = 0;
+ 151   3                  led_blink_info.blinktimes = 0;
+ 152   3                  Led_Control(key_info.lastkey,LED_ON);
+ 153   3              }
+ 154   2      
+ 155   2          }
+ 156   1      
+ 157   1      
+ 158   1      
+ 159   1      }
+ 160          
+ 161          void Led_Control(unsigned char led,unsigned char on_off)
+ 162          {
+ 163   1          if(led == KEY_NONE || led >= KEY_MAX_VALUE)
+ 164   1          {
+ 165   2              return;
+ 166   2          }
+ 167   1          if(on_off >= LED_NONE)
+ 168   1          {
+ 169   2              return;
+ 170   2          }
+ 171   1          switch(led)
+ 172   1          {
+ 173   2            case KEY_MODE:
+ 174   2              LED_MODE_PIN = on_off;
+ 175   2              break;
+ 176   2            case KEY_TIMER:
+C51 COMPILER V9.52.0.0   LED                                                               09/18/2017 11:41:21 PAGE 4   
+
+ 177   2              LED_TIMER_PIN = on_off;
+ 178   2              break;
+ 179   2            case KEY_SPEED:
+ 180   2              LED_SPEED_PIN = on_off;
+ 181   2              break;
+ 182   2            case KEY_POWER:
+ 183   2              LED_POWER_PIN = on_off;
+ 184   2              break;
+ 185   2            default:
+ 186   2              break;        
+ 187   2          }
+ 188   1      }
+ 189          
+ 190          
+ 191          
+ 192          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    207    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      5    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

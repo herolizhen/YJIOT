@@ -1,0 +1,568 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>缴费列表</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate" />
+<link href="../../compontents/bootstarp/css/bootstrap-UI.css.css"
+	rel="stylesheet" media="screen">
+<link href="../../compontents/iot/css/table.css" rel="stylesheet" />
+<script
+	src="https://cdn.staticfile.org/flat-ui/2.3.0/js/vendor/jquery.min.js"></script>
+<script
+	src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="../../compontents/bootstarp/js/bootstrap-table.js"></script>
+<script
+	src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
+<script
+	src="https://cdn.bootcss.com/bootstrap-validator/0.5.3/js/bootstrapValidator.js"></script>
+<script src="../../compontents/iot/js/api.js"></script>
+</head>
+<style type="text/css">
+body {
+	font-family: "华文细黑";
+	width: 100%;
+	height: auto;
+	background: #f7f7f7;
+	margin-left: 30px;
+	padding-right: 50px;
+}
+</style>
+<body>
+
+	<!-- 缴费添加 -->
+	<div class="modal fade myModal" id="myModal" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div id="modalDialog" class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">缴费添加</h4>
+				</div>
+				<div class="modal-body">
+					<form id="userform">
+						<div class="col-md-12">
+
+							<div class="col-md-6">
+								<div class="input-group">
+									<span class="input-group-addon">类&nbsp;&nbsp;&nbsp;&nbsp;型</span>
+									<input type="text" id="chargeType" class="form-control"
+										style="width:178px;height:40px" name="chargeType">
+								</div>
+								<br>
+								<div class="input-group">
+									<span class="input-group-addon">名&nbsp;&nbsp;&nbsp;&nbsp;称</span>
+									<input type="text" id="typeName" class="form-control"
+										style="width:178px;height:40px">
+								</div>
+								<br>
+								<div class="input-group">
+									<span class="input-group-addon">定&nbsp;&nbsp;&nbsp;&nbsp;价</span>
+									<input type="text" id="price" class="form-control"
+										style="width:178px;height:40px">
+								</div>
+								<br>
+								<div class="input-group">
+									<span class="input-group-addon">
+										筹&nbsp;&nbsp;&nbsp;&nbsp;码 </span><input type="text" id="chips"
+										class="form-control" style="width:178px;height:40px">
+								</div>
+								<br> <br>
+							</div>
+
+							<div class="input-group">
+								<span class="input-group-addon">编&nbsp;&nbsp;&nbsp;&nbsp;号</span>
+								<input type="text" id="dispNo" class="form-control"
+									style="width:178px;height:40px">
+							</div>
+							<br>
+							<div class="input-group">
+								<span class="input-group-addon">状&nbsp;&nbsp;&nbsp;&nbsp;态</span>
+								<select class="form-control" id="isValid"
+									style="width:178px;height:40px ">
+									<option value="0">停用</option>
+									<option value="1">启用</option>
+								</select>
+							</div>
+							<br>
+							<div class="input-group">
+								<span class="input-group-addon">单&nbsp;&nbsp;&nbsp;&nbsp;位</span>
+								<input style="width:178px;height:40px " type="text" id="unit"
+									class="form-control" style="width:178px;height:40px"
+									readonly="readonly" value="分">
+							</div>
+							<br>
+
+
+						</div>
+
+
+					</form>
+
+
+					<div style=" clear:both"></div>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">
+						取消</button>
+					<button type="button" class="btn btn-primary" onclick="addCharge()">确认</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /缴费添加 -->
+	<!-- 缴费修改 -->
+	<div class="modal fade myModal" id="myModalUpd" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" onclick="">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">缴费定义维护</h4>
+				</div>
+				<div class="modal-body">
+					<div class="col-md-12">
+
+						<div class="col-md-6">
+							<div class="input-group">
+								<span class="input-group-addon">类&nbsp;&nbsp;&nbsp;&nbsp;型</span>
+								<input type="text" id="chargeTypeUpd" class="form-control"
+									style="width:178px;height:40px" name="chargeType"
+									readonly="readonly">
+							</div>
+							<br>
+							<div class="input-group">
+								<span class="input-group-addon">名&nbsp;&nbsp;&nbsp;&nbsp;称</span>
+								<input type="text" id="typeNameUpd" class="form-control"
+									style="width:178px;height:40px">
+							</div>
+							<br>
+							<div class="input-group">
+								<span class="input-group-addon">定&nbsp;&nbsp;&nbsp;&nbsp;价</span>
+								<input type="text" id="priceUpd" class="form-control"
+									style="width:178px;height:40px">
+							</div>
+							<br>
+							<div class="input-group">
+								<span class="input-group-addon">
+									筹&nbsp;&nbsp;&nbsp;&nbsp;码 </span><input type="text" id="chipsUpd"
+									class="form-control" style="width:178px;height:40px">
+							</div>
+							<br> <br>
+						</div>
+
+						<div class="input-group">
+							<span class="input-group-addon">编&nbsp;&nbsp;&nbsp;&nbsp;号</span>
+							<input type="text" id="dispNoUpd" class="form-control"
+								style="width:178px;height:40px"readonly="readonly">
+						</div>
+						<br>
+						<div class="input-group">
+							<span class="input-group-addon">状&nbsp;&nbsp;&nbsp;&nbsp;态</span>
+							<select class="form-control" id="isValidUpd"
+								style="width:178px;height:40px ">
+								<option value="0">停用</option>
+								<option value="1">启用</option>
+							</select>
+						</div>
+						<br>
+						<div class="input-group">
+							<span class="input-group-addon">单&nbsp;&nbsp;&nbsp;&nbsp;位</span>
+							<input style="width:178px;height:40px " type="text" id="unitUpd"
+								class="form-control" style="width:178px;height:40px"
+								readonly="readonly" value="分">
+						</div>
+						<br>
+
+
+					</div>
+					<div style=" clear:both"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">
+						取消</button>
+					<button type="button" class="btn btn-primary saveChargeUpd">确认</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /缴费修改 -->
+	<!--缴费列表 -->
+	<div>
+		<h4 style="margin-left: 15px;margin-bottom: -15px;margin-top: 2px">缴费定义</h4>
+		<hr
+			style="height:1px;border:none;border-top:3px solid #028cfd;margin-bottom: 15px;" />
+		<button class="btn btn-primary btn-sm" data-toggle="modal"
+			onclick="clearFrom()" data-target="#myModal"
+			style="float:left; margin-right: 50px; margin-bottom: 1px">
+			缴费添加</button>
+
+		<table id="tableData"></table>
+	</div>
+	<!--//缴费列表 -->
+
+</body>
+
+<script type="text/javascript">
+	/**
+	 * 合并单元格
+	 * @param data  原始数据（在服务端完成排序）
+	 * @param fieldName 合并属性名称
+	 * @param colspan   合并列
+	 * @param target    目标表格对象
+	 */
+	function mergeCells(data, fieldName, colspan, target) {
+		//声明一个map计算相同属性值在data对象出现的次数和
+		var sortMap = {};
+		for (var i = 0; i < data.length; i++) {
+			for (var prop in data[i]) {
+				if (prop == fieldName) {
+					var key = data[i][prop]
+					if (sortMap.hasOwnProperty(key)) {
+						sortMap[key] = sortMap[key] * 1 + 1;
+					} else {
+						sortMap[key] = 1;
+					}
+					break;
+				}
+			}
+		}
+		var index = 0;
+		for (var prop in sortMap) {
+			var count = sortMap[prop] * 1;
+			$(target).bootstrapTable('mergeCells', {
+				index : index,
+				field : fieldName,
+				colspan : colspan,
+				rowspan : count
+			});
+			index += count;
+		}
+	}
+</script>
+
+
+<script>
+	var appId = $api.getCurrApp();
+	//初始化缴费定义信息
+
+	function initTable() {
+		$api.ui_openLoading('提示', '用户信息加载中，请耐心等待......');
+		window.setTimeout(function() {
+			$api.ui_closeLoading();
+		}, 500);
+		var data = {}
+		$dict.selChargeAll(data,
+			function(ret) {
+				var list = ret.chargeList;
+				var yuan;
+				for (i in list) {
+					if (1 == list[i].isValid) {
+						list[i].isValid = "有效";
+					} else {
+						list[i].isValid = "失效";
+					}
+					yuan = list[i].price / 100.0;
+
+					list[i].price = $api.roundNumber(yuan, 2);
+				}
+				var obj = list;
+				var pageSize = 10;
+				var tempdata = [];
+				if (obj.length > 0) {
+					for (var i = 0; i < 10; i++) {
+						tempdata.push(obj[i]);
+					}
+				}
+				//bootstrap-Table获取数据
+				$('#tableData').bootstrapTable({
+					data : obj, //最终的JSON数据放在这里
+					height : $(window).height() - 100,
+					striped : true,
+					pagination : true,
+					pageNumber : 1,
+					pageSize : pageSize,
+					pageList : [ 5, 10, 20, 50, 100 ],
+					search : true,
+					sidePagination : "client",
+					columns : [
+						{
+							title : '序号',
+							formatter : function(value, row, index) {
+								return index + 1;
+							}
+						},
+						{
+							field : 'chargeType',
+							title : '缴费类型',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'dispNo',
+							title : '类型序号',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'typeName',
+							title : '类型名称',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'price',
+							title : '定价（元）',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'chips',
+							title : '筹码（分钟）',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'isValid',
+							title : '状态',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'operate',
+							title : '操作',
+							align : 'center',
+							formatter : function(value, row, index) {
+								var a = '<button type="button" class="btn btn-danger  btn-sm" style="margin-right:15px;"   onclick="delCharge(\'' + row.chargeType + '\',\'' + row.dispNo + '\',\'' + row.typeName + '\')">删除</a> ';
+								var b = '<button type="button" class="btn btn-warning  btn-sm" style="margin-right:15px;" data-toggle="modal" data-target="#myModalUpd" onclick="updCharge(\'' + row.chargeType + '\',\'' + row.dispNo + '\',\'' + row.typeName + '\',\'' + row.price + '\',\'' + row.unit + '\',\'' + row.chips + '\',\'' + row.isValid + '\')">修改</button>';
+								return a + b;
+							}
+						} ],
+
+					formatNoMatches : function() {
+						return "没有相关的匹配结果";
+					},
+					formatLoadingMessage : function() {
+						return "";
+					},
+					onPostBody : function() {
+						var data = $('#tableData').bootstrapTable('getData', true);
+						console.log(data);
+						if (data.length > 1) {
+							mergeCells(data, 'chargeType', 1, $('#tableData'));
+						}
+					}
+				});
+				mergeCells(tempdata, 'chargeType', 1, $('#tableData'));
+			},
+			function() {
+				$api.ui_openAlert('查询提示', '缴费定义信息加载失败');
+			});
+
+	}
+
+	/*  刷新缴费定义信息 */
+	function refreshTableData() {
+		var data = {};
+		$dict.selChargeAll(data,
+			function(ret) {
+				var list = ret.chargeList;
+				var yuan;
+				for (i in list) {
+					if (1 == list[i].isValid) {
+						list[i].isValid = "有效";
+					} else {
+						list[i].isValid = "失效";
+					}
+					yuan = list[i].price / 100.0;
+
+					list[i].price = $api.roundNumber(yuan, 2);
+				}
+				var data = list;
+				$("#tableData").bootstrapTable('load', data);
+
+			},
+			function() {
+				$api.ui_openAlert('查询提示', '缴费定义信息更新失败');
+			});
+
+
+	}
+</script>
+
+<script type="text/javascript">
+	function clearFrom() {
+		$(':input', '#userform')
+			.not(':button, :submit, :reset, :hidden')
+			.val('')
+			.removeAttr('checked')
+			.removeAttr('selected');
+
+	}
+</script>
+<script>
+</script>
+
+<script>
+	/* 缴费添加 */
+	function addCharge() {
+
+		//进行表单验证
+		var bv = form.data('bootstrapValidator');
+		bv.validate();
+		var chargeType = $("#chargeType").val();
+		var dispNo = $("#dispNo").val();
+		var typeName = $("#typeName").val();
+		var price = $("#price").val();
+		var unit = $("#unit").val();
+		var chips = $("#chips").val();
+		var isValid = $("#isValid").val();
+		var data = {};
+		data.chargeType = chargeType;
+		data.dispNo = dispNo;
+		data.typeName = typeName;
+		data.price = price;
+		data.unit = unit;
+		data.chips = chips;
+		data.isValid = isValid;
+		$dict.addCharge(data, success, error);
+		function success() {
+			refreshTableData();
+			$("#myModal").modal("hide");
+			clearFrom();
+		}
+		;
+		function error() {
+			$api.ui_openAlert('提示', '添加失败!该缴费定义已经存在');
+			clearFrom();
+		}
+		;
+	}
+</script>
+<script>
+	/* 修改缴费定义信息信息 */
+	function updCharge(chargeType, dispNo, typeName, price, unit, chips, isValid) {
+		$("#chargeTypeUpd").val(chargeType);
+		$("#dispNoUpd").val(dispNo);
+		$("#typeNameUpd").val(typeName);
+		$("#priceUpd").val(price * 100);
+		$("#unitUpd").val(unit);
+		$("#chipsUpd").val(chips);
+		if ('有效' == isValid) {
+			isValid = 1;
+		} else {
+			isValid = 0;
+		}
+		var brand = isValid;
+		if (brand != "") {
+			var s = document.getElementById("isValidUpd"); //获取select对象
+			var ops = s.options;
+			for (var i = 0; i < ops.length; i++) {
+				var tempValue = ops[i].value;
+				if (tempValue == brand) {
+					ops[i].selected = true; //如果后台的值与下拉列表的某一个value相等，就设置此项为选中项
+					break;
+				}
+			}
+		}
+		$(".saveChargeUpd").click(function() {
+			var data = {};
+			data.chargeType = $("#chargeTypeUpd").val();
+			data.dispNo = $("#dispNoUpd").val();
+			data.typeName = $("#typeNameUpd").val();
+			data.price = $("#priceUpd").val();
+			data.unit = $("#unitUpd").val();
+			data.chips = $("#chipsUpd").val();
+			data.isValid = $("#isValidUpd").val();
+			console.log(data);
+			$dict.updCharge(data, success, error);
+			function success(ret) {
+				refreshTableData();
+				$("#myModalUpd").modal("hide");
+			}
+			;
+			function error() {
+				$api.ui_openAlert('修改提示', '请检查缴费定义信息');
+			}
+			;
+		})
+
+	}
+</script>
+<script>
+	/* 删除缴费定义 */
+	function delCharge(chargeType, dispNo, typeName) {
+		$api.ui_openAlert('用户删除', '请确认是否要删除缴费定义：' + chargeType + typeName, function(tag) {
+			if (tag) {
+				var data = {};
+				data.chargeType = chargeType;
+				data.dispNo = dispNo;
+				console.log(data);
+				$dict.delCharge(data, success, error);
+				function success() {
+					refreshTableData();
+					$api.ui_closeLoading();
+				}
+				;
+				function error() {
+					$api.ui_openAlert('删除提示', '删除失败请检查缴费定义信息');
+				}
+				;
+
+			}
+		});
+	}
+</script>
+
+<script>
+	$(function() {
+		$api.Initialize();
+		initTable();
+	});
+</script>
+
+<script type='text/javascript'>
+	var form = $('#userform');
+	$(document).ready(function() {
+		form.bootstrapValidator({
+			message : '输入值不合法',
+			feedbackIcons : {
+				valid : 'glyphicon glyphicon-ok',
+				invalid : 'glyphicon glyphicon-remove',
+				validating : 'glyphicon glyphicon-refresh'
+			},
+			fields : {
+				username : {
+					message : '用户名不合法',
+					validators : {
+						notEmpty : {
+							message : '用户名不能为空'
+						},
+						stringLength : {
+							min : 3,
+							max : 30,
+							message : '请输入3到30个字符'
+						},
+						regexp : {
+							regexp : /^[a-zA-Z0-9_\. \u4e00-\u9fa5 ]+$/,
+							message : '用户名只能由字母、数字、点、下划线和汉字组成 '
+						},
+					}
+				}
+			}
+		});
+	});
+</script>
+
+
+
+</html>

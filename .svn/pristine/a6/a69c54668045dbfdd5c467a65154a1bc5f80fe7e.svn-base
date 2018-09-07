@@ -1,0 +1,72 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: ¦ÌVision V5.23.0.0
+Copyright (C) 2017 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: 111 Microsoft, Microsoft, LIC=VG6CX-HTBJT-SLYCN-YV1AV-D2AWA-WALD2
+ 
+Tool Versions:
+Toolchain:       PK51 Prof. Developers Kit  Version: 9.52.0.0
+Toolchain Path:  C:\Keil_v5\C51\BIN
+C Compiler:      C51.exe V9.52.0.0
+Assembler:       A51.exe V8.02b
+Linker/Locator:  BL51.exe V6.22
+Library Manager: LIB51.exe V4.29
+Hex Converter:   OH51.exe V2.7.0.0
+CPU DLL:         S8051.DLL V3.91.0.0
+Dialog DLL:      DCore51.DLL V2.81.2.0 
+<h2>Project:</h2>
+C:\Users\Administrator.PC-20150716NTPE\Desktop\test\OB39R32T1-check\project\OB39R32T1.uvproj
+Project File Date:  11/17/2017
+
+<h2>Output:</h2>
+Build target 'Target 1'
+compiling main.c...
+compiling data.c...
+compiling wifi_uart.c...
+compiling dc_motor.c...
+compiling sys_run.c...
+compiling step_motor.c...
+compiling M26.c...
+linking...
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?SENSOR_POWER_ON?SENSOR
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?SENSOR_POWER_OFF?SENSOR
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?CHECK_ISPFAH?EEPROM
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_EEPROM_SECTOR_PROGRAM?EEPROM
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?DEVICE_ACTIVATE?M26
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?LVR_DISABLE?LVI_LVR
+*** WARNING L15: MULTIPLE CALL TO SEGMENT
+    SEGMENT: ?PR?CHARGE_LEFTTIME_FLASH_WRITE?CHARGE
+    CALLER1: ?C_C51STARTUP
+    CALLER2: ?PR?LVI?LVI_LVR
+*** WARNING L15: MULTIPLE CALL TO SEGMENT
+    SEGMENT: ?PR?_MYMEMSET?COMMON
+    CALLER1: ?C_C51STARTUP
+    CALLER2: ?PR?LVI?LVI_LVR
+*** WARNING L15: MULTIPLE CALL TO SEGMENT
+    SEGMENT: ?PR?PRINTF?PRINTF
+    CALLER1: ?C_C51STARTUP
+    CALLER2: ?PR?LVI?LVI_LVR
+*** WARNING L15: MULTIPLE CALL TO SEGMENT
+    SEGMENT: ?PR?_MYSTRLEN?COMMON
+    CALLER1: ?C_C51STARTUP
+    CALLER2: ?PR?LVI?LVI_LVR
+*** WARNING L15: MULTIPLE CALL TO SEGMENT
+    SEGMENT: ?PR?_DEBUG_UART_SENDBYTES?DEBUG_UART
+    CALLER1: ?C_C51STARTUP
+    CALLER2: ?PR?LVI?LVI_LVR
+Program Size: data=192.0 xdata=745 code=30087
+creating hex file from ".\Objects\OB39R32T1"...
+".\Objects\OB39R32T1" - 0 Error(s), 11 Warning(s).
+Build Time Elapsed:  00:00:03
+</pre>
+</body>
+</html>

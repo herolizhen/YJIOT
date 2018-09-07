@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.device.dao.DevConsumeMapper">
+	<resultMap id="BaseResultMap" type="com.yjyz.iot.device.entity.DevConsume">
+		<id column="client_id" jdbcType="VARCHAR" property="clientId" />
+		<id column="device_id" jdbcType="VARCHAR" property="deviceId" />
+		<id column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+		<result column="total_free" jdbcType="INTEGER" property="totalFree" />
+		<result column="type" jdbcType="CHAR" property="type" />
+		<result column="prepay_id" jdbcType="VARCHAR" property="prepayId" />
+		<result column="pay_no" jdbcType="VARCHAR" property="payNo" />
+		<result column="mch_id" jdbcType="VARCHAR" property="mchId" />
+		<result column="bill_being" jdbcType="TIMESTAMP" property="billBeing" />
+		<result column="bill_export" jdbcType="TIMESTAMP" property="billExport" />
+		<result column="status" jdbcType="CHAR" property="status" />
+		<result column="chips" jdbcType="INTEGER" property="chips" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		client_id, device_id, create_time, order_no, total_free,
+		type, prepay_id,
+		pay_no,
+		mch_id, bill_being, bill_export, status, chips
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="com.yjyz.iot.device.entity.DevConsumeKey"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_dev_consume
+		where client_id = #{clientId,jdbcType=VARCHAR}
+		and
+		device_id = #{deviceId,jdbcType=VARCHAR}
+		and create_time =
+		#{createTime,jdbcType=TIMESTAMP}
+	</select>
+	<select id="selectByOrderNo" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_dev_consume
+		where order_no = #{orderNo,jdbcType=VARCHAR}
+	</select>
+
+	<select id="selectUnConOrder" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_dev_consume dc where dc.device_id =#{deviceId,jdbcType=VARCHAR}
+		and dc.status='1' order by dc.create_time DESC LIMIT 1
+	</select>
+
+	<select id="selectHistory" parameterType="com.yjyz.iot.device.entity.DevConsumeKey"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_dev_consume dc
+		where client_id = #{clientId,jdbcType=VARCHAR}
+		and device_id = #{deviceId,jdbcType=VARCHAR}
+		and status != '0'
+		order by
+		create_time DESC
+		LIMIT 10
+	</select>
+
+	<select id="selectByDeviceID" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_dev_consume dc
+		where device_id = #{deviceId,jdbcType=VARCHAR}
+		and status != '0'
+		order by create_time DESC
+		LIMIT 20
+	</select>
+
+	<select id="selectByClientId" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_dev_consume
+		where client_id = #{clientId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="com.yjyz.iot.device.entity.DevConsumeKey">
+		delete from
+		t_dev_consume
+		where client_id = #{clientId,jdbcType=VARCHAR}
+		and
+		device_id = #{deviceId,jdbcType=VARCHAR}
+		and create_time =
+		#{createTime,jdbcType=TIMESTAMP}
+	</delete>
+	<insert id="insert" parameterType="com.yjyz.iot.device.entity.DevConsume">
+		insert into t_dev_consume
+		(client_id, device_id, create_time,
+		order_no, total_free, type,
+		prepay_id, pay_no, mch_id,
+		bill_being, bill_export, status,
+		chips)
+		values (#{clientId,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR},
+		#{createTime,jdbcType=TIMESTAMP},
+		#{orderNo,jdbcType=VARCHAR},
+		#{totalFree,jdbcType=INTEGER}, #{type,jdbcType=CHAR},
+		#{prepayId,jdbcType=VARCHAR}, #{payNo,jdbcType=VARCHAR},
+		#{mchId,jdbcType=VARCHAR},
+		#{billBeing,jdbcType=TIMESTAMP},
+		#{billExport,jdbcType=TIMESTAMP}, #{status,jdbcType=CHAR},
+		#{chips,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="com.yjyz.iot.device.entity.DevConsume">
+		insert into t_dev_consume
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="clientId != null">
+				client_id,
+			</if>
+			<if test="deviceId != null">
+				device_id,
+			</if>
+			<if test="createTime != null">
+				create_time,
+			</if>
+			<if test="orderNo != null">
+				order_no,
+			</if>
+			<if test="totalFree != null">
+				total_free,
+			</if>
+			<if test="type != null">
+				type,
+			</if>
+			<if test="prepayId != null">
+				prepay_id,
+			</if>
+			<if test="payNo != null">
+				pay_no,
+			</if>
+			<if test="mchId != null">
+				mch_id,
+			</if>
+			<if test="billBeing != null">
+				bill_being,
+			</if>
+			<if test="billExport != null">
+				bill_export,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="chips != null">
+				chips,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="clientId != null">
+				#{clientId,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceId != null">
+				#{deviceId,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="orderNo != null">
+				#{orderNo,jdbcType=VARCHAR},
+			</if>
+			<if test="totalFree != null">
+				#{totalFree,jdbcType=INTEGER},
+			</if>
+			<if test="type != null">
+				#{type,jdbcType=CHAR},
+			</if>
+			<if test="prepayId != null">
+				#{prepayId,jdbcType=VARCHAR},
+			</if>
+			<if test="payNo != null">
+				#{payNo,jdbcType=VARCHAR},
+			</if>
+			<if test="mchId != null">
+				#{mchId,jdbcType=VARCHAR},
+			</if>
+			<if test="billBeing != null">
+				#{billBeing,jdbcType=TIMESTAMP},
+			</if>
+			<if test="billExport != null">
+				#{billExport,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=CHAR},
+			</if>
+			<if test="chips != null">
+				#{chips,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yjyz.iot.device.entity.DevConsume">
+		update t_dev_consume
+		<set>
+			<if test="orderNo != null">
+				order_no = #{orderNo,jdbcType=VARCHAR},
+			</if>
+			<if test="totalFree != null">
+				total_free = #{totalFree,jdbcType=INTEGER},
+			</if>
+			<if test="type != null">
+				type = #{type,jdbcType=CHAR},
+			</if>
+			<if test="prepayId != null">
+				prepay_id = #{prepayId,jdbcType=VARCHAR},
+			</if>
+			<if test="payNo != null">
+				pay_no = #{payNo,jdbcType=VARCHAR},
+			</if>
+			<if test="mchId != null">
+				mch_id = #{mchId,jdbcType=VARCHAR},
+			</if>
+			<if test="billBeing != null">
+				bill_being = #{billBeing,jdbcType=TIMESTAMP},
+			</if>
+			<if test="billExport != null">
+				bill_export = #{billExport,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=CHAR},
+			</if>
+			<if test="chips != null">
+				chips = #{chips,jdbcType=INTEGER},
+			</if>
+		</set>
+		where client_id = #{clientId,jdbcType=VARCHAR}
+		and device_id =
+		#{deviceId,jdbcType=VARCHAR}
+		and create_time =
+		#{createTime,jdbcType=TIMESTAMP}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yjyz.iot.device.entity.DevConsume">
+		update
+		t_dev_consume
+		set order_no = #{orderNo,jdbcType=VARCHAR},
+		total_free =
+		#{totalFree,jdbcType=INTEGER},
+		type = #{type,jdbcType=CHAR},
+		prepay_id =
+		#{prepayId,jdbcType=VARCHAR},
+		pay_no = #{payNo,jdbcType=VARCHAR},
+		mch_id = #{mchId,jdbcType=VARCHAR},
+		bill_being =
+		#{billBeing,jdbcType=TIMESTAMP},
+		bill_export =
+		#{billExport,jdbcType=TIMESTAMP},
+		status = #{status,jdbcType=CHAR},
+		chips = #{chips,jdbcType=INTEGER}
+		where client_id =
+		#{clientId,jdbcType=VARCHAR}
+		and device_id =
+		#{deviceId,jdbcType=VARCHAR}
+		and create_time =
+		#{createTime,jdbcType=TIMESTAMP}
+	</update>
+</mapper>

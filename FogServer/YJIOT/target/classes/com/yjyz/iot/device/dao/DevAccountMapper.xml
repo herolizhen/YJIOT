@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.device.dao.DevAccountMapper">
+	<resultMap id="BaseResultMap" type="com.yjyz.iot.device.entity.DevAccount">
+		<id column="device_id" jdbcType="VARCHAR" property="deviceId" />
+		<result column="owner_type" jdbcType="CHAR" property="ownerType" />
+		<result column="owner_code" jdbcType="VARCHAR" property="ownerCode" />
+		<result column="owner_name" jdbcType="VARCHAR" property="ownerName" />
+		<result column="position" jdbcType="VARCHAR" property="position" />
+		<result column="longitude" jdbcType="DOUBLE" property="longitude" />
+		<result column="latitude" jdbcType="DOUBLE" property="latitude" />
+		<result column="installer" jdbcType="VARCHAR" property="installer" />
+		<result column="manager" jdbcType="VARCHAR" property="manager" />
+		<result column="tel" jdbcType="VARCHAR" property="tel" />
+		<result column="install_date" jdbcType="TIMESTAMP" property="installDate" />
+		<result column="status" jdbcType="CHAR" property="status" />
+		<result column="is_online" jdbcType="BIT" property="isOnline" />
+		<result column="last_time" jdbcType="TIMESTAMP" property="lastTime" />
+		<result column="reg_code" jdbcType="VARCHAR" property="regCode" />
+	</resultMap>
+
+	<resultMap id="MiniResultMap" type="com.yjyz.iot.device.entity.DevAccountMini">
+		<id column="device_id" jdbcType="VARCHAR" property="deviceId" />
+		<result column="owner_name" jdbcType="VARCHAR" property="ownerName" />
+		<result column="position" jdbcType="VARCHAR" property="position" />
+		<result column="longitude" jdbcType="DOUBLE" property="longitude" />
+		<result column="latitude" jdbcType="DOUBLE" property="latitude" />
+		<result column="install_date" jdbcType="TIMESTAMP" property="installDate" />
+		<result column="is_online" jdbcType="BIT" property="isOnline" />
+		<result column="last_time" jdbcType="TIMESTAMP" property="lastTime" />
+		<result column="device_mac" jdbcType="VARCHAR" property="deviceMac" />
+		<result column="activate_time" jdbcType="TIMESTAMP" property="activateTime" />
+		<result column="module_name" jdbcType="VARCHAR" property="moduleName" />
+		<result column="reg_ip" jdbcType="VARCHAR" property="regIp" />
+		<result column="firmware" jdbcType="VARCHAR" property="firmware" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		device_id, owner_type, owner_code, owner_name, position,
+		longitude, latitude,
+		installer,
+		manager, tel, install_date, status,
+		is_online, last_time, reg_code
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_dev_account
+		where device_id = #{deviceId,jdbcType=VARCHAR}
+	</select>
+
+	<select id="selectByMerchantCode" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_dev_account
+		where owner_code = #{ownerCode,jdbcType=VARCHAR}
+	</select>
+
+	<select id="selectByGISRect" parameterType="com.yjyz.iot.comm.GISQuery"
+		resultMap="MiniResultMap">
+  <![CDATA[
+		SELECT
+			tda.device_id,
+			tda.is_online,
+			tda.last_time,
+			tda.latitude,
+			tda.longitude,
+			tda.owner_name,
+			tda.position,
+			tda.install_date,
+      		tdi.device_mac,
+			tdi.activate_time ,
+			tdi.module_name ,
+			tdi.reg_ip ,
+			tdi.firmware
+		FROM
+			t_dev_account tda,
+			t_dev_info tdi,
+			t_prod_info pi
+		WHERE
+			tda.device_id = tdi.device_id
+		AND tdi.product_id = pi.product_id
+		AND pi.app_id =  #{appId,jdbcType=VARCHAR}
+		and	tda.latitude >= #{latitudeLB,jdbcType=DOUBLE}
+		AND tda.latitude <= #{latitudeRT,jdbcType=DOUBLE}
+		AND tda.longitude >= #{longitudeLB,jdbcType=DOUBLE}
+		AND tda.longitude <= #{longitudeRT,jdbcType=DOUBLE}
+		]]>
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		t_dev_account
+		where device_id = #{deviceId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.yjyz.iot.device.entity.DevAccount">
+		insert into t_dev_account
+		(device_id, owner_type, owner_code,
+		owner_name, position, longitude,
+		latitude, installer, manager,
+		tel, install_date, status,
+		is_online,
+		last_time, reg_code
+		)
+		values (#{deviceId,jdbcType=VARCHAR},
+		#{ownerType,jdbcType=CHAR},
+		#{ownerCode,jdbcType=VARCHAR},
+		#{ownerName,jdbcType=VARCHAR}, #{position,jdbcType=VARCHAR},
+		#{longitude,jdbcType=DOUBLE},
+		#{latitude,jdbcType=DOUBLE},
+		#{installer,jdbcType=VARCHAR},
+		#{manager,jdbcType=VARCHAR},
+		#{tel,jdbcType=VARCHAR}, #{installDate,jdbcType=TIMESTAMP},
+		#{status,jdbcType=CHAR},
+		#{isOnline,jdbcType=BIT},
+		#{lastTime,jdbcType=TIMESTAMP},
+		#{regCode,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.yjyz.iot.device.entity.DevAccount">
+		insert into t_dev_account
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="deviceId != null">
+				device_id,
+			</if>
+			<if test="ownerType != null">
+				owner_type,
+			</if>
+			<if test="ownerCode != null">
+				owner_code,
+			</if>
+			<if test="ownerName != null">
+				owner_name,
+			</if>
+			<if test="position != null">
+				position,
+			</if>
+			<if test="longitude != null">
+				longitude,
+			</if>
+			<if test="latitude != null">
+				latitude,
+			</if>
+			<if test="installer != null">
+				installer,
+			</if>
+			<if test="manager != null">
+				manager,
+			</if>
+			<if test="tel != null">
+				tel,
+			</if>
+			<if test="installDate != null">
+				install_date,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="isOnline != null">
+				is_online,
+			</if>
+			<if test="lastTime != null">
+				last_time,
+			</if>
+			<if test="regCode != null">
+				reg_code,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="deviceId != null">
+				#{deviceId,jdbcType=VARCHAR},
+			</if>
+			<if test="ownerType != null">
+				#{ownerType,jdbcType=CHAR},
+			</if>
+			<if test="ownerCode != null">
+				#{ownerCode,jdbcType=VARCHAR},
+			</if>
+			<if test="ownerName != null">
+				#{ownerName,jdbcType=VARCHAR},
+			</if>
+			<if test="position != null">
+				#{position,jdbcType=VARCHAR},
+			</if>
+			<if test="longitude != null">
+				#{longitude,jdbcType=DOUBLE},
+			</if>
+			<if test="latitude != null">
+				#{latitude,jdbcType=DOUBLE},
+			</if>
+			<if test="installer != null">
+				#{installer,jdbcType=VARCHAR},
+			</if>
+			<if test="manager != null">
+				#{manager,jdbcType=VARCHAR},
+			</if>
+			<if test="tel != null">
+				#{tel,jdbcType=VARCHAR},
+			</if>
+			<if test="installDate != null">
+				#{installDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=CHAR},
+			</if>
+			<if test="isOnline != null">
+				#{isOnline,jdbcType=BIT},
+			</if>
+			<if test="lastTime != null">
+				#{lastTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="regCode != null">
+				#{regCode,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yjyz.iot.device.entity.DevAccount">
+		update t_dev_account
+		<set>
+			<if test="ownerType != null">
+				owner_type = #{ownerType,jdbcType=CHAR},
+			</if>
+			<if test="ownerCode != null">
+				owner_code = #{ownerCode,jdbcType=VARCHAR},
+			</if>
+			<if test="ownerName != null">
+				owner_name = #{ownerName,jdbcType=VARCHAR},
+			</if>
+			<if test="position != null">
+				position = #{position,jdbcType=VARCHAR},
+			</if>
+			<if test="longitude != null">
+				longitude = #{longitude,jdbcType=DOUBLE},
+			</if>
+			<if test="latitude != null">
+				latitude = #{latitude,jdbcType=DOUBLE},
+			</if>
+			<if test="installer != null">
+				installer = #{installer,jdbcType=VARCHAR},
+			</if>
+			<if test="manager != null">
+				manager = #{manager,jdbcType=VARCHAR},
+			</if>
+			<if test="tel != null">
+				tel = #{tel,jdbcType=VARCHAR},
+			</if>
+			<if test="installDate != null">
+				install_date = #{installDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=CHAR},
+			</if>
+			<if test="isOnline != null">
+				is_online = #{isOnline,jdbcType=BIT},
+			</if>
+			<if test="lastTime != null">
+				last_time = #{lastTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="regCode != null">
+				reg_code = #{regCode,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where device_id = #{deviceId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yjyz.iot.device.entity.DevAccount">
+		update
+		t_dev_account
+		set owner_type = #{ownerType,jdbcType=CHAR},
+		owner_code =
+		#{ownerCode,jdbcType=VARCHAR},
+		owner_name =
+		#{ownerName,jdbcType=VARCHAR},
+		position = #{position,jdbcType=VARCHAR},
+		longitude = #{longitude,jdbcType=DOUBLE},
+		latitude =
+		#{latitude,jdbcType=DOUBLE},
+		installer = #{installer,jdbcType=VARCHAR},
+		manager = #{manager,jdbcType=VARCHAR},
+		tel = #{tel,jdbcType=VARCHAR},
+		install_date = #{installDate,jdbcType=TIMESTAMP},
+		status =
+		#{status,jdbcType=CHAR},
+		is_online = #{isOnline,jdbcType=BIT},
+		last_time = #{lastTime,jdbcType=TIMESTAMP},
+		reg_code =
+		#{regCode,jdbcType=VARCHAR}
+		where device_id =
+		#{deviceId,jdbcType=VARCHAR}
+	</update>
+
+	<update id="updateMqttDevOnlineState">
+		update
+		t_dev_account
+		set is_online = true,
+		last_time = SYSDATE()
+		where
+		device_id in
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+</mapper>

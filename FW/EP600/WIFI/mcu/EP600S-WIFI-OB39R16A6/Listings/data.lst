@@ -1,0 +1,162 @@
+C51 COMPILER V9.52.0.0   DATA                                                              12/18/2017 15:06:00 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE DATA
+OBJECT MODULE PLACED IN .\Objects\data.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\data.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\USER\IIC;.\USER\UART
+                    -;.\USER\TM1618;.\USER\Sensor;.\USER;.\USER\PWM;.\USER\DC_MOTOR;.\USER\timer;.\USER\inc;.\USER\EXINT;.\USER\touch_key;.\U
+                    -SER\SYS_RUN;.\USER\step_motor;.\USER\BUZZER;.\USER\UART;.\USER\common;.\USER\lib;.\USER\UV;.\USER\ION;.\USER\EEPROM;.\US
+                    -ER\TM1620;.\USER\charge) DEBUG OBJECTEXTEND PRINT(.\Listings\data.lst) TABS(2) OBJECT(.\Objects\data.obj)
+
+line level    source
+
+   1          #include "dc_motor.h"
+   2          #include "global.h"
+   3          #include "UV.h"
+   4          #include "sys_run.h"
+   5          
+   6          const unsigned char device_id = 1;
+   7          
+   8          bit g_1ms_flag = 0;
+   9          bit g_2ms_flag = 0;
+  10          bit g_10ms_flag = 0;
+  11          bit g_100ms_flag = 0;
+  12          bit g_1s_flag = 0;
+  13          unsigned long g_1s_times = 0;
+  14          bit g_1min_flag = 0;
+  15          unsigned long g_sys_time_ms = 0;
+  16          //unsigned long g_sys_time_s = 0;
+  17          
+  18          
+  19          //·ç»ú·´À¡ÐÅºÅFGµÄ¼ÆÊý
+  20          unsigned char FGcount = 0;
+  21          
+  22          
+  23          unsigned char speedBak = 0;     //µç»ú¿ØÖÆ
+  24          bit gbMotorFGEn = 0;  //ÊÇ·ñ¸ù¾ÝFGµ÷½Ú×ªËÙ±êÖ¾      
+  25          unsigned char gBMotorFGSet = 0;    
+  26          unsigned char speed_dang = 0;
+  27          bit sys_mode = 0; //ÏµÍ³ÔËÐÐÄ£Ê½£¬·ÖÎª´ý»úºÍÔËÐÐ  
+  28          bit run_mode = 0; //ÔËÐÐÄ£Ê½·ÖÎª×Ô¶¯ºÍÊÖ¶¯
+  29          bit gbMotorDelay = 0;
+  30          bit IsSpeedChanged = 0;  
+  31          bit IsFanRunning = 0;
+  32          unsigned int pwmDLbak = 0;     //µ±Ç°PWMÊä³öµÄÕ¼¿Õ±È
+  33          
+  34          signed long beats = 0;
+  35          
+  36          unsigned int gBuzzerTimes_cnt = 0;
+  37          unsigned int gBuzzerEdge_cnt = 0;  //¸Ã±äÁ¿µ÷½ÚÄ£ÄâPWMµÄÕ¼¿Õ±È
+  38          
+  39          
+  40          //Ó²¼þUART0
+  41          unsigned char U0RxBuffer[U0RxBuff_MAXSIZE] = {0};
+  42          unsigned char U0RxPtr = 0;
+  43          
+  44          #ifdef WIFI_SOFT_UART
+              //Ä£ÄâUART2
+              unsigned char U2RxBuffer[U2RxBuff_MAXSIZE];
+              unsigned char U2RxPtr = 0;
+              unsigned char U2TxBuffer[U2TxBuff_MAXSIZE];
+              unsigned char U2TxPtr = 0;
+              unsigned char U2LdPtr = 0;
+              unsigned char U2TxBitCount = 0;
+              unsigned char U2TxRate = 0;
+C51 COMPILER V9.52.0.0   DATA                                                              12/18/2017 15:06:00 PAGE 2   
+
+              //IsU2TxBusy = 1Ê±£¬±íÊ¾Ä£ÄâUART2ÕýÔÚ·¢ËÍÊý¾Ý£¬Èç¹ûÓÐÊý¾ÝÒª·¢ËÍ£¬·¢ËÍ»º³åÇøÓÐÊý¾Ý£¬·¢ËÍµÄÊý¾Ý²»ÄÜ·ÅÔÚ·¢ËÍ»
+             -º³åÇøbufferµÚ0¸ö×Ö½Ú£¬¶øÊÇ·ÅÔÚÕýÔÚ·¢ËÍµÄÊý¾ÝºóÃæ
+              bit IsU2TxBusy = 0;
+              bit IsU2RxBusy = 0;
+              #endif
+  57          
+  58          //Ä£ÄâUART3
+  59          unsigned char U3RxBuffer[U3RxBuff_MAXSIZE];
+  60          unsigned char U3RxPtr = 0;
+  61          unsigned char U3TxBuffer[U3TxBuff_MAXSIZE];
+  62          unsigned char U3TxPtr = 0;
+  63          unsigned char U3LdPtr = 0;
+  64          unsigned char U3TxBitCount = 0;
+  65          unsigned char U3TxRate = 0;
+  66          //IsU2TxBusy = 1Ê±£¬±íÊ¾Ä£ÄâUART2ÕýÔÚ·¢ËÍÊý¾Ý£¬Èç¹ûÓÐÊý¾ÝÒª·¢ËÍ£¬·¢ËÍ»º³åÇøÓÐÊý¾Ý£¬·¢ËÍµÄÊý¾Ý²»ÄÜ·ÅÔÚ·¢ËÍ»
+             -º³åÇøbufferµÚ0¸ö×Ö½Ú£¬¶øÊÇ·ÅÔÚÕýÔÚ·¢ËÍµÄÊý¾ÝºóÃæ
+  67          bit IsU3TxBusy = 0; 
+  68          bit IsU3RxBusy = 0;
+  69          
+  70          bit IsSysFault = 0;
+  71          bit IsStepMotorBusy = 0;
+  72          
+  73          //UV
+  74          bit IsUVOn = 0;
+  75          bit IsUVfault = 0;
+  76          //UVµÆ¼ì²âÊ±¼ä¼ä¸ô10·ÖÖÓ£¬Ã¿´ÎÆô¶¯UVµÆ10Ãëºó¼ì²âµÚÒ»´Î£¬ÒÔ·ÀÖ¹UVµÆÓÐÎÊÌâ£¬ÒÔºóÃ¿¸ô10·ÖÖÓ¼ì²âÒ»´Î
+  77          //Ã¿´ÎUVÆô¶¯ÊÇ±ØÐëÉèÖÃ uv_check_timeinterval = UV_CHECK_TIME_INTERVAL - 10,ÔÚUV_On()º¯ÊýÖÐ
+  78          unsigned int uv_check_timeinterval = UV_CHECK_TIME_INTERVAL - 10;
+  79          bit IsUVCheck = 0;
+  80          bit uv_check_flag = 0;
+  81          //UV·´À¡µçÑ¹¼ì²â£ºÃ¿¸öÒ»¶ÎÊ±¼äÁ¬Ðø¼ì²â3Ãë£¬Ã¿Ãë¼ì²âÒ»´Î£¬¼ä¸ôÊ±¼äÔÚUV.hÖÐµÄ UV_CHECK_TIME_INTERVAL ºê¶¨Òå
+  82          //Ã¿´Î¸ÕÉÏµçÊ±£¬µÚÒ»´Î¼ì²âµ½µÄADCµÄÖµÎª0£¬ËùÒÔ³õÊ¼»¯Îª-1£¬ÉÏµçºó×î¿ªÊ¼¼ì²â4´Î£¬ºöÂÔµÚ1´Î£¬ÒÔºóÃ¿´Î¶¼ÊÇ¼ì²â
+             -3´Î
+  83          char uv_check_times = -1; 
+  84          
+  85          //¸ºÑõÀë×Ó¹¤×÷×´Ì¬
+  86          bit Is_ION_On = 0;
+  87          
+  88          //²ÖÃÅ´ò¿ª±êÖ¾£¬´Î±êÖ¾ÊÇÉ¨ÂëÊ±ÏÂ·¢µÄ´ò¿ª²ÖÃÅ±êÖ¾
+  89          bit Is_Door_Open = 0;
+  90          //´ò¿ª²ÖÃÅµÄÊ±¼ä
+  91          unsigned long door_open_time = 0;
+  92          
+  93          //´«¸ÐÆ÷Êý¾Ý
+  94          float PM25_value = 0;
+  95          float PM25_value_bak = 0; //ÓÃÓÚ¼ÇÂ¼¿ª»úÊ±PM2.5µÄÊý¾Ý
+  96          //float PM1_value = 0;
+  97          //float PM10_value = 0;
+  98          //float HCHO_value = 0;
+  99          
+ 100          
+ 101          //ÏµÍ³×Ô¼ì±êÖ¾Î»
+ 102          bit Is_selfcheck = 0;
+ 103          
+ 104          
+ 105          //ÏµÍ³Æô¶¯Ê±¼ä£¬ÓÃÓÚ´¦Àí´«¸ÐÆ÷Êý¾Ý
+ 106          unsigned long sys_start_time = 0;
+ 107          //ÏµÍ³¹Ø±ÕÊ±¼ä£¬ÓÃÓÚ´¦Àí´«¸ÐÆ÷Êý¾Ý
+ 108          unsigned long sys_stop_time = 0;
+ 109          
+ 110          
+ 111          unsigned int display_pm_value = 0;
+C51 COMPILER V9.52.0.0   DATA                                                              12/18/2017 15:06:00 PAGE 3   
+
+ 112          
+ 113          
+ 114          
+ 115          //wifi¿ØÖÆMCUÏµÍ³×Ô¼ì±êÖ¾Î»
+ 116          bit is_sys_auto_check = 0;
+ 117          bit is_auto_check_complete = 0;
+ 118          //wifi¿ØÖÆMCUÏµÍ³×Ô¼ì±êÖ¾Î»
+ 119          bit is_sys_manual_check = 0;
+ 120          
+ 121          sys_check_t sys_check_info;
+ 122          
+ 123          
+ 124          
+ 125          
+ 126          
+ 127          
+ 128          
+ 129          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   ----    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =    403    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =     26    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

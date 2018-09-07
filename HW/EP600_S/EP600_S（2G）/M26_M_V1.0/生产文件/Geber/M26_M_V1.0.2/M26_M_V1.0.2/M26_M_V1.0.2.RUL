@@ -1,0 +1,5 @@
+DRC Rules Export File for PCB: Q:\工作\工程\M26\工程文件\M26_M_V1.0\Project\PCB\M26_M_V1.0.2.PcbDoc
+RuleKind=ShortCircuit|RuleName=ShortCircuit|Scope=Board|Allowed=0
+RuleKind=Clearance|RuleName=Clearance|Scope=Board|Minimum=5.91
+RuleKind=Width|RuleName=Width|Scope=Board|Minimum=8.00
+RuleKind=SolderMaskExpansion|RuleName=SolderMaskExpansion|Scope=Board|Minimum=4.00

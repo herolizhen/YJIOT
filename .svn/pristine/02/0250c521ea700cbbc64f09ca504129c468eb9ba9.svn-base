@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.device.dao.DevAccountHisMapper">
+  <resultMap id="BaseResultMap" type="com.yjyz.iot.device.entity.DevAccountHis">
+    <result column="guid" jdbcType="VARCHAR" property="guid" />
+    <result column="device_id" jdbcType="VARCHAR" property="deviceId" />
+    <result column="owner_type" jdbcType="CHAR" property="ownerType" />
+    <result column="owner_code" jdbcType="VARCHAR" property="ownerCode" />
+    <result column="owner_name" jdbcType="VARCHAR" property="ownerName" />
+    <result column="position" jdbcType="VARCHAR" property="position" />
+    <result column="longitude" jdbcType="DOUBLE" property="longitude" />
+    <result column="latitude" jdbcType="DOUBLE" property="latitude" />
+    <result column="installer" jdbcType="VARCHAR" property="installer" />
+    <result column="manager" jdbcType="VARCHAR" property="manager" />
+    <result column="tel" jdbcType="VARCHAR" property="tel" />
+    <result column="install_date" jdbcType="TIMESTAMP" property="installDate" />
+    <result column="remove_date" jdbcType="TIMESTAMP" property="removeDate" />
+    <result column="remover" jdbcType="VARCHAR" property="remover" />
+  </resultMap>
+  <insert id="insert" parameterType="com.yjyz.iot.device.entity.DevAccountHis">
+    insert into t_dev_account_his (guid, device_id, owner_type, 
+      owner_code, owner_name, position, 
+      longitude, latitude, installer, 
+      manager, tel, install_date, 
+      remove_date, remover)
+    values (#{guid,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR}, #{ownerType,jdbcType=CHAR}, 
+      #{ownerCode,jdbcType=VARCHAR}, #{ownerName,jdbcType=VARCHAR}, #{position,jdbcType=VARCHAR}, 
+      #{longitude,jdbcType=DOUBLE}, #{latitude,jdbcType=DOUBLE}, #{installer,jdbcType=VARCHAR}, 
+      #{manager,jdbcType=VARCHAR}, #{tel,jdbcType=VARCHAR}, #{installDate,jdbcType=TIMESTAMP}, 
+      #{removeDate,jdbcType=TIMESTAMP}, #{remover,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yjyz.iot.device.entity.DevAccountHis">
+    insert into t_dev_account_his
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="guid != null">
+        guid,
+      </if>
+      <if test="deviceId != null">
+        device_id,
+      </if>
+      <if test="ownerType != null">
+        owner_type,
+      </if>
+      <if test="ownerCode != null">
+        owner_code,
+      </if>
+      <if test="ownerName != null">
+        owner_name,
+      </if>
+      <if test="position != null">
+        position,
+      </if>
+      <if test="longitude != null">
+        longitude,
+      </if>
+      <if test="latitude != null">
+        latitude,
+      </if>
+      <if test="installer != null">
+        installer,
+      </if>
+      <if test="manager != null">
+        manager,
+      </if>
+      <if test="tel != null">
+        tel,
+      </if>
+      <if test="installDate != null">
+        install_date,
+      </if>
+      <if test="removeDate != null">
+        remove_date,
+      </if>
+      <if test="remover != null">
+        remover,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="guid != null">
+        #{guid,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null">
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="ownerType != null">
+        #{ownerType,jdbcType=CHAR},
+      </if>
+      <if test="ownerCode != null">
+        #{ownerCode,jdbcType=VARCHAR},
+      </if>
+      <if test="ownerName != null">
+        #{ownerName,jdbcType=VARCHAR},
+      </if>
+      <if test="position != null">
+        #{position,jdbcType=VARCHAR},
+      </if>
+      <if test="longitude != null">
+        #{longitude,jdbcType=DOUBLE},
+      </if>
+      <if test="latitude != null">
+        #{latitude,jdbcType=DOUBLE},
+      </if>
+      <if test="installer != null">
+        #{installer,jdbcType=VARCHAR},
+      </if>
+      <if test="manager != null">
+        #{manager,jdbcType=VARCHAR},
+      </if>
+      <if test="tel != null">
+        #{tel,jdbcType=VARCHAR},
+      </if>
+      <if test="installDate != null">
+        #{installDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="removeDate != null">
+        #{removeDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remover != null">
+        #{remover,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+</mapper>

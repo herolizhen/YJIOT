@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.security.dao.PowUserRoleMapper">
+	<resultMap id="BaseResultMap" type="com.yjyz.iot.security.entity.PowUserRoleKey">
+		<id column="role_id" jdbcType="VARCHAR" property="roleId" />
+		<id column="username" jdbcType="VARCHAR" property="username" />
+	</resultMap>
+	<resultMap id="RoleResultMap" type="com.yjyz.iot.security.entity.PowRole">
+		<id column="role_id" jdbcType="VARCHAR" property="roleId" />
+		<id column="app_id" jdbcType="VARCHAR" property="appId" />
+		<result column="role_name" jdbcType="VARCHAR" property="roleName" />
+	</resultMap>
+
+	<resultMap id="SysUserResultMap" type="com.yjyz.iot.security.entity.PowSysUser">
+		<id column="app_id" jdbcType="VARCHAR" property="appId" />
+		<id column="username" jdbcType="VARCHAR" property="username" />
+		<result column="password" jdbcType="VARCHAR" property="password" />
+		<result column="realname" jdbcType="VARCHAR" property="realname" />
+		<result column="nickname" jdbcType="VARCHAR" property="nickname" />
+		<result column="sex" jdbcType="VARCHAR" property="sex" />
+		<result column="address" jdbcType="VARCHAR" property="address" />
+		<result column="company" jdbcType="VARCHAR" property="company" />
+		<result column="job" jdbcType="VARCHAR" property="job" />
+		<result column="createtime" jdbcType="TIMESTAMP" property="createtime" />
+		<result column="status" jdbcType="VARCHAR" property="status" />
+	</resultMap>
+
+	<delete id="deleteByPrimaryKey" parameterType="com.yjyz.iot.security.entity.PowUserRoleKey">
+		delete from
+		t_pow_user_role
+		where role_id = #{roleId,jdbcType=VARCHAR}
+		and username
+		= #{username,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.yjyz.iot.security.entity.PowUserRoleKey">
+		insert into t_pow_user_role
+		(role_id, username)
+		values (#{roleId,jdbcType=VARCHAR},
+		#{username,jdbcType=VARCHAR})
+	</insert>
+	<select id="selectRoleByUser" parameterType="com.yjyz.iot.security.entity.PowUserRoleKey"
+		resultMap="RoleResultMap">
+		select pr.*
+		from t_pow_user_role pur,t_pow_role pr
+		where
+		pur.role_id = pr.role_id
+		and pur.username= #{username,jdbcType=VARCHAR}
+	</select>
+
+	<select id="selectUserByRole" parameterType="com.yjyz.iot.security.entity.PowUserRoleKey"
+		resultMap="SysUserResultMap">
+		select psu.*
+		from t_pow_user_role pur,t_pow_sys_user psu
+		where pur.username = psu.username
+		and pur.role_id =
+		#{roleId,jdbcType=VARCHAR}
+	</select>
+	<insert id="insertSelective" parameterType="com.yjyz.iot.security.entity.PowUserRoleKey">
+		insert into t_pow_user_role
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="roleId != null">
+				role_id,
+			</if>
+			<if test="username != null">
+				username,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="roleId != null">
+				#{roleId,jdbcType=VARCHAR},
+			</if>
+			<if test="username != null">
+				#{username,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+</mapper>

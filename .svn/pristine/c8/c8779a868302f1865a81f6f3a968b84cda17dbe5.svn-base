@@ -1,0 +1,4 @@
+amq.brokerURL=tcp://118.178.233.12:61616
+amq.userName=admin
+amq.password=8848
+amq.useAsyncSend=true

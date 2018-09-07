@@ -1,0 +1,207 @@
+C51 COMPILER V9.52.0.0   DC_MOTOR                                                          10/19/2017 16:46:51 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE DC_MOTOR
+OBJECT MODULE PLACED IN .\Objects\dc_motor.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\DC_MOTOR\dc_motor.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\USER\II
+                    -C;.\USER\UART;.\USER\TM1618;.\USER\Sensor;.\USER;.\USER\PWM;.\USER\DC_MOTOR;.\USER\timer;.\USER\inc;.\USER\EXINT;.\USER\
+                    -touch_key;.\USER\SYS_RUN;.\USER\step_motor;.\USER\BUZZER;.\USER\UART;.\USER\common;.\USER\lib;.\USER\UV;.\USER\ION;.\USE
+                    -R\EEPROM;.\USER\TM1620;.\USER\charge) DEBUG OBJECTEXTEND PRINT(.\Listings\dc_motor.lst) TABS(2) OBJECT(.\Objects\dc_moto
+                    -r.obj)
+
+line level    source
+
+   1          #include "OB39R16A6.h"
+   2          #include "dc_motor.h"
+   3          #include "global.h"
+   4          #include "PWM.h"
+   5          //#include "TM1618.h"
+   6          #include "sensor.h"
+   7          #include "timer.h"
+   8          
+   9          const code PWM0DL_TAB[4] = {PWMDL_SPEED1,PWMDL_SPEED2,PWMDL_SPEED3,PWMDL_SPEED4};
+  10          const code MotorFG_TAB[4]={SPEED_FG_COUNT1,SPEED_FG_COUNT2,SPEED_FG_COUNT3,SPEED_FG_COUNT4};
+  11          
+  12          
+  13          
+  14          void Start_DC_Motor(void)
+  15          {
+  16   1          speed_dang = LOW_SPEED;
+  17   1          pwmDLbak = 0;
+  18   1          PWM_Set_Duty(PWM7_NUM,pwmDLbak);
+  19   1      }
+  20          
+  21          
+  22          void Stop_DC_Motor(void)
+  23          {
+  24   1         speed_dang = DC_MOTOR_SPEED0;
+  25   1      }
+  26          
+  27          
+  28          void Set_DC_Motor_Speed(unsigned char speed)
+  29          {
+  30   1          if(speed > 4)
+  31   1          {
+  32   2              return;
+  33   2          }
+  34   1          
+  35   1          speed_dang = speed;
+  36   1          IsSpeedChanged = 1;
+  37   1      }
+  38          
+  39          
+  40          //1ms执行1次
+  41          void DirectMotor(void)
+  42          {
+  43   1        unsigned int temp = 0;
+  44   1        unsigned long nowtime = 0;
+  45   1        
+  46   1        nowtime = get_sys_stime();
+  47   1        
+  48   1        //开机后先开仓门，延时2秒再启动风机
+  49   1        if(nowtime < (sys_start_time + 2))
+  50   1        {
+  51   2            return;
+C51 COMPILER V9.52.0.0   DC_MOTOR                                                          10/19/2017 16:46:51 PAGE 2   
+
+  52   2        }
+  53   1        
+  54   1        if(speed_dang >= 1)
+  55   1        {
+  56   2            temp = PWM0DL_TAB[speed_dang-1] ;
+  57   2        
+  58   2        }
+  59   1        
+  60   1        if((sys_mode == RUNNING) && (IsSpeedChanged))// 转速发生改变, PWM 设定到目标值
+  61   1        {
+  62   2      
+  63   2          if(speedBak != speed_dang)
+  64   2          {
+  65   3      
+  66   3            gbMotorDelay = 1;
+  67   3            speedBak = speed_dang;// 开始启动时, PWM 占空比设置的初始值
+  68   3            gbMotorFGEn = 0;
+  69   3      
+  70   3          }
+  71   2              
+  72   2          if(gbMotorDelay)  // 启动到PWM 设定目标值
+  73   2          { 
+  74   3           
+  75   3            if(pwmDLbak < temp)
+  76   3            {      
+  77   4              pwmDLbak += 100;
+  78   4            }
+  79   3            else if(pwmDLbak > temp)
+  80   3            {
+  81   4              pwmDLbak -= 100;
+  82   4            }
+  83   3            else
+  84   3            {         
+  85   4              gbMotorDelay=0;
+  86   4              IsSpeedChanged = 0;
+  87   4            }
+  88   3            PWM_Set_Duty(DC_MOTOR_PWM,pwmDLbak);
+  89   3            
+  90   3          }
+  91   2          else          // 通过反馈信号FG  控制转速 
+  92   2          { 
+  93   3            gBMotorFGSet = MotorFG_TAB[speed_dang-1];
+  94   3            gbMotorFGEn = 1;
+  95   3          }
+  96   2        }
+  97   1        else if((sys_mode == STANDBY) && (IsSpeedChanged))
+  98   1        {
+  99   2          gbMotorFGEn = 0;      
+ 100   2          if(pwmDLbak >= 100)
+ 101   2          {
+ 102   3            if(IsFanRunning)
+ 103   3            {
+ 104   4                pwmDLbak -= 100;
+ 105   4                PWM_Set_Duty(DC_MOTOR_PWM,pwmDLbak);    
+ 106   4            }
+ 107   3      
+ 108   3          }
+ 109   2          else
+ 110   2          { 
+ 111   3            if(IsFanRunning)
+ 112   3            {
+ 113   4                IsSpeedChanged = 0;
+C51 COMPILER V9.52.0.0   DC_MOTOR                                                          10/19/2017 16:46:51 PAGE 3   
+
+ 114   4                pwmDLbak = 0;
+ 115   4                PWM_Set_Duty(DC_MOTOR_PWM,pwmDLbak);
+ 116   4                IsFanRunning = 0; 
+ 117   4                speedBak = speed_dang;        
+ 118   4            }
+ 119   3      
+ 120   3          } 
+ 121   2        } 
+ 122   1      
+ 123   1      }
+ 124          
+ 125          //100ms执行一次
+ 126          void Dcmoto_adj(void)
+ 127          {
+ 128   1        unsigned int temp = 0;  
+ 129   1        
+ 130   1        //防止FG信号或者电机出现问题后，PWM的脉宽一直增加
+ 131   1        unsigned int pwm_compare = 0;
+ 132   1        
+ 133   1        switch(speed_dang)
+ 134   1        {
+ 135   2          case QUIET_SPEED:
+ 136   2            pwm_compare = PWMDL_SPEED1 + 100;
+ 137   2            break;
+ 138   2          case LOW_SPEED:
+ 139   2            pwm_compare = PWMDL_SPEED2 + 100;
+ 140   2            break;    
+ 141   2          case MID_SPEED:
+ 142   2            pwm_compare = PWMDL_SPEED3 + 100;
+ 143   2            break;  
+ 144   2          case HIGH_SPEED:
+ 145   2            pwm_compare = PWMDL_SPEED4 + 100;
+ 146   2            break;   
+ 147   2          default:
+ 148   2            return;      
+ 149   2        }
+ 150   1        
+ 151   1        
+ 152   1        if(gbMotorFGEn)
+ 153   1        {
+ 154   2          // 通过反馈信号FG  控制转速
+ 155   2          if(FGcount > gBMotorFGSet)
+ 156   2          {               
+ 157   3            if(pwmDLbak > pwm_compare)
+ 158   3            {
+ 159   4              pwmDLbak -= 100;
+ 160   4            }
+ 161   3          }
+ 162   2          else if (FGcount < gBMotorFGSet)
+ 163   2          {
+ 164   3            if(pwmDLbak < pwm_compare)
+ 165   3            {
+ 166   4              pwmDLbak += 100;
+ 167   4            }
+ 168   3          }
+ 169   2          PWM_Set_Duty(DC_MOTOR_PWM,pwmDLbak);
+ 170   2        }
+ 171   1        FGcount = 0;
+ 172   1      }
+ 173          
+ 174          
+
+C51 COMPILER V9.52.0.0   DC_MOTOR                                                          10/19/2017 16:46:51 PAGE 4   
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    510    ----
+   CONSTANT SIZE    =     16    ----
+   XDATA SIZE       =   ----       8
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

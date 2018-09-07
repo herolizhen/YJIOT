@@ -1,0 +1,55 @@
+package com.yjyz.iot.device.entity;
+
+import java.math.BigDecimal;
+
+public class DevTestDetail {
+    private String guid;
+
+    private String deviceId;
+
+    private String testId;
+
+    private String testItem;
+
+    private BigDecimal testResult;
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid == null ? null : guid.trim();
+    }
+
+    public String getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId == null ? null : deviceId.trim();
+    }
+
+    public String getTestId() {
+        return testId;
+    }
+
+    public void setTestId(String testId) {
+        this.testId = testId == null ? null : testId.trim();
+    }
+
+    public String getTestItem() {
+        return testItem;
+    }
+
+    public void setTestItem(String testItem) {
+        this.testItem = testItem == null ? null : testItem.trim();
+    }
+
+    public BigDecimal getTestResult() {
+        return testResult;
+    }
+
+    public void setTestResult(BigDecimal testResult) {
+        this.testResult = testResult;
+    }
+}

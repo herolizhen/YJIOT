@@ -1,0 +1,299 @@
+C51 COMPILER V9.52.0.0   MAIN                                                              01/11/2018 14:22:48 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(..\project;.\USER\BUZZER;.\
+                    -USER\charge;.\USER\common;.\USER\DC_MOTOR;.\USER\EEPROM;.\USER\EXINT;.\USER\IIC;.\USER\inc;.\USER\ION;.\USER\M26;.\USER\
+                    -PWM;.\USER\Sensor;.\USER\step_motor;.\USER\SYS_RUN;.\USER\timer;.\USER\TM1620;.\USER\touch_key;.\USER\UART;.\USER\UV;.\U
+                    -SER\LVI) DEBUG OBJECTEXTEND PRINT(.\Listings\main.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <stdio.h>
+   2          #include <string.h>
+   3          #include "IIC.h"
+   4          #include "TM1620.h"
+   5          #include "sensor.h"
+   6          #include "SOFT_IIC.h"
+   7          #include "PWM.h"
+   8          #include "dc_motor.h"
+   9          #include "timer.h"
+  10          #include "global.h"
+  11          #include "INT.h"
+  12          #include "step_motor.h"
+  13          #include "sys_run.h"
+  14          #include "buzzer.h"
+  15          #include "wifi_uart.h"
+  16          #include "debug_uart.h"
+  17          #include "soft_uart.h"
+  18          #include "ADC.h"
+  19          #include "UV.h"
+  20          #include "ION.h"
+  21          #include "global.h"
+  22          #include "EEPROM.h"
+  23          #include "charge.h"
+  24          #include "UART0.h"
+  25          #include "common.h"
+  26          #include "M26.h"
+  27          #include "LVI_LVR.h"
+  28          
+  29          
+  30          /*
+  31          sprintfÐè×¢ÒâµÄµØ·½£º
+  32          1.¸ñÊ½»¯ÕûÊýÊ±£¬±ØÐë´«²Î unsigned int ¸ñÊ½
+  33          */
+  34          /*
+  35          ³ÌÐòÐè×¢ÒâÎÊÌâ£º
+  36          1.ÔÚÊ¹ÓÃlongÀàÐÍºÍºê¶¨ÒåÊ±ÈÝÒ×³öÏÖÎÊÌâ£¬¼ÆËã½á¹û²»¶Ô£¬ÈçÏÂÊ¾Àý
+  37          #define TEST_NUM   60000
+  38          unsigned long temp = 0;
+  39          temp = TEST_NUM + 10000;
+  40          
+  41          ¼ÆËã½á¹û±¾Ó¦¸ÃÊÇ70000 = 0x11170,µ«ÊÇÊµ¼ÊÔËËã³öÀ´µÄ½á¹ûÊÇ0xffff1170¡£
+  42          ºê¶¨ÒåµÄÊýÖµÈç¹ûÐ¡ÓÚ0xFFFF,ÓÃ¸Ãºê¶¨ÒåµÄÖµºÍÒ»¸öÐ¡ÓÚ0xFFFFµÄÊýÔËËã£¬Èç¹û½á¹û³¬¹ý0xFFFF£¬Ôò³öÏÖ´íÎó½á¹û¡£×ö³
+             -Ë·¨ÔËËãÒ»Ñù´æÔÚÕâÑùµÄÎÊÌâ
+  43          µ«ÊÇÈç¹û¶¨Òå 
+  44          #define TEST_NUM   70000  
+  45          ¼´ºê¶¨ÒåµÄÊýÖµ³¬¹ý 0xFFFF£¬¼ÆËã½á¹ûÊÇÕýÈ·µÄ¡£
+  46          
+  47          Èç¹ûÖ±½ÓÊ¹ÓÃ temp = 60000 + 10000; Ö±½ÓÊ¹ÓÃÊý×Ö½øÐÐ¼ÆËãÃ»ÓÐÎÊÌâ
+  48          
+  49          
+  50          ½â¾ö°ì·¨£º
+  51          temp = (TEST_NUM | 0x00) + 10000;  
+C51 COMPILER V9.52.0.0   MAIN                                                              01/11/2018 14:22:48 PAGE 2   
+
+  52          ÕâÖÖÔËËã½á¹ûÕýÈ·
+  53          
+  54          
+  55          */
+  56          
+  57          #define test_EEPROM_START_ADDR   0x3D00
+  58          
+  59          
+  60          extern M26_Cmd_Typedef m26_cmd_info;
+  61          extern M26_RESGISTER_Typedef M26_register_net;
+  62          
+  63          extern unsigned char m26_action;
+  64          
+  65          
+  66          
+  67          void main(void)
+  68          {
+  69   1      
+  70   1        unsigned long times_1s = 0;
+  71   1      
+  72   1      
+  73   1        M26_Power_Pin_Init();
+  74   1        M26_Power_On();
+  75   1        M26_Wakeup_Pin_Init();
+  76   1        
+  77   1        TM1620_Init();
+  78   1        
+  79   1        Key_IIC_PinConifg();
+  80   1        Start_Timer1();
+  81   1        Start_INT3();
+  82   1      
+  83   1        
+  84   1        PWM_Init();
+  85   1      
+  86   1        
+  87   1        
+  88   1        Step_Motor_Pin_Init();
+  89   1        Buzzer_PinConfig();
+  90   1        SENSOR_IIC_PinConifg();
+  91   1        Soft_UART_Init();
+  92   1      #ifdef WIFI_SOFT_IIC
+                Wifi_Uart_Init();
+              #else
+  95   1        init_UART0();
+  96   1      #endif 
+  97   1        DEBUG_Uart_Init();
+  98   1        UV_Pin_Init();
+  99   1        ION_Pin_Init();
+ 100   1      
+ 101   1      
+ 102   1        
+ 103   1        M26_register_net.Is_m26_registerd = 0;
+ 104   1        M26_register_net.step = 0;
+ 105   1          
+ 106   1        //EA = 1;                //Enable all inierrupt
+ 107   1        
+ 108   1        Buzzer_Power_On();
+ 109   1        TM1620_DispalyData(SENSOR_PM25,0);
+ 110   1        TM1620_LED_Control(LED_ALL,LED_OFF);
+ 111   1        TM1620_LED_Control(LED_POWER,LED_ON);
+ 112   1        TM1620_LED_Control(LED_SLEEP_MODE,LED_ON);
+ 113   1        
+C51 COMPILER V9.52.0.0   MAIN                                                              01/11/2018 14:22:48 PAGE 3   
+
+ 114   1        
+ 115   1        LVI_EN();
+ 116   1        charge_init();
+ 117   1      
+ 118   1      
+ 119   1        
+ 120   1        //ÎªÁË±£Ö¤°²È«Æô¶¯±ØÐë½øÐÐ²ÖÃÅ¼ì²â
+ 121   1        sys_init_check();
+ 122   1        
+ 123   1      
+ 124   1        M26_Wakeup();
+ 125   1      
+ 126   1        
+ 127   1        //device_get_ccid();
+ 128   1      
+ 129   1        //m26_fog_service_init();
+ 130   1        
+ 131   1        //M26_Ota_Check();
+ 132   1        
+ 133   1        //next_sync_mstime = 0;
+ 134   1        
+ 135   1        m26_cmd_info.error_times = 0;
+ 136   1        m26_cmd_info.timeout_times = 0;
+ 137   1      
+ 138   1      
+ 139   1        while(1)
+ 140   1        {   
+ 141   2      //      if(_test_timeflag(g_1min_flag))
+ 142   2      //      { 
+ 143   2      //          g_1min_flag = 0;
+ 144   2      //              
+ 145   2      //      }
+ 146   2            
+ 147   2            if(_test_timeflag(g_1s_flag))
+ 148   2            {
+ 149   3                g_1s_flag = 0;
+ 150   3                times_1s++;
+ 151   3              
+ 152   3                
+ 153   3              
+ 154   3                charge_lefttime_count();         
+ 155   3      
+ 156   3              
+ 157   3      //        mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 158   3      //        sprintf(m26_cmd_info.sendtring,"1s come\r\n");
+ 159   3      //        DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,strlen(m26_cmd_info.sendtring));
+ 160   3              
+ 161   3                
+ 162   3                display_pm_data(); 
+ 163   3                
+ 164   3                   
+ 165   3      
+ 166   3                Check_If_Close_Door(); 
+ 167   3        
+ 168   3                
+ 169   3                
+ 170   3                m26_signal_check();
+ 171   3                
+ 172   3                if(times_1s % 60 == 0)
+ 173   3                {
+ 174   4                               
+ 175   4                }
+C51 COMPILER V9.52.0.0   MAIN                                                              01/11/2018 14:22:48 PAGE 4   
+
+ 176   3                if(times_1s % 5 == 1)
+ 177   3                {
+ 178   4                    mymemset(m26_cmd_info.sendtring,0,sizeof(m26_cmd_info.sendtring));
+ 179   4                    sprintf(m26_cmd_info.sendtring,"err times:%d,timeout times:%d\r\n",(unsigned int)m26_cmd_inf
+             -o.error_times,(unsigned int)m26_cmd_info.timeout_times);
+ 180   4                    DEBUG_Uart_Sendbytes(m26_cmd_info.sendtring,strlen(m26_cmd_info.sendtring));           
+ 181   4                }
+ 182   3                
+ 183   3                if(is_sys_auto_check == 1)
+ 184   3                {
+ 185   4                    //TM1620_DispalyData(SENSOR_PM25,sys_check_info.fg_count);
+ 186   4                    TM1620_DispalyData(SENSOR_PM25,sys_check_info.fan_check_fault_times);
+ 187   4                }
+ 188   3                
+ 189   3                
+ 190   3                //TM1620_DispalyData(SENSOR_PM25,sys_check_info.fg_count);
+ 191   3                
+ 192   3                //ÊÖ¶¯²âÊÔÊ±£¬Èç¹û3·ÖÖÓÄÚ²»Í¨¹ýAPPÍ£Ö¹£¬Ôò³ÌÐò×Ô¶¯Í£Ö¹
+ 193   3                if(is_sys_manual_check == 1)
+ 194   3                {
+ 195   4                    check_if_stop_manual_check();
+ 196   4                } 
+ 197   3                
+ 198   3                
+ 199   3                //¼ì²âM26ÊÇ·ñËÀ»ú£¬m26Æô¶¯ºó¸ú·þÎñÆ÷µÄ³õÊ¼»¯
+ 200   3                m26_fogcloud_init_and_check();
+ 201   3                
+ 202   3                
+ 203   3            }
+ 204   2        
+ 205   2            if(_test_timeflag(g_1ms_flag))
+ 206   2            {
+ 207   3                g_1ms_flag = 0;
+ 208   3                sys_run();
+ 209   3                DirectMotor();       
+ 210   3            }  
+ 211   2      
+ 212   2            if(_test_timeflag(g_2ms_flag))
+ 213   2            {
+ 214   3                g_2ms_flag = 0;
+ 215   3                TurnMotor();
+ 216   3            }        
+ 217   2            
+ 218   2            if(_test_timeflag(g_10ms_flag))
+ 219   2            {
+ 220   3                g_10ms_flag = 0;
+ 221   3                Scan_TouchPad();  
+ 222   3               
+ 223   3                m26_http_loop();        
+ 224   3                M26_wait_response(); 
+ 225   3                check_m26_cmd_result();
+ 226   3              
+ 227   3                if(is_upload_auto_check_result == 1)
+ 228   3                {
+ 229   4                    sys_check_auto_result_upload();
+ 230   4                }
+ 231   3                if(is_upload_manual_check_result == 1)
+ 232   3                {
+ 233   4                    sys_check_manual_result_upload();
+ 234   4                }
+ 235   3              
+ 236   3                //ÊÕµ½³ïÂëºó£¬ÏÈupload data,È»ºóÁ¢¿ÌÖ´ÐÐ³ïÂëÈ·ÈÏ£¬ÔÚÊÕµ½³ïÂëºóÔÚcheck_m26_cmd_resultº¯ÊýÖÐ¸Ä±äÁË
+C51 COMPILER V9.52.0.0   MAIN                                                              01/11/2018 14:22:48 PAGE 5   
+
+             - next_upload_data_timeµÄÖµ£¬´Ó¶øÊµÏÖÁ¢¿Ìupload data
+ 237   3                M26_Upload_Data();  
+ 238   3                       
+ 239   3              
+ 240   3                M26_Status_Sync(); 
+ 241   3                
+ 242   3            }   
+ 243   2      
+ 244   2            if(_test_timeflag(g_100ms_flag))
+ 245   2            {
+ 246   3                g_100ms_flag = 0;
+ 247   3              
+ 248   3                if(is_sys_auto_check == 1)
+ 249   3                {
+ 250   4                    sys_dev_auto_check();
+ 251   4                } 
+ 252   3                
+ 253   3      //          sys_check_info.fg_count = FGcount;
+ 254   3      //          FGcount = 0;
+ 255   3              
+ 256   3                Dcmoto_adj();   
+ 257   3                UV_Check();                 
+ 258   3            }
+ 259   2            
+ 260   2           
+ 261   2        }
+ 262   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    440    ----
+   CONSTANT SIZE    =     32    ----
+   XDATA SIZE       =   ----       4
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

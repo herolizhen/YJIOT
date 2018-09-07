@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.notice.dao.NoticeMapper">
+	<resultMap id="BaseResultMap" type="com.yjyz.iot.notice.entity.Notice">
+
+		<id column="product_id" jdbcType="VARCHAR" property="productId" />
+
+		<result column="device_name" jdbcType="VARCHAR" property="deviceName" />
+		<result column="device_open" jdbcType="BIT" property="deviceOpen" />
+		<result column="sms_open" jdbcType="BIT" property="smsOpen" />
+		<result column="push_open" jdbcType="BIT" property="pushOpen" />
+		<result column="voice_open" jdbcType="BIT" property="voiceOpen" />
+		<result column="time_open" jdbcType="BIT" property="timeOpen" />
+		<result column="time_start" jdbcType="VARCHAR" property="timeStart" />
+		<result column="time_stop" jdbcType="VARCHAR" property="timeStop" />
+
+		<result column="app_id"    jdbcType="VARCHAR" property="appId" />
+		<result column="app_name"  jdbcType="VARCHAR" property="appName" />
+		<result column="ytx_appid" jdbcType="VARCHAR" property="ytxAppid" />
+		<result column="sign"      jdbcType="VARCHAR" property="sign" />
+		<result column="ver_template_id" jdbcType="VARCHAR" property="verTemplateId" />
+		<result column="ver_template" jdbcType="VARCHAR" property="verTemplate" />
+		<result column="mes_template_id" jdbcType="VARCHAR" property="mesTemplateId" />
+		<result column="mes_template" jdbcType="VARCHAR" property="mesTemplate" />
+		<result column="voice_tel_no" jdbcType="VARCHAR" property="voiceTelNo" />
+		<result column="voice_wav" jdbcType="VARCHAR" property="voiceWav" />
+		<result column="voice_text" jdbcType="VARCHAR" property="voiceText" />
+		<result column="api_appid" jdbcType="VARCHAR" property="apiAppid" />
+		<result column="api_appkey" jdbcType="VARCHAR" property="apiAppkey" />
+		<result column="api_template" jdbcType="VARCHAR" property="apiTemplate" />
+		<result column="notice_open" jdbcType="BIT" property="noticeOpen" />
+
+	</resultMap>
+	<sql id="Base_Column_List">
+		product_id,device_name, device_open, sms_open, push_open,
+		voice_open,
+		time_open, time_start,time_stop, app_id,
+		app_name,ytx_appid, sign,
+		ver_template_id, ver_template,
+		mes_template_id, mes_template,
+		voice_tel_no, voice_wav, voice_text,
+		api_appid, api_appkey,
+		api_template, notice_open
+	</sql>
+	<select id="selectByDeviceId" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		SELECT
+		tdi.product_id,
+		tdi.device_name,
+		device_open,
+		sms_open,
+		push_open,
+		voice_open,
+		time_open,
+		time_start,
+		time_stop,
+		pai.app_id,
+		pai.app_name,
+		ytx_appid,
+		nc.sign as sign,
+		ver_template_id,
+		ver_template,
+		mes_template_id,
+		mes_template,
+		voice_tel_no,
+		voice_wav,
+		voice_text,
+		api_appid,
+		api_appkey,
+		api_template,
+		notice_open
+		FROM
+		t_dev_info tdi,
+		t_prod_info pi,
+		t_pow_app_info pai,
+		t_notice_config nc,
+		t_notice_rule nr
+		WHERE
+		tdi.product_id = pi.product_id
+		AND pi.app_id = pai.app_id
+		AND pai.app_id = nc.app_id
+		AND tdi.product_id = nr.product_id
+		and tdi.device_id = #{deviceId,jdbcType=VARCHAR}
+	</select>
+
+</mapper>

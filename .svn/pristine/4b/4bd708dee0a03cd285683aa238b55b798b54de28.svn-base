@@ -1,0 +1,137 @@
+C51 COMPILER V9.52.0.0   ADC                                                               11/24/2017 09:42:46 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE ADC
+OBJECT MODULE PLACED IN .\Objects\ADC.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\UV\ADC.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(..\project;.\USER\BU
+                    -ZZER;.\USER\charge;.\USER\common;.\USER\DC_MOTOR;.\USER\EEPROM;.\USER\EXINT;.\USER\IIC;.\USER\inc;.\USER\ION;.\USER\M26;
+                    -.\USER\PWM;.\USER\Sensor;.\USER\step_motor;.\USER\SYS_RUN;.\USER\timer;.\USER\TM1620;.\USER\touch_key;.\USER\UART;.\USER
+                    -\UV;.\USER\LVI) DEBUG OBJECTEXTEND PRINT(.\Listings\ADC.lst) TABS(2) OBJECT(.\Objects\ADC.obj)
+
+line level    source
+
+   1          #include "OB39R32T1.h"
+   2          #include "ADC.h"
+   3          #include "wifi_uart.h"
+   4          
+   5          
+   6          //#define d_ADCnEN        0x01
+   7          //#define d_ADC_CLK_Sel   d_ADC_CLK_DIV64
+   8          unsigned int n_data;
+   9          bit ADCfinish = 0;
+  10          
+  11          void ADCstart(unsigned char n_ADC_CH)
+  12          {  
+  13   1          ADCC2 &= 0x7F;      //ADC stop conversion 
+  14   1          ADCC2  = n_ADC_CH;  //Set a new channel
+  15   1          ADCC2 |= 0x80;      //ADC start conversion
+  16   1      }
+  17          
+  18          void ADCInit(unsigned char n_ADCnEN, unsigned char n_ADC_CLK)
+  19          {
+  20   1          ADCC1 |= n_ADCnEN;   //Set ADC channel 
+  21   1          ADCCS = n_ADC_CLK;  //Select ADC clock
+  22   1          IEADC = 1;          //Enable ADC interrupt.
+  23   1          EA    = 1;
+  24   1      }
+  25          
+  26          unsigned int ADC_Read12()//12-bit ADC
+  27          {
+  28   1          unsigned int n_ADCD12 = 0x0000;
+  29   1          n_ADCD12 = (ADCDH<<4)|ADCDL;    //10-bit ADC
+  30   1          return n_ADCD12;
+  31   1      }
+  32          
+  33          void ADCInterrupt(void) interrupt d_ADC_Vector  // ADC Interrupt Vector Address 0053h => interrupt 10
+  34          {
+  35   1          n_data = ADC_Read12();  //Read ADC
+  36   1          ADCfinish = 1;    
+  37   1      }
+  38          
+  39          /*
+  40          void ADC_stop(void)
+  41          {
+  42              ADCC2 &= 0x7F;  //ADC stop conversion
+  43              IEADC = 0;      //Disable ADC interrupt
+  44          }
+  45          */
+  46          
+  47          /*
+  48          void ADC(void)
+  49          { 
+  50              if (d_ADCnEN & 0x01)
+  51              {
+  52                  ADCstart(d_ADC_CH0_IN);
+C51 COMPILER V9.52.0.0   ADC                                                               11/24/2017 09:42:46 PAGE 2   
+
+  53                  while(!ADCfinish);
+  54                  ADCfinish = 0;
+  55              }
+  56              if (d_ADCnEN & 0x02)
+  57              {
+  58                  ADCstart(d_ADC_CH1_IN);
+  59                  while(!ADCfinish);
+  60                  ADCfinish = 0;
+  61              }
+  62              if (d_ADCnEN & 0x04)
+  63              {
+  64                  ADCstart(d_ADC_CH2_IN);
+  65                  while(!ADCfinish);
+  66                  ADCfinish = 0;
+  67              }
+  68              if (d_ADCnEN & 0x08)
+  69              {
+  70                  ADCstart(d_ADC_CH3_IN);
+  71                  while(!ADCfinish);
+  72                  ADCfinish = 0;
+  73              }
+  74              if (d_ADCnEN & 0x10)
+  75              {
+  76                  ADCstart(d_ADC_CH4_IN);
+  77                  while(!ADCfinish);
+  78                  ADCfinish = 0;
+  79              }
+  80              if (d_ADCnEN & 0x20)
+  81              {
+  82                  ADCstart(d_ADC_CH5_IN);
+  83                  while(!ADCfinish);
+  84                  ADCfinish = 0;
+  85              }
+  86              if (d_ADCnEN & 0x40)
+  87              {
+  88                  ADCstart(d_ADC_CH6_IN);
+  89                  while(!ADCfinish);
+  90                  ADCfinish = 0;
+  91              }
+  92              if (d_ADCnEN & 0x80)
+  93              {
+  94                  ADCstart(d_ADC_CH7_IN);
+  95                  while(!ADCfinish);
+  96                  ADCfinish = 0;
+  97              }
+  98          }
+  99          
+ 100          void ADC_test(void)
+ 101          {
+ 102              if(ADCfinish)
+ 103              {
+ 104              
+ 105              }
+ 106          }
+ 107          */
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     87    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      2    ----
+   PDATA SIZE       =   ----    ----
+C51 COMPILER V9.52.0.0   ADC                                                               11/24/2017 09:42:46 PAGE 3   
+
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

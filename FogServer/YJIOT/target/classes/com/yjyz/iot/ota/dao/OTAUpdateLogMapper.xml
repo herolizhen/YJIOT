@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.ota.dao.OTAUpdateLogMapper">
+  <resultMap id="BaseResultMap" type="com.yjyz.iot.ota.entity.OTAUpdateLog">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="device_id" jdbcType="VARCHAR" property="deviceId" />
+    <result column="software" jdbcType="VARCHAR" property="software" />
+    <result column="modulename" jdbcType="VARCHAR" property="modulename" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, device_id, software, modulename, update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_ota_upload_log
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_ota_upload_log
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yjyz.iot.ota.entity.OTAUpdateLog">
+    insert into t_ota_upload_log (ID, device_id, software, 
+      modulename, update_time)
+    values (#{id,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR}, #{software,jdbcType=VARCHAR}, 
+      #{modulename,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yjyz.iot.ota.entity.OTAUpdateLog">
+    insert into t_ota_upload_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="deviceId != null">
+        device_id,
+      </if>
+      <if test="software != null">
+        software,
+      </if>
+      <if test="modulename != null">
+        modulename,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null">
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="software != null">
+        #{software,jdbcType=VARCHAR},
+      </if>
+      <if test="modulename != null">
+        #{modulename,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yjyz.iot.ota.entity.OTAUpdateLog">
+    update t_ota_upload_log
+    <set>
+      <if test="deviceId != null">
+        device_id = #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="software != null">
+        software = #{software,jdbcType=VARCHAR},
+      </if>
+      <if test="modulename != null">
+        modulename = #{modulename,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yjyz.iot.ota.entity.OTAUpdateLog">
+    update t_ota_upload_log
+    set device_id = #{deviceId,jdbcType=VARCHAR},
+      software = #{software,jdbcType=VARCHAR},
+      modulename = #{modulename,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

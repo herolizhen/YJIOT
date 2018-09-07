@@ -1,0 +1,35 @@
+<html>
+<body>
+<pre>
+<h1>礦ision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: μVision V5.23.0.0
+Copyright (C) 2017 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: 111 Microsoft, Microsoft, LIC=VG6CX-HTBJT-SLYCN-YV1AV-D2AWA-WALD2
+ 
+Tool Versions:
+Toolchain:       PK51 Prof. Developers Kit  Version: 9.52.0.0
+Toolchain Path:  C:\Keil_v5\C51\BIN
+C Compiler:      C51.exe V9.52.0.0
+Assembler:       A51.exe V8.02b
+Linker/Locator:  BL51.exe V6.22
+Library Manager: LIB51.exe V4.29
+Hex Converter:   OH51.exe V2.7.0.0
+CPU DLL:         S8051.DLL V3.91.0.0
+Dialog DLL:      DCore51.DLL V2.81.2.0 
+<h2>Project:</h2>
+E:\工作\家商一体机\程序\TOUCH_PROJ\Project\OB39A08T1.uvproj
+Project File Date:  09/11/2017
+
+<h2>Output:</h2>
+Build target 'OB39A08T1'
+linking...
+*** WARNING L16: UNCALLED SEGMENT, IGNORED FOR OVERLAY PROCESS
+    SEGMENT: ?PR?_LED_BLINK_DELAY?LED
+Program Size: data=56.0 xdata=0 code=1010
+creating hex file from ".\Objects\OB39A08T1"...
+".\Objects\OB39A08T1" - 0 Error(s), 1 Warning(s).
+Build Time Elapsed:  00:00:00
+</pre>
+</body>
+</html>

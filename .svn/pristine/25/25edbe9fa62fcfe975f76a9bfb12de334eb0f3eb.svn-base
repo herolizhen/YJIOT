@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.dict.dao.DictChargeMapper">
+	<resultMap id="BaseResultMap" type="com.yjyz.iot.dict.entity.DictCharge">
+		<id column="charge_type" jdbcType="VARCHAR" property="chargeType" />
+		<id column="disp_no" jdbcType="VARCHAR" property="dispNo" />
+		<result column="type_name" jdbcType="VARCHAR" property="typeName" />
+		<result column="price" jdbcType="INTEGER" property="price" />
+		<result column="unit" jdbcType="VARCHAR" property="unit" />
+		<result column="chips" jdbcType="INTEGER" property="chips" />
+		<result column="is_valid" jdbcType="CHAR" property="isValid" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		charge_type, disp_no, type_name, price, unit, chips,
+		is_valid
+	</sql>
+
+
+	<select id="selectByType" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_dict_charge
+		where charge_type = #{chargeType,jdbcType=VARCHAR}
+		order by disp_no
+	</select>
+	<select id="selectAll" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_dict_charge
+		order by charge_type ,disp_no
+	</select>
+
+
+	<select id="selectByDeviceId" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_dict_charge where is_valid = '1' and
+		charge_type = (select
+		charge_type
+		from T_DICT_MERCHANT
+		where merchant_code = (select
+		owner_code
+		from T_DEV_ACCOUNT
+		where device_id =
+		#{deviceId,jdbcType=VARCHAR}
+		)
+		)
+	</select>
+
+	<select id="selectByPrimaryKey" parameterType="com.yjyz.iot.dict.entity.DictChargeKey"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_dict_charge
+		where charge_type = #{chargeType,jdbcType=VARCHAR}
+		and disp_no = #{dispNo,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="com.yjyz.iot.dict.entity.DictChargeKey">
+		delete from
+		t_dict_charge
+		where charge_type = #{chargeType,jdbcType=VARCHAR}
+		and
+		disp_no = #{dispNo,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.yjyz.iot.dict.entity.DictCharge">
+		insert into t_dict_charge
+		(charge_type, disp_no, type_name,
+		price, unit, chips,
+		is_valid)
+		values
+		(#{chargeType,jdbcType=VARCHAR}, #{dispNo,jdbcType=VARCHAR},
+		#{typeName,jdbcType=VARCHAR},
+		#{price,jdbcType=INTEGER},
+		#{unit,jdbcType=VARCHAR}, #{chips,jdbcType=INTEGER},
+		#{isValid,jdbcType=CHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.yjyz.iot.dict.entity.DictCharge">
+		insert into t_dict_charge
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="chargeType != null">
+				charge_type,
+			</if>
+			<if test="dispNo != null">
+				disp_no,
+			</if>
+			<if test="typeName != null">
+				type_name,
+			</if>
+			<if test="price != null">
+				price,
+			</if>
+			<if test="unit != null">
+				unit,
+			</if>
+			<if test="chips != null">
+				chips,
+			</if>
+			<if test="isValid != null">
+				is_valid,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="chargeType != null">
+				#{chargeType,jdbcType=VARCHAR},
+			</if>
+			<if test="dispNo != null">
+				#{dispNo,jdbcType=VARCHAR},
+			</if>
+			<if test="typeName != null">
+				#{typeName,jdbcType=VARCHAR},
+			</if>
+			<if test="price != null">
+				#{price,jdbcType=INTEGER},
+			</if>
+			<if test="unit != null">
+				#{unit,jdbcType=VARCHAR},
+			</if>
+			<if test="chips != null">
+				#{chips,jdbcType=INTEGER},
+			</if>
+			<if test="isValid != null">
+				#{isValid,jdbcType=CHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yjyz.iot.dict.entity.DictCharge">
+		update t_dict_charge
+		<set>
+			<if test="typeName != null">
+				type_name = #{typeName,jdbcType=VARCHAR},
+			</if>
+			<if test="price != null">
+				price = #{price,jdbcType=INTEGER},
+			</if>
+			<if test="unit != null">
+				unit = #{unit,jdbcType=VARCHAR},
+			</if>
+			<if test="chips != null">
+				chips = #{chips,jdbcType=INTEGER},
+			</if>
+			<if test="isValid != null">
+				is_valid = #{isValid,jdbcType=CHAR},
+			</if>
+		</set>
+		where charge_type = #{chargeType,jdbcType=VARCHAR}
+		and disp_no =
+		#{dispNo,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yjyz.iot.dict.entity.DictCharge">
+		update
+		t_dict_charge
+		set type_name = #{typeName,jdbcType=VARCHAR},
+		price =
+		#{price,jdbcType=INTEGER},
+		unit = #{unit,jdbcType=VARCHAR},
+		chips =
+		#{chips,jdbcType=INTEGER},
+		is_valid = #{isValid,jdbcType=CHAR}
+		where
+		charge_type = #{chargeType,jdbcType=VARCHAR}
+		and disp_no =
+		#{dispNo,jdbcType=VARCHAR}
+	</update>
+</mapper>

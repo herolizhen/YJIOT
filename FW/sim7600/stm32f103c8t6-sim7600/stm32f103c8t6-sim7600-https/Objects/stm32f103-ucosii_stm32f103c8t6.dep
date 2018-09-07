@@ -1,0 +1,531 @@
+Dependencies for Project 'stm32f103-ucosii', Target 'stm32f103c8t6': (DO NOT MODIFY !)
+F (.\CMSIS\startup\startup_stm32f10x_hd.s)(0x4ED949C8)(--cpu Cortex-M3 -g --apcs=interwork --pd "__MICROLIB SETA 1"-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include--pd "__UVISION_VERSION SETA 523" --pd "STM32F10X_MD SETA 1"--list .\listings\startup_stm32f10x_hd.lst --xref -o .\objects\startup_stm32f10x_hd.o --depend .\objects\startup_stm32f10x_hd.d)
+F (.\user\main.c)(0x5B22130F)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\main.o --omf_browse .\objects\main.crf --depend .\objects\main.d)
+I (user\includes.h)(0x5B2B45DC)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x57F606B8)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x57F606B8)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x49D9694A)
+I (user\stm32f10x_it.h)(0x49D96964)
+I (.\uCOS-II\Source\ucos_ii.h)(0x48893FC2)
+I (.\APP\app_cfg.h)(0x5B2B0D6C)
+I (.\APP\os_cfg.h)(0x5B236914)
+I (.\uCOS-II\Ports\os_cpu.h)(0x4ED949C8)
+I (.\malloc\malloc.h)(0x5AFD3D18)
+I (.\json\cJSON.h)(0x5B0280E6)
+I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x57F606B8)
+I (.\BSP\BSP.h)(0x4ED94AC2)
+I (.\APP\app.h)(0x5B17A511)
+I (.\BSP\led.h)(0x54732792)
+I (.\user\user_usart\user_usart2.h)(0x5AFD144D)
+I (.\user\user_usart\user_usart3.h)(0x5AFE8328)
+I (.\modbus\modbus_master.h)(0x5B038E10)
+I (.\modbus\bsp_board.h)(0x5AFCFEC0)
+I (.\modbus\crc16.h)(0x59F182D7)
+I (.\modbus\word.h)(0x59F182D7)
+I (.\modbus\trans_recieve_buff_control.h)(0x5AF95052)
+I (.\user\user_usart\user_usart1.h)(0x5AFD21F3)
+I (.\user\user_usart\user_usart.h)(0x5B178942)
+I (.\user\user_sim7600\user_sim7600_task.h)(0x5B2C880E)
+I (.\user\user_sim7600\user_mqtt_task.h)(0x5B2359B3)
+I (.\user\user_debug.h)(0x5B222740)
+I (.\user\user_sim7600\user_updata_data.h)(0x5B2B45BA)
+I (.\user\user_sim7600\sim7600.h)(0x5B2CB3BC)
+F (.\user\stm32f10x_it.c)(0x5B2C60FB)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\stm32f10x_it.o --omf_browse .\objects\stm32f10x_it.crf --depend .\objects\stm32f10x_it.d)
+I (user\includes.h)(0x5B2B45DC)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x57F606B8)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x57F606B8)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x49D9694A)
+I (user\stm32f10x_it.h)(0x49D96964)
+I (.\uCOS-II\Source\ucos_ii.h)(0x48893FC2)
+I (.\APP\app_cfg.h)(0x5B2B0D6C)
+I (.\APP\os_cfg.h)(0x5B236914)
+I (.\uCOS-II\Ports\os_cpu.h)(0x4ED949C8)
+I (.\malloc\malloc.h)(0x5AFD3D18)
+I (.\json\cJSON.h)(0x5B0280E6)
+I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x57F606B8)
+I (.\BSP\BSP.h)(0x4ED94AC2)
+I (.\APP\app.h)(0x5B17A511)
+I (.\BSP\led.h)(0x54732792)
+I (.\user\user_usart\user_usart2.h)(0x5AFD144D)
+I (.\user\user_usart\user_usart3.h)(0x5AFE8328)
+I (.\modbus\modbus_master.h)(0x5B038E10)
+I (.\modbus\bsp_board.h)(0x5AFCFEC0)
+I (.\modbus\crc16.h)(0x59F182D7)
+I (.\modbus\word.h)(0x59F182D7)
+I (.\modbus\trans_recieve_buff_control.h)(0x5AF95052)
+I (.\user\user_usart\user_usart1.h)(0x5AFD21F3)
+I (.\user\user_usart\user_usart.h)(0x5B178942)
+I (.\user\user_sim7600\user_sim7600_task.h)(0x5B2C880E)
+I (.\user\user_sim7600\user_mqtt_task.h)(0x5B2359B3)
+I (.\user\user_debug.h)(0x5B222740)
+I (.\user\user_sim7600\user_updata_data.h)(0x5B2B45BA)
+I (.\user\user_sim7600\sim7600.h)(0x5B2CB3BC)
+F (.\user\flash\user_flash.c)(0x5AFE3DD7)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\user_flash.o --omf_browse .\objects\user_flash.crf --depend .\objects\user_flash.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x57F606B8)
+I (user\flash\user_flash.h)(0x5AFD2614)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x49D9694A)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+F (.\user\user_config\user_config.c)(0x5B04D926)()
+F (.\user\user_usart\user_usart.c)(0x5B178956)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\user_usart.o --omf_browse .\objects\user_usart.crf --depend .\objects\user_usart.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x57F606B8)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+I (user\user_usart\user_usart.h)(0x5B178942)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x49D9694A)
+F (.\user\user_usart\user_usart1.c)(0x5B2C751C)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\user_usart1.o --omf_browse .\objects\user_usart1.crf --depend .\objects\user_usart1.d)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x49D9694A)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x57F606B8)
+I (user\user_usart\user_usart1.h)(0x5AFD21F3)
+I (.\FWlib\inc\misc.h)(0x49D9694A)
+F (.\user\user_usart\user_usart2.c)(0x5B189362)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\user_usart2.o --omf_browse .\objects\user_usart2.crf --depend .\objects\user_usart2.d)
+I (.\FWlib\inc\misc.h)(0x49D9694A)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x49D9694A)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x57F606B8)
+I (user\user_usart\user_usart2.h)(0x5AFD144D)
+F (.\user\user_usart\user_usart3.c)(0x5AFE9973)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\user_usart3.o --omf_browse .\objects\user_usart3.crf --depend .\objects\user_usart3.d)
+I (.\FWlib\inc\misc.h)(0x49D9694A)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x49D9694A)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x57F606B8)
+I (user\user_usart\user_usart3.h)(0x5AFE8328)
+F (.\user\user_modbus\user_modbus.c)(0x5B076EA2)()
+F (.\user\charge\charge.c)(0x5B0CB0BA)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\charge.o --omf_browse .\objects\charge.crf --depend .\objects\charge.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x57F606B8)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x57F606B8)
+I (user\charge\charge.h)(0x5B0CB137)
+F (.\user\user_sim7600\sim7600.c)(0x5B2CB6FA)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\sim7600.o --omf_browse .\objects\sim7600.crf --depend .\objects\sim7600.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x57F606B8)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x57F606B8)
+I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x57F606B8)
+I (.\uCOS-II\Source\ucos_ii.h)(0x48893FC2)
+I (.\APP\app_cfg.h)(0x5B2B0D6C)
+I (.\APP\os_cfg.h)(0x5B236914)
+I (.\uCOS-II\Ports\os_cpu.h)(0x4ED949C8)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+I (user\user_sim7600\sim7600.h)(0x5B2CB3BC)
+I (.\user\user_debug.h)(0x5B222740)
+I (user\user_sim7600\user_sim7600_task.h)(0x5B2C880E)
+I (.\user\charge\charge.h)(0x5B0CB137)
+I (.\malloc\malloc.h)(0x5AFD3D18)
+I (.\APP\app.h)(0x5B17A511)
+I (.\json\cJSON.h)(0x5B0280E6)
+I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x57F606B8)
+F (.\user\user_sim7600\user_sim7600.c)(0x5B2B5A35)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\user_sim7600.o --omf_browse .\objects\user_sim7600.crf --depend .\objects\user_sim7600.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x57F606B8)
+I (.\uCOS-II\Source\ucos_ii.h)(0x48893FC2)
+I (.\APP\app_cfg.h)(0x5B2B0D6C)
+I (.\APP\os_cfg.h)(0x5B236914)
+I (.\uCOS-II\Ports\os_cpu.h)(0x4ED949C8)
+I (user\user_sim7600\user_sim7600.h)(0x5B17A409)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\user\user_usart\user_usart.h)(0x5B178942)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x49D9694A)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+I (user\user_sim7600\sim7600.h)(0x5B2B4A9E)
+I (.\user\user_debug.h)(0x5B222740)
+F (.\user\user_sim7600\user_mqtt_task.c)(0x5B2B49B7)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\user_mqtt_task.o --omf_browse .\objects\user_mqtt_task.crf --depend .\objects\user_mqtt_task.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x57F606B8)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x57F606B8)
+I (.\uCOS-II\Source\ucos_ii.h)(0x48893FC2)
+I (.\APP\app_cfg.h)(0x5B2B0D6C)
+I (.\APP\os_cfg.h)(0x5B236914)
+I (.\uCOS-II\Ports\os_cpu.h)(0x4ED949C8)
+I (user\user_sim7600\user_mqtt_task.h)(0x5B2359B3)
+I (.\user\user_debug.h)(0x5B222740)
+I (user\user_sim7600\sim7600.h)(0x5B2CB3BC)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+I (.\APP\app.h)(0x5B17A511)
+I (.\malloc\malloc.h)(0x5AFD3D18)
+F (.\user\user_sim7600\user_sim7600_task.c)(0x5B2C8817)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\user_sim7600_task.o --omf_browse .\objects\user_sim7600_task.crf --depend .\objects\user_sim7600_task.d)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x57F606B8)
+I (.\user\user_usart\user_usart.h)(0x5B178942)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x49D9694A)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+I (.\user\user_usart\user_usart2.h)(0x5AFD144D)
+I (user\user_sim7600\user_sim7600_task.h)(0x5B2C880E)
+I (.\modbus\ringbuffer.h)(0x59F182D7)
+I (.\modbus\bsp_board.h)(0x5AFCFEC0)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x57F606B8)
+I (.\json\cJSON.h)(0x5B0280E6)
+I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x57F606B8)
+I (.\malloc\malloc.h)(0x5AFD3D18)
+I (.\uCOS-II\Source\ucos_ii.h)(0x48893FC2)
+I (.\APP\app_cfg.h)(0x5B2B0D6C)
+I (.\APP\os_cfg.h)(0x5B236914)
+I (.\uCOS-II\Ports\os_cpu.h)(0x4ED949C8)
+I (.\modbus\modbus_master.h)(0x5B038E10)
+I (.\modbus\crc16.h)(0x59F182D7)
+I (.\modbus\word.h)(0x59F182D7)
+I (user\user_sim7600\SIM7600.h)(0x5B2CB3BC)
+I (.\user\user_debug.h)(0x5B222740)
+F (.\user\user_sim7600\user_upload_data.c)(0x5B2B6EC4)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\user_upload_data.o --omf_browse .\objects\user_upload_data.crf --depend .\objects\user_upload_data.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x57F606B8)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x57F606B8)
+I (.\uCOS-II\Source\ucos_ii.h)(0x48893FC2)
+I (.\APP\app_cfg.h)(0x5B2B0D6C)
+I (.\APP\os_cfg.h)(0x5B236914)
+I (.\uCOS-II\Ports\os_cpu.h)(0x4ED949C8)
+I (user\user_sim7600\user_updata_data.h)(0x5B2B45BA)
+I (user\user_sim7600\sim7600.h)(0x5B2CB3BC)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+I (.\user\user_debug.h)(0x5B222740)
+I (.\malloc\malloc.h)(0x5AFD3D18)
+I (.\APP\app.h)(0x5B17A511)
+F (.\FWlib\src\misc.c)(0x49D9694A)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\misc.o --omf_browse .\objects\misc.crf --depend .\objects\misc.d)
+I (.\FWlib\inc\misc.h)(0x49D9694A)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+F (.\FWlib\src\stm32f10x_crc.c)(0x49D9694A)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\stm32f10x_crc.o --omf_browse .\objects\stm32f10x_crc.crf --depend .\objects\stm32f10x_crc.d)
+I (.\FWlib\inc\stm32f10x_crc.h)(0x49D9694A)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+F (.\FWlib\src\stm32f10x_flash.c)(0x49D9694A)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\stm32f10x_flash.o --omf_browse .\objects\stm32f10x_flash.crf --depend .\objects\stm32f10x_flash.d)
+I (.\FWlib\inc\stm32f10x_flash.h)(0x49D9694A)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+F (.\FWlib\src\stm32f10x_gpio.c)(0x49D9694A)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\stm32f10x_gpio.o --omf_browse .\objects\stm32f10x_gpio.crf --depend .\objects\stm32f10x_gpio.d)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+F (.\FWlib\src\stm32f10x_usart.c)(0x49D9694A)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\stm32f10x_usart.o --omf_browse .\objects\stm32f10x_usart.crf --depend .\objects\stm32f10x_usart.d)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x49D9694A)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+F (.\FWlib\src\stm32f10x_rcc.c)(0x49D9694A)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\stm32f10x_rcc.o --omf_browse .\objects\stm32f10x_rcc.crf --depend .\objects\stm32f10x_rcc.d)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+F (.\CMSIS\core_cm3.c)(0x49D96948)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\core_cm3.o --omf_browse .\objects\core_cm3.crf --depend .\objects\core_cm3.d)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+F (.\CMSIS\system_stm32f10x.c)(0x4DE9AAF0)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\system_stm32f10x.o --omf_browse .\objects\system_stm32f10x.crf --depend .\objects\system_stm32f10x.d)
+I (CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (CMSIS\core_cm3.h)(0x49D96948)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+F (.\BSP\BSP.c)(0x5B2C753B)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\bsp.o --omf_browse .\objects\bsp.crf --depend .\objects\bsp.d)
+I (.\user\includes.h)(0x5B2B45DC)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x57F606B8)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x57F606B8)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x49D9694A)
+I (.\user\stm32f10x_it.h)(0x49D96964)
+I (.\uCOS-II\Source\ucos_ii.h)(0x48893FC2)
+I (.\APP\app_cfg.h)(0x5B2B0D6C)
+I (.\APP\os_cfg.h)(0x5B236914)
+I (.\uCOS-II\Ports\os_cpu.h)(0x4ED949C8)
+I (.\malloc\malloc.h)(0x5AFD3D18)
+I (.\json\cJSON.h)(0x5B0280E6)
+I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x57F606B8)
+I (.\BSP\BSP.h)(0x4ED94AC2)
+I (.\APP\app.h)(0x5B17A511)
+I (.\BSP\led.h)(0x54732792)
+I (.\user\user_usart\user_usart2.h)(0x5AFD144D)
+I (.\user\user_usart\user_usart3.h)(0x5AFE8328)
+I (.\modbus\modbus_master.h)(0x5B038E10)
+I (.\modbus\bsp_board.h)(0x5AFCFEC0)
+I (.\modbus\crc16.h)(0x59F182D7)
+I (.\modbus\word.h)(0x59F182D7)
+I (.\modbus\trans_recieve_buff_control.h)(0x5AF95052)
+I (.\user\user_usart\user_usart1.h)(0x5AFD21F3)
+I (.\user\user_usart\user_usart.h)(0x5B178942)
+I (.\user\user_sim7600\user_sim7600_task.h)(0x5B2C880E)
+I (.\user\user_sim7600\user_mqtt_task.h)(0x5B2359B3)
+I (.\user\user_debug.h)(0x5B222740)
+I (.\user\user_sim7600\user_updata_data.h)(0x5B2B45BA)
+I (.\user\user_sim7600\sim7600.h)(0x5B2CB3BC)
+F (.\BSP\led.c)(0x5B1787FC)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\led.o --omf_browse .\objects\led.crf --depend .\objects\led.d)
+I (BSP\led.h)(0x54732792)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+F (.\APP\app.c)(0x5B2B4603)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\app.o --omf_browse .\objects\app.crf --depend .\objects\app.d)
+I (.\user\includes.h)(0x5B2B45DC)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x57F606B8)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x57F606B8)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x49D9694A)
+I (.\user\stm32f10x_it.h)(0x49D96964)
+I (.\uCOS-II\Source\ucos_ii.h)(0x48893FC2)
+I (.\APP\app_cfg.h)(0x5B2B0D6C)
+I (.\APP\os_cfg.h)(0x5B236914)
+I (.\uCOS-II\Ports\os_cpu.h)(0x4ED949C8)
+I (.\malloc\malloc.h)(0x5AFD3D18)
+I (.\json\cJSON.h)(0x5B0280E6)
+I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x57F606B8)
+I (.\BSP\BSP.h)(0x4ED94AC2)
+I (.\APP\app.h)(0x5B17A511)
+I (.\BSP\led.h)(0x54732792)
+I (.\user\user_usart\user_usart2.h)(0x5AFD144D)
+I (.\user\user_usart\user_usart3.h)(0x5AFE8328)
+I (.\modbus\modbus_master.h)(0x5B038E10)
+I (.\modbus\bsp_board.h)(0x5AFCFEC0)
+I (.\modbus\crc16.h)(0x59F182D7)
+I (.\modbus\word.h)(0x59F182D7)
+I (.\modbus\trans_recieve_buff_control.h)(0x5AF95052)
+I (.\user\user_usart\user_usart1.h)(0x5AFD21F3)
+I (.\user\user_usart\user_usart.h)(0x5B178942)
+I (.\user\user_sim7600\user_sim7600_task.h)(0x5B2C880E)
+I (.\user\user_sim7600\user_mqtt_task.h)(0x5B2359B3)
+I (.\user\user_debug.h)(0x5B222740)
+I (.\user\user_sim7600\user_updata_data.h)(0x5B2B45BA)
+I (.\user\user_sim7600\sim7600.h)(0x5B2CB3BC)
+F (.\uCOS-II\Source\os_core.c)(0x4ED95B30)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\os_core.o --omf_browse .\objects\os_core.crf --depend .\objects\os_core.d)
+I (.\uCOS-II\Source\ucos_ii.h)(0x48893FC2)
+I (.\APP\app_cfg.h)(0x5B2B0D6C)
+I (.\APP\os_cfg.h)(0x5B236914)
+I (.\uCOS-II\Ports\os_cpu.h)(0x4ED949C8)
+F (.\uCOS-II\Source\os_flag.c)(0x48893FC2)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\os_flag.o --omf_browse .\objects\os_flag.crf --depend .\objects\os_flag.d)
+I (.\uCOS-II\Source\ucos_ii.h)(0x48893FC2)
+I (.\APP\app_cfg.h)(0x5B2B0D6C)
+I (.\APP\os_cfg.h)(0x5B236914)
+I (.\uCOS-II\Ports\os_cpu.h)(0x4ED949C8)
+F (.\uCOS-II\Source\os_mbox.c)(0x48893FC4)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\os_mbox.o --omf_browse .\objects\os_mbox.crf --depend .\objects\os_mbox.d)
+I (.\uCOS-II\Source\ucos_ii.h)(0x48893FC2)
+I (.\APP\app_cfg.h)(0x5B2B0D6C)
+I (.\APP\os_cfg.h)(0x5B236914)
+I (.\uCOS-II\Ports\os_cpu.h)(0x4ED949C8)
+F (.\uCOS-II\Source\os_mem.c)(0x48893FC4)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\os_mem.o --omf_browse .\objects\os_mem.crf --depend .\objects\os_mem.d)
+I (.\uCOS-II\Source\ucos_ii.h)(0x48893FC2)
+I (.\APP\app_cfg.h)(0x5B2B0D6C)
+I (.\APP\os_cfg.h)(0x5B236914)
+I (.\uCOS-II\Ports\os_cpu.h)(0x4ED949C8)
+F (.\uCOS-II\Source\os_mutex.c)(0x48893FC4)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\os_mutex.o --omf_browse .\objects\os_mutex.crf --depend .\objects\os_mutex.d)
+I (.\uCOS-II\Source\ucos_ii.h)(0x48893FC2)
+I (.\APP\app_cfg.h)(0x5B2B0D6C)
+I (.\APP\os_cfg.h)(0x5B236914)
+I (.\uCOS-II\Ports\os_cpu.h)(0x4ED949C8)
+F (.\uCOS-II\Source\os_q.c)(0x48893FC2)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\os_q.o --omf_browse .\objects\os_q.crf --depend .\objects\os_q.d)
+I (.\uCOS-II\Source\ucos_ii.h)(0x48893FC2)
+I (.\APP\app_cfg.h)(0x5B2B0D6C)
+I (.\APP\os_cfg.h)(0x5B236914)
+I (.\uCOS-II\Ports\os_cpu.h)(0x4ED949C8)
+F (.\uCOS-II\Source\os_sem.c)(0x48893FC2)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\os_sem.o --omf_browse .\objects\os_sem.crf --depend .\objects\os_sem.d)
+I (.\uCOS-II\Source\ucos_ii.h)(0x48893FC2)
+I (.\APP\app_cfg.h)(0x5B2B0D6C)
+I (.\APP\os_cfg.h)(0x5B236914)
+I (.\uCOS-II\Ports\os_cpu.h)(0x4ED949C8)
+F (.\uCOS-II\Source\os_task.c)(0x48893FC2)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\os_task.o --omf_browse .\objects\os_task.crf --depend .\objects\os_task.d)
+I (.\uCOS-II\Source\ucos_ii.h)(0x48893FC2)
+I (.\APP\app_cfg.h)(0x5B2B0D6C)
+I (.\APP\os_cfg.h)(0x5B236914)
+I (.\uCOS-II\Ports\os_cpu.h)(0x4ED949C8)
+F (.\uCOS-II\Source\os_time.c)(0x48893FC4)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\os_time.o --omf_browse .\objects\os_time.crf --depend .\objects\os_time.d)
+I (.\uCOS-II\Source\ucos_ii.h)(0x48893FC2)
+I (.\APP\app_cfg.h)(0x5B2B0D6C)
+I (.\APP\os_cfg.h)(0x5B236914)
+I (.\uCOS-II\Ports\os_cpu.h)(0x4ED949C8)
+F (.\uCOS-II\Source\os_tmr.c)(0x48893FC2)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\os_tmr.o --omf_browse .\objects\os_tmr.crf --depend .\objects\os_tmr.d)
+I (.\uCOS-II\Source\ucos_ii.h)(0x48893FC2)
+I (.\APP\app_cfg.h)(0x5B2B0D6C)
+I (.\APP\os_cfg.h)(0x5B236914)
+I (.\uCOS-II\Ports\os_cpu.h)(0x4ED949C8)
+F (.\uCOS-II\Ports\os_cpu_a.asm)(0x4ED952F4)(--cpu Cortex-M3 -g --apcs=interwork --pd "__MICROLIB SETA 1"-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include--pd "__UVISION_VERSION SETA 523" --pd "STM32F10X_MD SETA 1"--list .\listings\os_cpu_a.lst --xref -o .\objects\os_cpu_a.o --depend .\objects\os_cpu_a.d)
+F (.\uCOS-II\Ports\os_cpu_c.c)(0x4ED949C8)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\os_cpu_c.o --omf_browse .\objects\os_cpu_c.crf --depend .\objects\os_cpu_c.d)
+I (.\uCOS-II\Source\ucos_ii.h)(0x48893FC2)
+I (.\APP\app_cfg.h)(0x5B2B0D6C)
+I (.\APP\os_cfg.h)(0x5B236914)
+I (.\uCOS-II\Ports\os_cpu.h)(0x4ED949C8)
+F (.\uCOS-II\Ports\os_dbg.c)(0x4ED949C8)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\os_dbg.o --omf_browse .\objects\os_dbg.crf --depend .\objects\os_dbg.d)
+I (.\uCOS-II\Source\ucos_ii.h)(0x48893FC2)
+I (.\APP\app_cfg.h)(0x5B2B0D6C)
+I (.\APP\os_cfg.h)(0x5B236914)
+I (.\uCOS-II\Ports\os_cpu.h)(0x4ED949C8)
+F (.\malloc\malloc.c)(0x5B174605)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\malloc.o --omf_browse .\objects\malloc.crf --depend .\objects\malloc.d)
+I (malloc\malloc.h)(0x5AFD3D18)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+F (.\modbus\modbus_master.c)(0x5B062C7C)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\modbus_master.o --omf_browse .\objects\modbus_master.crf --depend .\objects\modbus_master.d)
+I (modbus\modbus_master.h)(0x5B038E10)
+I (modbus\bsp_board.h)(0x5AFCFEC0)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x49D9694A)
+I (modbus\crc16.h)(0x59F182D7)
+I (modbus\word.h)(0x59F182D7)
+I (modbus\trans_recieve_buff_control.h)(0x5AF95052)
+I (.\uCOS-II\Source\ucos_ii.h)(0x48893FC2)
+I (.\APP\app_cfg.h)(0x5B2B0D6C)
+I (.\APP\os_cfg.h)(0x5B236914)
+I (.\uCOS-II\Ports\os_cpu.h)(0x4ED949C8)
+F (.\modbus\ringbuffer.c)(0x59F182D7)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\ringbuffer.o --omf_browse .\objects\ringbuffer.crf --depend .\objects\ringbuffer.d)
+I (modbus\ringbuffer.h)(0x59F182D7)
+I (modbus\bsp_board.h)(0x5AFCFEC0)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x49D9694A)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x57F606B8)
+F (.\modbus\trans_recieve_buff_control.c)(0x5AFD1039)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\trans_recieve_buff_control.o --omf_browse .\objects\trans_recieve_buff_control.crf --depend .\objects\trans_recieve_buff_control.d)
+I (modbus\trans_recieve_buff_control.h)(0x5AF95052)
+I (modbus\bsp_board.h)(0x5AFCFEC0)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+I (.\FWlib\inc\stm32f10x_usart.h)(0x49D9694A)
+I (modbus\ringbuffer.h)(0x59F182D7)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x57F606B8)
+I (.\user\user_usart\user_usart.h)(0x5B178942)
+I (.\user\user_usart\user_usart2.h)(0x5AFD144D)
+I (.\uCOS-II\Source\ucos_ii.h)(0x48893FC2)
+I (.\APP\app_cfg.h)(0x5B2B0D6C)
+I (.\APP\os_cfg.h)(0x5B236914)
+I (.\uCOS-II\Ports\os_cpu.h)(0x4ED949C8)
+F (.\json\cJSON.c)(0x5B0282E0)(--c99 -c --cpu Cortex-M3 -D__MICROLIB -g -O0 --apcs=interwork --split_sections -I .\CMSIS -I .\FWlib\inc -I .\uCOS-II\Ports -I .\uCOS-II\Source -I .\malloc -I .\modbus -I .\APP -I .\BSP -I .\user -I .\json -I .\user\flash -I .\user\user_usart -I .\user\charge -I .\user\user_sim7600-I.\RTE\_stm32f103c8t6-IC:\Keil_v5\ARM\PACK\Keil\STM32F1xx_DFP\1.1.0\Device\Include-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="523" -DSTM32F10X_MD -DUSE_STDPERIPH_DRIVER -DSTM32F10X_HD-o .\objects\cjson.o --omf_browse .\objects\cjson.crf --depend .\objects\cjson.d)
+I (C:\Keil_v5\ARM\ARMCC\include\string.h)(0x57F606B8)
+I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x57F606B8)
+I (C:\Keil_v5\ARM\ARMCC\include\math.h)(0x57F606B6)
+I (C:\Keil_v5\ARM\ARMCC\include\stdlib.h)(0x57F606B8)
+I (C:\Keil_v5\ARM\ARMCC\include\float.h)(0x57F606B6)
+I (C:\Keil_v5\ARM\ARMCC\include\limits.h)(0x57F606B6)
+I (C:\Keil_v5\ARM\ARMCC\include\ctype.h)(0x57F606B6)
+I (.\malloc\malloc.h)(0x5AFD3D18)
+I (.\CMSIS\stm32f10x.h)(0x5AFCEDFD)
+I (.\CMSIS\core_cm3.h)(0x49D96948)
+I (C:\Keil_v5\ARM\ARMCC\include\stdint.h)(0x5AF5121D)
+I (.\CMSIS\system_stm32f10x.h)(0x49D96948)
+I (.\user\stm32f10x_conf.h)(0x4E648C2A)
+I (.\FWlib\inc\stm32f10x_gpio.h)(0x4E64CA32)
+I (.\FWlib\inc\stm32f10x_rcc.h)(0x49D9694A)
+I (json\cJSON.h)(0x5B0280E6)
+I (C:\Keil_v5\ARM\ARMCC\include\stddef.h)(0x57F606B8)
+F (.\Listings\stm32f103-ucosii.map)(0x5B2CB6FC)()

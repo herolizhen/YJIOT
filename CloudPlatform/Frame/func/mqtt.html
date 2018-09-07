@@ -1,0 +1,154 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+    <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate" />
+    <link href="https://cdn.staticfile.org/flat-ui/2.3.0/css/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.staticfile.org/flat-ui/2.3.0/css/flat-ui.min.css" rel="stylesheet" />
+    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <script src="https://cdn.staticfile.org/flat-ui/2.3.0/js/vendor/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/flat-ui/2.3.0/js/flat-ui.min.js"></script>
+    <script src="https://cdn.staticfile.org/vue/2.2.6/vue.min.js"></script>
+    <!--模态框拖动-->
+    <script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <!--模态框拖动-->
+    <script src="../scripts/api.js"></script>
+    <title></title>
+</head>
+<body>
+    <div id="data-content" class="container-fluid">
+        <div class="row">
+            <div class="col-md-4">
+                <table class="table table-bordered">
+                    <tr>
+                        <td>
+                            <h5>服务器连接</h5>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="input-group">
+                                <span class="input-group-addon">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;地址</span>
+                                <input v-model="input.url" type="text" class="form-control" placeholder="ws://,wss://" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="input-group">
+                                <span class="input-group-addon">登录名</span>
+                                <input v-model="input.username" type="text" class="form-control" placeholder="登录ID" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="input-group">
+                                <span class="input-group-addon">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;密码</span>
+                                <input v-model="input.password" type="text" class="form-control" placeholder="ID密码" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="input-group">
+                                <span class="input-group-addon">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;主题</span>
+                                <input v-model="input.topic" type="text" class="form-control" placeholder="初始主题" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button onclick="onprimary()" class="btn btn-primary">确定连接</button>
+                            <button onclick="onwarning()" class="btn btn-warning">断开连接</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-md-8">
+                <table class="table table-bordered table-hover table-condensed">
+                    <tr>
+                        <td colspan="2">
+                            <h5>消息队列</h5>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>时间</th>
+                        <th>数据</th>
+                    </tr>
+                    <tbody>
+                        <tr v-for="item in table">
+                            <td>{{item.time}}</td>
+                            <td>{{item.json}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="input-loading" tabindex="-1" role="dialog" aria-labelledby="loading-modal-title">
+        <div id="input-loading-modal" class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="loading-modal-title"></h4>
+                </div>
+                <div id="loading-modal-body" class="modal-body">
+                    ...
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script>
+    var content;
+    $(function () {
+        $api.Initialize();
+        initContent();
+        $("#input-loading").draggable();
+    });
+    function initContent() {
+        content = new Vue({
+            el: '#data-content',
+            data: {
+                input: {
+                    url: 'wss://www.yjiot.net/mqtt',
+                    username: 'cff7d7d9-3999-4780-b255-b583d17b3d33',
+                    password: '7747',
+                    topic: '/topic/d2c.cff7d7d9-3999-4780-b255-b583d17b3d33.status'
+                },
+                table:[]
+            }
+        });
+    }
+    function onprimary() {
+        $('#input-loading').modal('show');
+        $api.ui_openLoading();
+        window.setTimeout(function () {
+            $api.ui_closeLoading();
+        }, 3000);
+        $iot.mqttClientConnect(
+            content.input.url,
+            content.input.username,
+            content.input.password,
+            content.input.topic,
+            function (data) {
+                content.table.unshift({
+                    time: (new Date()).pattern('yyyy-MM-dd HH:mm:ss'),
+                    json:JSON.stringify(data)
+                });
+            }, function () {
+                $api.ui_openAlert('连接提示','连接服务器失败，请重试');
+            });
+    }
+    function onwarning() {
+        $api.ui_openAlert('连接断开提示','真的要断开连接吗？',function (tag) {
+            if (tag) {
+                $iot.mqttClientDisconnect();
+                $api.ui_openAlert('连接断开提示', '连接断开成功');
+            }
+        });
+    }
+</script>

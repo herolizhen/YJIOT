@@ -1,0 +1,35 @@
+*************************************************************
+FileName = EP600_SENSOR_V1.0.1.GBR
+AutoAperture = True
+*************************************************************
+Generating : Drill Drawing
+      File : EP600_SENSOR_V1.0.1.GD1
+
+    Adding Layer      : Mechanical 1
+
+    Adding Layer      : Drill Drawing
+
+    Adding Drill Pair : Top Layer-Bottom Layer
+
+
+Used DCodes :
+    D10
+    D11
+*************************************************************
+
+*************************************************************
+Generating : Drill Guide
+      File : EP600_SENSOR_V1.0.1.GG1
+
+    Adding Layer      : Drill Guide
+
+    Adding Layer      : Mechanical 1
+
+    Adding Drill Pair : Top Layer-Bottom Layer
+
+
+Used DCodes :
+    D10
+    D11
+*************************************************************
+

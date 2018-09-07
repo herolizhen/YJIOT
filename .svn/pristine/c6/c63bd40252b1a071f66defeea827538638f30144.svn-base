@@ -1,0 +1,22 @@
+package com.yjyz.iot.device.dao;
+
+import java.util.List;
+
+import com.yjyz.iot.device.entity.DevAccount;
+
+public interface DevAccountMapper {
+	int deleteByPrimaryKey(String deviceId);
+
+	int insert(DevAccount record);
+
+	int insertSelective(DevAccount record);
+
+	DevAccount selectByPrimaryKey(String deviceId);
+
+	int updateByPrimaryKeySelective(DevAccount record);
+
+	int updateByPrimaryKey(DevAccount record);
+
+	List<DevAccount> selectByMerchantCode(String ownerCode);
+
+}

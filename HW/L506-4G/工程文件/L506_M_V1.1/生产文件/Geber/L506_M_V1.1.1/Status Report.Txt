@@ -1,0 +1,13 @@
+Output: NC Drill Files
+Type  : NC Drill
+From  : Project [L506_M_V1.1.PrjPCB]
+   Generated File[L506_M_V1.TXT]
+   Generated File[L506_M_V1.1.1.DRL]
+   Generated File[L506_M_V1.1.1.LDP]
+   Generated File[L506_M_V1.1.1.DRR]
+
+
+Files Generated   : 4
+Documents Printed : 0
+
+Finished Output Generation At 13:11:35 On 2018/3/23

@@ -1,0 +1,24 @@
+sms.taobao.url =http://gw.api.taobao.com/router/rest
+sms.taobao.appKey = 24497634
+sms.taobao.secret=3f154f2f69c6c6e751a770fdbdbd99ec
+sms.taobao.signName=\u6613\u51c0\u4f18\u667a
+sms.taobao.templateCode=SMS_74790010
+
+sms.aliyun.url    = dysmsapi.aliyuncs.com
+sms.aliyun.appKey = LTAIQaG0GL0cLi9I
+sms.aliyun.secret = spBIw75Nzrnt9go0g4mepn9ORUR8mt
+sms.aliyun.signName=\u6613\u4eab\u4e91
+sms.aliyun.verCodeTemplateCode=SMS_132705001
+sms.aliyun.alermTemplateCode=SMS_133005238
+sms.aliyun.messageTemplateCode=SMS_132995237
+
+
+sms.ytx.url =app.cloopen.com
+sms.ytx.port=8883
+sms.ytx.sid = 8a48b551506fd26f015093900d066a8f
+sms.ytx.token=cbaabeed5cb941288882504c604f7060
+sms.ytx.appid=8a216da862cc8f910162d7edbe3e07df
+sms.ytx.templateCode=244684
+sms.ytx.verCodeTemplateCode=244684
+sms.ytx.alermTemplateCode=244686
+sms.ytx.messageTemplateCode=244687

@@ -1,0 +1,32 @@
+Protel Design System Design Rule Check
+PCB File : Q:\工作\工程\EMW3165_WIFI模块\工程文件\WIFIModule_M_V1.0\Project\PCB\WIFIModule_M_V1.0.1.PcbDoc
+Date     : 2018/5/7
+Time     : 15:50:51
+
+Processing Rule : Hole Size Constraint (Min=1mil) (Max=100mil) (All)
+Rule Violations :0
+
+Processing Rule : Height Constraint (Min=0mil) (Max=1000mil) (Prefered=500mil) (All)
+Rule Violations :0
+
+Processing Rule : Width Constraint (Min=10mil) (Max=200mil) (Preferred=15mil) (All)
+Rule Violations :0
+
+Processing Rule : Clearance Constraint (Gap=7mil) (All),(All)
+Rule Violations :0
+
+Processing Rule : Broken-Net Constraint ( (All) )
+Rule Violations :0
+
+Processing Rule : Short-Circuit Constraint (Allowed=No) (All),(All)
+Rule Violations :0
+
+Processing Rule : Width Constraint (Min=15mil) (Max=15mil) (Preferred=15mil) (InDifferentialPair('NewDifferentialPair1'))
+Rule Violations :0
+
+Processing Rule : Matched Net Lengths(Tolerance=1000mil) (InDifferentialPair ('NewDifferentialPair1'))
+Rule Violations :0
+
+
+Violations Detected : 0
+Time Elapsed        : 00:00:00

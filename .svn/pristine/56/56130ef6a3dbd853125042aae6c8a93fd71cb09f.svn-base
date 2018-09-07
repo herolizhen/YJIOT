@@ -1,0 +1,207 @@
+C51 COMPILER V9.52.0.0   STEP_MOTOR                                                        10/25/2017 13:34:05 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE STEP_MOTOR
+OBJECT MODULE PLACED IN .\Objects\step_motor.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\step_motor\step_motor.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\USE
+                    -R\IIC;.\USER\UART;.\USER\TM1618;.\USER\Sensor;.\USER;.\USER\PWM;.\USER\DC_MOTOR;.\USER\timer;.\USER\inc;.\USER\EXINT;.\U
+                    -SER\touch_key;.\USER\SYS_RUN;.\USER\step_motor;.\USER\BUZZER;.\USER\UART;.\USER\common;.\USER\lib;.\USER\UV;.\USER\ION;.
+                    -\USER\EEPROM;.\USER\TM1620;.\USER\charge) DEBUG OBJECTEXTEND PRINT(.\Listings\step_motor.lst) TABS(2) OBJECT(.\Objects\s
+                    -tep_motor.obj)
+
+line level    source
+
+   1          #include "step_motor.h"
+   2          #include "global.h"
+   3          //#include "TM1618.h"
+   4          #include "dc_motor.h"
+   5          #include "timer.h"
+   6          #include "sys_run.h"
+   7          
+   8          void Door_Pin_Init(void)
+   9          {
+  10   1          DOOR_CHECK_PxM0 &= ~(1 << DOOR_CHECK_PORTBIT); 
+  11   1          DOOR_CHECK_PxM1 &= ~(1 << DOOR_CHECK_PORTBIT); 
+  12   1      
+  13   1      }
+  14          
+  15          
+  16          void Step_Motor_Pin_Init(void)
+  17          {
+  18   1          P2M0 &= ~((1 << 0) | (1 << 1) |(1 << 2) |(1 << 3));
+  19   1          P2M1 &= ~((1 << 0) | (1 << 1) |(1 << 2) |(1 << 3));
+  20   1         
+  21   1          STEP_MOTOR_A=0;
+  22   1          STEP_MOTOR_B=0;
+  23   1          STEP_MOTOR_C=0;
+  24   1          STEP_MOTOR_D=0;  
+  25   1        
+  26   1          Door_Pin_Init();
+  27   1      }
+  28          
+  29          
+  30          //当仓门关闭时，仓门检测引脚是高电平；当仓门打开时，仓门检测引脚是低电平
+  31          void Door_Check(void)
+  32          {
+  33   1          //当步进电机停止转动后再检测仓门
+  34   1          if(sys_mode == STANDBY && IsStepMotorBusy == 0)
+  35   1          {
+  36   2              if(!DOOR_CHECK_PIN)
+  37   2              {
+  38   3                  IsSysFault = 1;
+  39   3              }
+  40   2          }
+  41   1          
+  42   1          
+  43   1          if(sys_mode == RUNNING && IsStepMotorBusy == 0)
+  44   1          {
+  45   2              if(DOOR_CHECK_PIN)
+  46   2              {
+  47   3                  IsSysFault = 1;
+  48   3              }
+  49   2          }
+  50   1      
+  51   1      }
+C51 COMPILER V9.52.0.0   STEP_MOTOR                                                        10/25/2017 13:34:05 PAGE 2   
+
+  52          
+  53          
+  54          
+  55          void Door_Open(void)
+  56          {
+  57   1          StartMotor(-220);
+  58   1      }
+  59          
+  60          void Door_Close(void)
+  61          {
+  62   1          //TM1618_DispalyData(2,222);
+  63   1          StartMotor(220);
+  64   1          Is_Door_Open = 0;
+  65   1      }
+  66          
+  67          void StartMotor(signed long angle)
+  68          {
+  69   1      //    beats = (angle*4076)/360;
+  70   1          beats = (angle*4076)/360;
+  71   1          IsStepMotorBusy = 1;
+  72   1      }
+  73          
+  74          
+  75          void Check_If_Close_Door(void)
+  76          {
+  77   1          static bit open_door_try_again = 0;
+  78   1          const unsigned int time_interval = 60;
+  79   1          unsigned long nowtime = 0;
+  80   1        
+  81   1          if(Is_Door_Open == 0)
+  82   1          {
+  83   2              open_door_try_again = 0;
+  84   2          }
+  85   1        
+  86   1          if(cost_info.IsCostType == 1 && cost_info.lefttime == 0)
+  87   1          {
+  88   2              if(Is_Door_Open == 1)
+  89   2              {
+  90   3                  nowtime = get_sys_stime();
+  91   3                  if(nowtime >= (door_open_time + time_interval))
+  92   3                  {
+  93   4                      Door_Close();
+  94   4                  }
+  95   3                  else if(nowtime >= (door_open_time + 3))
+  96   3                  {
+  97   4                     //如果下发打开仓门指令后仓门并没有打开，则重新打开一次
+  98   4                      if(DOOR_CHECK_PIN == 1)
+  99   4                      {
+ 100   5                          if(open_door_try_again == 0)
+ 101   5                          {
+ 102   6                              Door_Open();
+ 103   6                              open_door_try_again = 1;
+ 104   6                          }                      
+ 105   5                      }
+ 106   4                  }
+ 107   3              }
+ 108   2          }
+ 109   1      }
+ 110          
+ 111          
+ 112          /*
+ 113          void StopMotor(void)
+C51 COMPILER V9.52.0.0   STEP_MOTOR                                                        10/25/2017 13:34:05 PAGE 3   
+
+ 114          {
+ 115            beats = 0;
+ 116          }
+ 117          */
+ 118          
+ 119          void TurnMotor(void)
+ 120          {
+ 121   1        static unsigned char index = 0;
+ 122   1        static const unsigned char BeatCode[8] = {0x01, 0x03, 0x02, 0x06, 0x04, 0x0c, 0x08, 0x09};
+ 123   1      
+ 124   1        if(beats != 0)
+ 125   1        {
+ 126   2          
+ 127   2          if(beats > 0)
+ 128   2          {
+ 129   3            index++;
+ 130   3            index = index & 0x07;
+ 131   3            beats--;
+ 132   3          }
+ 133   2          else
+ 134   2          {
+ 135   3            index--;
+ 136   3            index = index & 0x07;
+ 137   3            beats++;
+ 138   3          }
+ 139   2          
+ 140   2          if(BeatCode[index]&0x1) {STEP_MOTOR_A=1;} else {STEP_MOTOR_A=0;}
+ 141   2          if(BeatCode[index]&0x2) {STEP_MOTOR_B=1;} else {STEP_MOTOR_B=0;}
+ 142   2          if(BeatCode[index]&0x4) {STEP_MOTOR_C=1;} else {STEP_MOTOR_C=0;}
+ 143   2          if(BeatCode[index]&0x8) {STEP_MOTOR_D=1;} else {STEP_MOTOR_D=0;}
+ 144   2          
+ 145   2      
+ 146   2        }
+ 147   1        else
+ 148   1        {
+ 149   2          if(IsStepMotorBusy == 1)
+ 150   2          {
+ 151   3              STEP_MOTOR_A = 0;
+ 152   3              STEP_MOTOR_B = 0;
+ 153   3              STEP_MOTOR_C = 0;
+ 154   3              STEP_MOTOR_D = 0;
+ 155   3              IsStepMotorBusy = 0;
+ 156   3            
+ 157   3              //当步进电机转动结束后，如果检测到仓门没有到位则可能是仓门坏了不能打开，停止风机，按键失效
+ 158   3              //Door_Check();
+ 159   3              if(IsSysFault == 1)
+ 160   3              {
+ 161   4                  //关闭风机的条件是(sys_mode == STANDBY) && (IsSpeedChanged == 1) 
+ 162   4      //            sys_mode = STANDBY; 
+ 163   4      //            IsSpeedChanged = 1;
+ 164   4      //            Stop_DC_Motor();
+ 165   4                  if(sys_mode == RUNNING)
+ 166   4                  {
+ 167   5                      sys_stop();
+ 168   5                  }
+ 169   4                  
+ 170   4              }
+ 171   3          }
+ 172   2          
+ 173   2        }
+ 174   1      }
+
+C51 COMPILER V9.52.0.0   STEP_MOTOR                                                        10/25/2017 13:34:05 PAGE 4   
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    517    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      9      10
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

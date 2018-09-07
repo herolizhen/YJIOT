@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.product.dao.ProdQnrMapper">
+  <resultMap id="BaseResultMap" type="com.yjyz.iot.product.entity.ProdQnr">
+    <id column="qnr_id" jdbcType="VARCHAR" property="qnrId" />
+    <result column="qnr_par" jdbcType="VARCHAR" property="qnrPar" />
+    <result column="client_id" jdbcType="VARCHAR" property="clientId" />
+    <result column="device_id" jdbcType="VARCHAR" property="deviceId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    qnr_id, qnr_par, client_id, device_id, create_time, phone, title, content, status
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_prod_qnr
+    where qnr_id = #{qnrId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_prod_qnr
+    where qnr_id = #{qnrId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yjyz.iot.product.entity.ProdQnr">
+    insert into t_prod_qnr (qnr_id, qnr_par, client_id, 
+      device_id, create_time, phone, 
+      title, content, status
+      )
+    values (#{qnrId,jdbcType=VARCHAR}, #{qnrPar,jdbcType=VARCHAR}, #{clientId,jdbcType=VARCHAR}, 
+      #{deviceId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{phone,jdbcType=VARCHAR}, 
+      #{title,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yjyz.iot.product.entity.ProdQnr">
+    insert into t_prod_qnr
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="qnrId != null">
+        qnr_id,
+      </if>
+      <if test="qnrPar != null">
+        qnr_par,
+      </if>
+      <if test="clientId != null">
+        client_id,
+      </if>
+      <if test="deviceId != null">
+        device_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="phone != null">
+        phone,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="qnrId != null">
+        #{qnrId,jdbcType=VARCHAR},
+      </if>
+      <if test="qnrPar != null">
+        #{qnrPar,jdbcType=VARCHAR},
+      </if>
+      <if test="clientId != null">
+        #{clientId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null">
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="phone != null">
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yjyz.iot.product.entity.ProdQnr">
+    update t_prod_qnr
+    <set>
+      <if test="qnrPar != null">
+        qnr_par = #{qnrPar,jdbcType=VARCHAR},
+      </if>
+      <if test="clientId != null">
+        client_id = #{clientId,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null">
+        device_id = #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+    </set>
+    where qnr_id = #{qnrId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yjyz.iot.product.entity.ProdQnr">
+    update t_prod_qnr
+    set qnr_par = #{qnrPar,jdbcType=VARCHAR},
+      client_id = #{clientId,jdbcType=VARCHAR},
+      device_id = #{deviceId,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      phone = #{phone,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR},
+      content = #{content,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER}
+    where qnr_id = #{qnrId,jdbcType=VARCHAR}
+  </update>
+</mapper>

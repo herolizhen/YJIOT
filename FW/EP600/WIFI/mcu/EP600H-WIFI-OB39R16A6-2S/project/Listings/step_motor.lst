@@ -1,0 +1,165 @@
+C51 COMPILER V9.52.0.0   STEP_MOTOR                                                        01/22/2018 10:28:14 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE STEP_MOTOR
+OBJECT MODULE PLACED IN .\Objects\step_motor.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\step_motor\step_motor.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(..\pr
+                    -oject;.\USER\BUZZER;.\USER\DC_MOTOR;.\USER\EXINT;.\USER\IIC;.\USER\inc;.\USER\ION;.\USER\PWM;.\USER\step_motor;.\USER\SY
+                    -S_RUN;.\USER\timer;.\USER\TM1620;.\USER\touch_key;.\USER\UART;.\USER\UV;.\USER\Sensor;.\USER\user_timer) DEBUG OBJECTEXT
+                    -END PRINT(.\Listings\step_motor.lst) TABS(2) OBJECT(.\Objects\step_motor.obj)
+
+line level    source
+
+   1          #include "step_motor.h"
+   2          #include "global.h"
+   3          //#include "TM1620.h"
+   4          #include "dc_motor.h"
+   5          #include "timer.h"
+   6          
+   7          
+   8          //当仓门关闭时，仓门检测引脚是高电平；当仓门打开时，仓门检测引脚是低电平
+   9          
+  10          void Door_Pin_Init(void)
+  11          {
+  12   1          DOOR_CHECK_PxM0 &= ~(1 << DOOR_CHECK_PORTBIT); 
+  13   1          DOOR_CHECK_PxM1 &= ~(1 << DOOR_CHECK_PORTBIT); 
+  14   1      
+  15   1      }
+  16          
+  17          
+  18          void Step_Motor_Pin_Init(void)
+  19          {
+  20   1          P1M0 |= ((1 << 2) |(1 << 3));
+  21   1          P1M1 &= ~((1 << 2) |(1 << 3));
+  22   1        
+  23   1          P2M0 |= ((1 << 0) | (1 << 1));
+  24   1          P2M1 &= ~((1 << 0) | (1 << 1));
+  25   1         
+  26   1          STEP_MOTOR_A=0;
+  27   1          STEP_MOTOR_B=0;
+  28   1          STEP_MOTOR_C=0;
+  29   1          STEP_MOTOR_D=0;  
+  30   1        
+  31   1          Door_Pin_Init();
+  32   1      }
+  33          
+  34          
+  35          
+  36          void Door_Open(void)
+  37          {
+  38   1          if(Is_Door_Open == 1)
+  39   1          {
+  40   2              return;
+  41   2          }
+  42   1          Is_Door_Open = 1;
+  43   1          door_open_time = get_sys_stime();
+  44   1          StartMotor(-220);
+  45   1      }
+  46          
+  47          void Door_Close(void)
+  48          {
+  49   1          if(Is_Door_Open == 0)
+  50   1          {
+  51   2              return;
+  52   2          }
+C51 COMPILER V9.52.0.0   STEP_MOTOR                                                        01/22/2018 10:28:14 PAGE 2   
+
+  53   1          StartMotor(220);
+  54   1          Is_Door_Open = 0;
+  55   1      }
+  56          
+  57          void StartMotor(signed long angle)
+  58          {
+  59   1      //    beats = (angle*4076)/360;
+  60   1          beats = (angle*4076)/360;
+  61   1          IsStepMotorBusy = 1;
+  62   1      }
+  63          
+  64          
+  65          /*
+  66          void Check_If_Close_Door(void)
+  67          {
+  68              const unsigned int code time_interval = 60;
+  69            
+  70              //if(charge_info.IsChargeType == 1 && charge_info.lefttime.l_time == 0)
+  71              if(sys_mode == STANDBY)
+  72              {
+  73                  if(Is_Door_Open == 1)
+  74                  {
+  75                      nowtime_s = get_sys_stime();
+  76                      if(nowtime_s >= (door_open_time + time_interval))
+  77                      {
+  78                          Door_Close();
+  79                      }
+  80                  }
+  81              }
+  82          }
+  83          */
+  84          
+  85          
+  86          /*
+  87          void StopMotor(void)
+  88          {
+  89            beats = 0;
+  90          }
+  91          */
+  92          
+  93          void TurnMotor(void)
+  94          {
+  95   1        static unsigned char index = 0;
+  96   1        static const unsigned char code BeatCode[8] = {0x01, 0x03, 0x02, 0x06, 0x04, 0x0c, 0x08, 0x09};
+  97   1        //const unsigned char code BeatCode[8] = {0x01, 0x03, 0x02, 0x06, 0x04, 0x0c, 0x08, 0x09};
+  98   1      
+  99   1      
+ 100   1        if(beats != 0)
+ 101   1        {
+ 102   2          
+ 103   2          if(beats > 0)
+ 104   2          {
+ 105   3            index++;
+ 106   3            index = index & 0x07;
+ 107   3            beats--;
+ 108   3          }
+ 109   2          else
+ 110   2          {
+ 111   3            index--;
+ 112   3            index = index & 0x07;
+ 113   3            beats++;
+ 114   3          }
+C51 COMPILER V9.52.0.0   STEP_MOTOR                                                        01/22/2018 10:28:14 PAGE 3   
+
+ 115   2          
+ 116   2          if(BeatCode[index]&0x1) {STEP_MOTOR_A=1;} else {STEP_MOTOR_A=0;}
+ 117   2          if(BeatCode[index]&0x2) {STEP_MOTOR_B=1;} else {STEP_MOTOR_B=0;}
+ 118   2          if(BeatCode[index]&0x4) {STEP_MOTOR_C=1;} else {STEP_MOTOR_C=0;}
+ 119   2          if(BeatCode[index]&0x8) {STEP_MOTOR_D=1;} else {STEP_MOTOR_D=0;}
+ 120   2          
+ 121   2      
+ 122   2        }
+ 123   1        else
+ 124   1        {
+ 125   2          if(IsStepMotorBusy == 1)
+ 126   2          {
+ 127   3              STEP_MOTOR_A = 0;
+ 128   3              STEP_MOTOR_B = 0;
+ 129   3              STEP_MOTOR_C = 0;
+ 130   3              STEP_MOTOR_D = 0;
+ 131   3              IsStepMotorBusy = 0;
+ 132   3          }   
+ 133   2        }
+ 134   1      }
+ 135          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    316    ----
+   CONSTANT SIZE    =      8    ----
+   XDATA SIZE       =      1       4
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

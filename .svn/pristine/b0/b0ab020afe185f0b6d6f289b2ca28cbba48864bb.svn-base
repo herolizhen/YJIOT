@@ -1,0 +1,25 @@
+#JWT\u914d\u7f6e\u53c2\u6570-\u786c\u4ef6
+##JWT\u5934\u4fe1\u606f\u914d\u7f6e-\u786c\u4ef6
+cfg.jwt.id=jwt
+cfg.jwt.secret=aGVyb2xpemhlbg==
+##JWT token\u6709\u6548\u65f6\u95f4  24*60*60*1000
+cfg.jwt.ttl=86400000
+
+#JWT\u914d\u7f6e\u53c2\u6570-\u8f6f\u4ef6
+##JWT\u5934\u4fe1\u606f\u914d\u7f6e-\u8f6f\u4ef6
+cfg.client.jwt.id=jwt
+cfg.client.jwt.secret=aGVyb2xpemhlbg==
+##JWT token\u6709\u6548\u65f6\u95f4 10*60*1000  10\u5206\u949f
+cfg.client.jwt.ttl=6000000
+
+#\u7cfb\u7edf\u914d\u7f6e
+##\u8bbe\u5907\u79bb\u7ebf\u9608\u503c  1*60*1000 1\u5206\u949f
+cfg.sys.device_ttl = 5000
+##\u8bbe\u5907\u521d\u59cb\u5316
+cfg.sys.device.owner_code=000
+cfg.sys.device.owner_type=1
+cfg.sys.device.owner_name=\u6613\u51c0\u4f18\u667a
+cfg.sys.device.latitude=40.052639
+cfg.sys.device.longitude=116.293981
+#OTA\u6587\u4ef6\u5b58\u50a8\u8def\u5f84
+cfg.sys.otafile.filePath=:\otaFile\temp

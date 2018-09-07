@@ -1,0 +1,112 @@
+C51 COMPILER V9.52.0.0   MAIN                                                              12/28/2017 10:57:50 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\Main.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE ..\User\Main.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\User;..\User\led;..\Us
+                    -er\touch;..\User\timer;..\User\inc) DEBUG OBJECTEXTEND PRINT(.\Listings\Main.lst) TABS(2) OBJECT(.\Objects\Main.obj)
+
+line level    source
+
+   1          #include "OB39A08T1.h"
+   2          #include "led.h"
+   3          #include "global.h"
+   4          #include "INTRINS.H"
+   5          #include "timer.h"
+   6          #include "touch.h"
+   7          
+   8          
+   9          
+  10          extern KEY_INFO_Typedef key_info;
+  11          
+  12          extern LED_BLINK_Typedef led_blink_info;
+  13          
+  14          
+  15          //========================================================================================================
+  16          //  Command Read Format:
+  17          //  Start    -> Slave(W) -> Ack -> Command -> Ack ->
+  18          //  Re-Start -> Slave(R) -> Ack -> STATUS2 -> Ack -> STATUS1 -> Ack -> STATUS0 -> NAck -> Stop
+  19          //
+  20          //  Touch Slave(W) Address = 0x60
+  21          //  Touch Slave(R) Address = 0x61
+  22          //  Read Key Status Command Number = 0x17
+  23          //
+  24          //  [Master Example]  
+  25          //  Start    ->  0x60(W) -> Ack ->  0x17   -> Ack ->
+  26          //  Re-Start ->  0x61(R) -> Ack -> STATUS2 -> Ack -> STATUS1 -> Ack -> STATUS0 -> NAck -> Stop
+  27          //========================================================================================================
+  28          
+  29          void IIC_ISR(void) interrupt 13 using 2
+  30          {
+  31   1          ((void(code*)(void))0x2600)();      //IIC ISR Function
+  32   1      }
+  33          
+  34          void WDT_ISR(void) interrupt 17 using 3
+  35          {
+  36   1          ((void(code*)(void))0x2500)();      //WDT ISR Function
+  37   1      }
+  38          
+  39          void TOUCH_ISR(void) interrupt 19 using 1
+  40          {
+  41   1          ((void(code*)(void))0x3000)();      //Touch ISR Function
+  42   1      }
+  43          
+  44          void INT0_ISR(void) interrupt 0
+  45          {
+  46   1          ((void(code*)(void))0x2580)();      //INT0 ISR Function
+  47   1      }
+  48          
+  49          extern unsigned char which_key_blink_off;
+  50          void Global_Data_Init(void)
+  51          {
+  52   1          led_blink_info.ledstate = LED_NONE;
+  53   1          led_blink_info.IsLedBlink = 0;
+  54   1          which_key_blink_off = KEY_NONE;
+C51 COMPILER V9.52.0.0   MAIN                                                              12/28/2017 10:57:50 PAGE 2   
+
+  55   1      }
+  56          
+  57          void main(void)
+  58          {
+  59   1          //unsigned char touch_status_0,touch_status_1,touch_status_2 = 0; 
+  60   1          unsigned char pinstatus = 0;  
+  61   1        
+  62   1          ((void(code*)(unsigned char))0x24D0)(0x00);      //Select IIC interface for P3.2&P3.3
+  63   1          ((void(code*)(void))0x2340)();                   //Touch initial
+  64   1          LVC&=0x7C;
+  65   1        
+  66   1          Global_Data_Init();
+  67   1         
+  68   1          Led_Pin_Config();
+  69   1          //Led_Control(LED_ALL,LED_ON);
+  70   1          
+  71   1          Start_Timer0();
+  72   1          
+  73   1          while(1)
+  74   1          {
+  75   2              ((void(code*)(void))0x21F0)();  //Touch Normal Run
+  76   2                
+  77   2                if(_test_timeflag(g_2ms_flag))
+  78   2                {
+  79   3                    g_2ms_flag = 0;
+  80   3                    Scan_TouchPad();  
+  81   3                    LedBlink();            
+  82   3                }
+  83   2               
+  84   2              
+  85   2          }
+  86   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    196    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

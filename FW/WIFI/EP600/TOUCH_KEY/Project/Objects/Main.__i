@@ -1,0 +1,1 @@
+"..\User\Main.c" OPTIMIZE (8,SPEED) BROWSE INCDIR(..\User;..\User\led;..\User\touch;..\User\timer;..\User\inc) DEBUG OBJECTEXTEND PRINT(.\Listings\Main.lst) TABS (2) OBJECT(.\Objects\Main.obj)

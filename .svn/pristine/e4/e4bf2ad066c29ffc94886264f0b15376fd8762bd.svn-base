@@ -1,0 +1,43 @@
+package com.yjyz.iot.security.entity;
+
+public class PowAppInfo {
+	private String appId;
+
+	private String appName;
+
+	private String masterId;
+
+	private String masterName;
+
+	public String getAppId() {
+		return appId;
+	}
+
+	public void setAppId(String appId) {
+		this.appId = appId == null ? null : appId.trim();
+	}
+
+	public String getAppName() {
+		return appName;
+	}
+
+	public void setAppName(String appName) {
+		this.appName = appName == null ? null : appName.trim();
+	}
+
+	public String getMasterId() {
+		return masterId;
+	}
+
+	public void setMasterId(String masterId) {
+		this.masterId = masterId == null ? null : masterId.trim();
+	}
+
+	public String getMasterName() {
+		return masterName;
+	}
+
+	public void setMasterName(String masterName) {
+		this.masterName = masterName == null ? null : masterName.trim();
+	}
+}

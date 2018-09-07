@@ -1,0 +1,277 @@
+package com.yjyz.iot.notice.service.impl;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import com.yjyz.iot.device.dao.DeviceInfoMapper;
+import com.yjyz.iot.device.entity.DeviceInfo;
+import com.yjyz.iot.product.dao.ProdInfoMapper;
+import com.yjyz.iot.product.entity.ProdInfo;
+import com.yjyz.iot.push.ISendPush;
+import com.yjyz.iot.push.PushResult;
+import com.yjyz.iot.security.dao.PowAppInfoMapper;
+import com.yjyz.iot.security.dao.PowUserDevMapper;
+import com.yjyz.iot.security.entity.PowAppInfo;
+import com.yjyz.iot.security.entity.PowClientUserQuery;
+import com.yjyz.iot.notice.dao.NoticeConfigMapper;
+import com.yjyz.iot.notice.dao.NoticeRuleMapper;
+import com.yjyz.iot.notice.entity.NoticeConfig;
+import com.yjyz.iot.notice.entity.NoticeRule;
+import com.yjyz.iot.notice.service.INoticeService;
+import com.yjyz.iot.sms.ISendSMS;
+import com.yjyz.iot.sms.SMSResult;
+
+/**
+ * 推送通知服务
+ * 
+ * @class :PushServiceImpl
+ * @TODO :
+ * @author:HeroLizhen
+ * @date :2018年5月12日下午4:05:45
+ */
+@Service("noticeService")
+public class NoticeServiceImpl implements INoticeService {
+	@Autowired
+	private NoticeConfigMapper noticeConfigDao;
+	@Autowired
+	private NoticeRuleMapper noticeRuleDao;
+
+	@Autowired
+	private DeviceInfoMapper deviceInfoDao;
+
+	@Autowired
+	private PowAppInfoMapper powInfoDao;
+
+	@Autowired
+	private ProdInfoMapper prodInfoDao;
+
+	@Autowired
+	private PowUserDevMapper powUserDevDao;
+	@Autowired
+	private ISendSMS sendSMS;
+	@Autowired
+	private ISendPush sendPush;
+
+	@Value("${sms.ytx.appid}")
+	private String SMS_YTX_APPID;
+	@Value("${sms.ytx.verCodeTemplateCode}")
+	private String SMS_YTX_VERCODETEMPLATECODE;
+	@Value("${sms.ytx.alermTemplateCode}")
+	private String SMS_YTX_ALERMTEMPLATECODE;
+	@Value("${sms.ytx.verCodeTemplate}")
+	private String SMS_YTX_VERCODETEMPLATE;
+	@Value("${sms.ytx.alermTemplate}")
+	private String SMS_YTX_ALERMTEMPLATE;
+	@Value("${push.apicloud.alermTemplate}")
+	private String PUSH_APICLOUD_ALERMTEMPLATE;
+
+	@Override
+	public boolean delNoticeConfig(String appId) throws Exception {
+		int ret = this.noticeConfigDao.deleteByPrimaryKey(appId);
+		if (ret == 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean insNoticeConfig(NoticeConfig record) throws Exception {
+		int ret = this.noticeConfigDao.insertSelective(record);
+		if (ret == 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public NoticeConfig selNoticeConfig(String appId) throws Exception {
+		NoticeConfig noticeConfig = this.noticeConfigDao.selectByPrimaryKey(appId);
+		if (noticeConfig == null) {
+			noticeConfig = new NoticeConfig();
+			noticeConfig.setYtxAppid(SMS_YTX_APPID);
+			noticeConfig.setVerTemplate(SMS_YTX_VERCODETEMPLATE);
+			noticeConfig.setVerTemplateId(SMS_YTX_VERCODETEMPLATECODE);
+			noticeConfig.setMesTemplate(SMS_YTX_ALERMTEMPLATE);
+			noticeConfig.setMesTemplateId(SMS_YTX_ALERMTEMPLATECODE);
+			noticeConfig.setApiTemplate(PUSH_APICLOUD_ALERMTEMPLATE);
+
+		}
+		return noticeConfig;
+	}
+
+	@Override
+	public boolean updNoticeConfig(NoticeConfig record) throws Exception {
+		int ret = this.noticeConfigDao.updateByPrimaryKeySelective(record);
+		if (ret == 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean delNoticeRule(String productId) throws Exception {
+		int ret = this.noticeRuleDao.deleteByPrimaryKey(productId);
+		if (ret == 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean insNoticeRule(NoticeRule record) throws Exception {
+		int ret = this.noticeRuleDao.insertSelective(record);
+		if (ret == 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public NoticeRule selNoticeRule(String productId) throws Exception {
+		return this.noticeRuleDao.selectByPrimaryKey(productId);
+	}
+
+	@Override
+	public boolean updNoticeRule(NoticeRule record) throws Exception {
+		int ret = this.noticeRuleDao.updateByPrimaryKeySelective(record);
+		if (ret == 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	public boolean noticeMessage(String deviceId, int pushType) throws Exception {
+		DeviceInfo deviceInfo = this.deviceInfoDao.selectByPrimaryKey(deviceId);
+		if (deviceInfo == null) {
+			return false;
+		}
+
+		ProdInfo prodInfo = this.prodInfoDao.selectByPrimaryKey(deviceInfo.getProductId());
+		if (prodInfo == null) {
+			return false;
+		}
+		PowAppInfo powAppInfo = this.powInfoDao.selectByPrimaryKey(prodInfo.getAppId());
+		if (powAppInfo == null) {
+			return false;
+		}
+
+		NoticeConfig pushConfig = this.noticeConfigDao.selectByPrimaryKey(prodInfo.getAppId());
+		if (pushConfig == null) {
+			return false;
+		}
+		NoticeRule pushRule = this.noticeRuleDao.selectByPrimaryKey(deviceInfo.getProductId());
+		if (pushRule == null) {
+			return false;
+		}
+
+		List<PowClientUserQuery> userList = this.powUserDevDao.selectDevUser(deviceId);
+
+		if (userList.size() == 0) {
+			return false;
+		}
+
+		String tels = "";
+		for (int i = 0; i < userList.size(); i++) {
+			tels += ((PowClientUserQuery) userList.get(i)).getTel();
+			if (i != userList.size() - 1) {
+				tels += ",";
+			}
+		}
+
+		if (pushRule.getTimeOpen()) {
+			try {
+				DateFormat df = new SimpleDateFormat("HH:mm");
+				Date dateStart = df.parse(pushRule.getTimeOpenStart());
+				Date dateStop = df.parse(pushRule.getTimeOpenStop());
+				Date date = new Date();
+				Date dateNow = df.parse(date.getHours() + ":" + date.getMinutes());
+				if (!(dateStop.getTime() > dateNow.getTime() && dateNow.getTime() > dateStart.getTime())) {
+					return false;
+				}
+			} catch (ParseException e) {
+				return false;
+			}
+		}
+		if (pushType == 2 || pushType == 3) {
+			if (pushRule.getSmsOpen()) {
+				this.sendSMS.sendAlerm(pushConfig.getYtxAppid(), pushConfig.getMesTemplateId(), tels,
+						deviceInfo.getDeviceName(), "message");
+			}
+		}
+		if (pushType == 1 || pushType == 3) {
+			if (pushRule.getNoticeOpen()) {
+				this.sendPush.DevMessage(powAppInfo.getAppName(), pushConfig.getApiAppid(), pushConfig.getApiAppkey(),
+						tels, deviceInfo.getDeviceName());
+			}
+		}
+		return true;
+	}
+
+	public boolean noticeTest(String appId, String tel, int type) throws Exception {
+		NoticeConfig pushConfig = this.noticeConfigDao.selectByPrimaryKey(appId);
+		SMSResult rst;
+		// 验证码
+		if (type == 1) {
+			if (pushConfig == null) {
+				rst = this.sendSMS.sendVerCode(tel, "0000");
+				if (rst.getCode().equals("0")) {
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				rst = this.sendSMS.sendVerCode(pushConfig.getYtxAppid(), pushConfig.getVerTemplateId(), tel, "0000");
+				if (rst.getCode().equals("0")) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}
+		if (pushConfig == null) {
+			return false;
+		}
+		// 短信通知
+		if (type == 2) {
+			rst = this.sendSMS.sendAlerm(pushConfig.getYtxAppid(), pushConfig.getMesTemplateId(), tel, "内部测试",
+					"message");
+			if (rst.getCode().equals("0")) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		// 消息通知
+		PowAppInfo powAppInfo = this.powInfoDao.selectByPrimaryKey(appId);
+		if (powAppInfo == null) {
+			return false;
+		}
+		if (type == 3) {
+			PushResult pst = this.sendPush.DevMessage(powAppInfo.getAppName(), pushConfig.getApiAppid(),
+					pushConfig.getApiAppkey(), tel, "内部测试");
+			if (pst.getStatus() == 1) {
+				return true;
+
+			} else {
+				return false;
+			}
+
+		}
+		return true;
+	}
+}

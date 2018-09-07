@@ -1,0 +1,14 @@
+Output: NC Drill Files
+Type  : NC Drill
+From  : Project [EP600_K_V1.2.PrjPCB]
+   Generated File[EP600_K_V1-RoundHoles.TXT]
+   Generated File[EP600_K_V1-SlotHoles.TXT]
+   Generated File[EP600_K_V1.2.3.DRL]
+   Generated File[EP600_K_V1.2.3.LDP]
+   Generated File[EP600_K_V1.2.3.DRR]
+
+
+Files Generated   : 5
+Documents Printed : 0
+
+Finished Output Generation At 11:47:53 On 2017/12/12

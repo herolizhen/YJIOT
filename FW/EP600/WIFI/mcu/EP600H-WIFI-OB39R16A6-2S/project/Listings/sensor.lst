@@ -1,0 +1,288 @@
+C51 COMPILER V9.52.0.0   SENSOR                                                            01/22/2018 11:49:53 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE SENSOR
+OBJECT MODULE PLACED IN .\Objects\sensor.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\Sensor\sensor.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(..\project;.\
+                    -USER\BUZZER;.\USER\DC_MOTOR;.\USER\EXINT;.\USER\IIC;.\USER\inc;.\USER\ION;.\USER\PWM;.\USER\step_motor;.\USER\SYS_RUN;.\
+                    -USER\timer;.\USER\TM1620;.\USER\touch_key;.\USER\UART;.\USER\UV;.\USER\Sensor;.\USER\user_timer) DEBUG OBJECTEXTEND PRIN
+                    -T(.\Listings\sensor.lst) TABS(2) OBJECT(.\Objects\sensor.obj)
+
+line level    source
+
+   1          #include <stdio.h>
+   2          #include <string.h>
+   3          #include "sensor.h"
+   4          #include "global.h"
+   5          #include "debug_uart.h"
+   6          #include "sensor_uart.h"
+   7          
+   8          extern bit is_sensor_uart_get_data;
+   9          
+  10          
+  11          reset_sensor_t reset_sensor_s;
+  12          
+  13          
+  14          void sensor_contron_pin_init(void)
+  15          {
+  16   1          SENSOR_PIN_PxM0 |= (1 << SENSOR_PIN_PORTBIT);
+  17   1          SENSOR_PIN_PxM1 &= ~(1 << SENSOR_PIN_PORTBIT);
+  18   1        
+  19   1          SENSOR_CONTROL_PIN = 1;
+  20   1      }
+  21          
+  22          
+  23          void sensor_init(void)
+  24          {
+  25   1          init_UART1();
+  26   1          sensor_contron_pin_init();
+  27   1          is_set_senor_mode_success = 0;
+  28   1          reset_sensor_s.step = 0;
+  29   1          reset_sensor_s.is_reset_sensor = 0;
+  30   1          
+  31   1      }
+  32          
+  33          
+  34          void set_sensor_run(void)
+  35          {
+  36   1          SENSOR_CONTROL_PIN = 1;
+  37   1      }
+  38          
+  39           
+  40          void set_sensor_sleep(void)
+  41          {
+  42   1          SENSOR_CONTROL_PIN = 0;
+  43   1          is_set_senor_mode_success = 0;
+  44   1      }
+  45          
+  46          void reset_sensor(void)
+  47          {
+  48   1          reset_sensor_s.is_reset_sensor = 1;
+  49   1          is_set_senor_mode_success = 0;
+  50   1          reset_sensor_s.step = 0;
+  51   1      }
+  52          
+C51 COMPILER V9.52.0.0   SENSOR                                                            01/22/2018 11:49:53 PAGE 2   
+
+  53          
+  54          //此函数1秒执行1次即可
+  55          void reset_sensor_loop(void)
+  56          {
+  57   1          if(reset_sensor_s.step == 0)
+  58   1          {
+  59   2              set_sensor_sleep();
+  60   2              reset_sensor_s.step += 1;
+  61   2              
+  62   2          }
+  63   1          else if(reset_sensor_s.step == 1)
+  64   1          {
+  65   2              set_sensor_run();
+  66   2              reset_sensor_s.step += 1;
+  67   2          }
+  68   1          else if(reset_sensor_s.step >= 2)
+  69   1          {
+  70   2              if(is_set_senor_mode_success == 0)
+  71   2              {
+  72   3                  set_sensor_to_unactive_mode();
+  73   3              }
+  74   2              else
+  75   2              {
+  76   3                  reset_sensor_s.step = 0;
+  77   3                  reset_sensor_s.is_reset_sensor = 0;
+  78   3              }        
+  79   2          }
+  80   1      }
+  81          
+  82          
+  83          //每次上电后PMS5003S默认是主动上传数据，发送控制命令可以设置为被动模式，设置成通过发送命令的方式读取传感器
+             -数据
+  84          void set_sensor_to_unactive_mode(void)
+  85          {
+  86   1          unsigned char cmd[7] = {0x42,0x4D,0xE1,0x00,0x00,0x01,0x70};
+  87   1          Sensor_Uart_Sendbytes(cmd,sizeof(cmd));
+  88   1      }
+  89          
+  90          
+  91          void get_sensor_data_cmd(void)
+  92          {
+  93   1          unsigned char cmd[7] = {0x42,0x4D,0xE2,0x00,0x00,0x01,0x71};
+  94   1          
+  95   1          if(is_set_senor_mode_success == 0)
+  96   1          {
+  97   2              return;
+  98   2          }
+  99   1          Sensor_Uart_Sendbytes(cmd,sizeof(cmd));
+ 100   1      }
+ 101          
+ 102          
+ 103          unsigned char check_sum(const unsigned char *sensor_buff,unsigned char buff_length)
+ 104          {
+ 105   1          unsigned char res = 0;
+ 106   1          unsigned int buff_check_sum = 0;
+ 107   1          unsigned int temp_check_sum = 0;
+ 108   1        
+ 109   1          unsigned char i = 0;
+ 110   1        
+ 111   1          //unsigned char debug_buff[40] = {0};
+ 112   1        
+ 113   1          if(sensor_buff == NULL || buff_length < 4)
+C51 COMPILER V9.52.0.0   SENSOR                                                            01/22/2018 11:49:53 PAGE 3   
+
+ 114   1          {
+ 115   2              res = 2;
+ 116   2              goto exit;
+ 117   2          } 
+ 118   1        
+ 119   1          buff_check_sum = ((int)sensor_buff[buff_length - 2] << 8) | sensor_buff[buff_length - 1];
+ 120   1          
+ 121   1          for(i = 0;i < (buff_length - 2);i++)
+ 122   1          {
+ 123   2              temp_check_sum += sensor_buff[i];
+ 124   2          }
+ 125   1          
+ 126   1          
+ 127   1          if(buff_check_sum != temp_check_sum)
+ 128   1          {
+ 129   2              memset(debug_buff_40,0,sizeof(debug_buff_40));
+ 130   2              sprintf(debug_buff_40,"b_sum:0x%x,t_sum:0x%x\r\n",(unsigned int)buff_check_sum,(unsigned int)temp_
+             -check_sum);
+ 131   2              DEBUG_Uart_Sendbytes(debug_buff_40,strlen(debug_buff_40)); 
+ 132   2            
+ 133   2              res = 1;   
+ 134   2          }
+ 135   1          else
+ 136   1          {
+ 137   2              res = 0; 
+ 138   2          }
+ 139   1          
+ 140   1      exit:
+ 141   1          
+ 142   1          return res;
+ 143   1      }
+ 144          
+ 145          void calculate_sensor_data(const unsigned char *sensor_buff)
+ 146          {
+ 147   1          if(sensor_buff[0] != 0x42 || sensor_buff[1] != 0x4D)
+ 148   1          {
+ 149   2              goto error_exit;      
+ 150   2          }
+ 151   1          PM1_value = ((unsigned int)sensor_buff[10] << 8) | sensor_buff[11];
+ 152   1          PM25_value = ((unsigned int)sensor_buff[12] << 8) | sensor_buff[13];
+ 153   1          PM10_value = ((unsigned int)sensor_buff[14] << 8) | sensor_buff[15];
+ 154   1          HCHO_value = (float)(((unsigned int)sensor_buff[28] << 8) | sensor_buff[29]) / 1000;
+ 155   1          
+ 156   1          if(PM25_value < 2)
+ 157   1          {
+ 158   2              display_pm25_value = 2;
+ 159   2          }
+ 160   1          else
+ 161   1          {
+ 162   2              display_pm25_value = PM25_value;
+ 163   2          }
+ 164   1          display_HCHO_value = HCHO_value + 0.01;
+ 165   1             
+ 166   1          memset(debug_buff_40,0,sizeof(debug_buff_40));
+ 167   1          sprintf(debug_buff_40,"pm1:%d,pm25:%d,pm10:%d,HCHO:%f\r\n",(unsigned int)PM1_value,(unsigned int)PM25_
+             -value,(unsigned int)PM10_value,HCHO_value);
+ 168   1          DEBUG_Uart_Sendbytes(debug_buff_40,strlen(debug_buff_40)); 
+ 169   1          
+ 170   1         
+ 171   1          return;
+ 172   1          
+ 173   1          
+C51 COMPILER V9.52.0.0   SENSOR                                                            01/22/2018 11:49:53 PAGE 4   
+
+ 174   1      error_exit:
+ 175   1          
+ 176   1          memset(debug_buff_40,0,sizeof(debug_buff_40));
+ 177   1          sprintf(debug_buff_40,"sensor buff err\r\n");
+ 178   1          DEBUG_Uart_Sendbytes(debug_buff_40,strlen(debug_buff_40)); 
+ 179   1          
+ 180   1          PM25_value = 0;
+ 181   1          HCHO_value = 0;
+ 182   1      
+ 183   1      
+ 184   1      }
+ 185          
+ 186          void deal_framebuff(const unsigned char *buff,unsigned char length)
+ 187          {
+ 188   1          if(check_sum(buff,length) == 0)
+ 189   1          {
+ 190   2              if(buff[4] == 0xE1)
+ 191   2              {
+ 192   3                  is_set_senor_mode_success = 1;
+ 193   3                                
+ 194   3                  memset(debug_buff_40,0,sizeof(debug_buff_40));
+ 195   3                  sprintf(debug_buff_40,"set sensor mode success\r\n");
+ 196   3                  DEBUG_Uart_Sendbytes(debug_buff_40,strlen(debug_buff_40)); 
+ 197   3              }
+ 198   2              else
+ 199   2              {
+ 200   3                  if(buff[3] == (SENSOR_DATA_LENGTH - 4))
+ 201   3                  {
+ 202   4                      calculate_sensor_data(buff);
+ 203   4                  }
+ 204   3              }
+ 205   2          }
+ 206   1          else 
+ 207   1          {
+ 208   2              memset(debug_buff_40,0,sizeof(debug_buff_40));
+ 209   2              sprintf(debug_buff_40,"check sum err\r\n");
+ 210   2              DEBUG_Uart_Sendbytes(debug_buff_40,strlen(debug_buff_40)); 
+ 211   2          }
+ 212   1      }
+ 213          
+ 214          
+ 215          static unsigned char sensor_data[SENSOR_DATA_MAX_LENGTH] = {0};
+ 216          void get_sensor_data(void)
+ 217          {
+ 218   1          unsigned char i = 0;
+ 219   1          unsigned int length = 0;
+ 220   1        
+ 221   1          if(is_sensor_uart_get_data == 1)
+ 222   1          {
+ 223   2      //        mymemset(debug_buff_40,0,sizeof(debug_buff_40));
+ 224   2      //        sprintf(debug_buff_40,"get sensor data\r\n");
+ 225   2      //        DEBUG_Uart_Sendbytes(debug_buff_40,mystrlen(debug_buff_40)); 
+ 226   2            
+ 227   2              if(U1RxPtr > sizeof(sensor_data))
+ 228   2              {
+ 229   3                  memset(debug_buff_40,0,sizeof(debug_buff_40));
+ 230   3                  sprintf(debug_buff_40,"out of buff range\r\n");
+ 231   3                  DEBUG_Uart_Sendbytes(debug_buff_40,strlen(debug_buff_40)); 
+ 232   3                  return;
+ 233   3              }
+ 234   2              for(i = 0;i < U1RxPtr;i++)
+ 235   2              {
+C51 COMPILER V9.52.0.0   SENSOR                                                            01/22/2018 11:49:53 PAGE 5   
+
+ 236   3                  sensor_data[i] = U1RxBuffer[i];
+ 237   3              }
+ 238   2              length = U1RxPtr;
+ 239   2              
+ 240   2              clear_sensor_uart_buff();
+ 241   2              
+ 242   2              is_sensor_uart_get_data = 0;
+ 243   2              
+ 244   2              deal_framebuff(sensor_data,length);
+ 245   2              
+ 246   2              
+ 247   2              
+ 248   2          }
+ 249   1      }
+ 250          
+ 251          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1165    ----
+   CONSTANT SIZE    =    151    ----
+   XDATA SIZE       =     34      29
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

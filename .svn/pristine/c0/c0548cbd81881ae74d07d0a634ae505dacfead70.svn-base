@@ -1,0 +1,1076 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>设备信息</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate" />
+<link href="../../compontents/bootstarp/css/bootstrap-UI.css.css"
+	rel="stylesheet">
+<link href="../../compontents/iot/css/table.css" rel="stylesheet" />
+<script
+	src="https://cdn.staticfile.org/flat-ui/2.3.0/js/vendor/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/flat-ui/2.3.0/js/flat-ui.min.js"></script>
+<script src="../../compontents/bootstarp/js/bootstrap-table.js"></script>
+<script
+	src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript"
+	src="https://api.map.baidu.com/api?v=3.0&ak=Z0TDGSIYG7CylToornHBOYhWVQmWRTx0"></script>
+<script type="text/javascript"
+	src="https://api.map.baidu.com/library/TextIconOverlay/1.2/src/TextIconOverlay_min.js"></script>
+<script type="text/javascript"
+	src="../../compontents/baidumap/js/MarkerClusterer.js"></script>
+<script src="../../compontents/echart/echarts.js"></script>
+<script src="../../compontents/iot/js/api.js"></script>
+<script src="../../compontents/baidumap/js/gis.js"></script>
+<style>
+#baiduMap {
+	width: 100%;
+	height: 100px;
+	overflow: hidden;
+}
+
+#baiduMap label {
+	max-width: none;
+}
+
+.table th {
+	border: 1px solid #bcbdc0;
+	background: #ffffff;
+	padding: 3px;
+	font-size: 14px;
+	vertical-align: middle;
+	text-align: center;
+}
+
+.table td {
+	border: 1px solid #bcbdc0;
+	background: #ffffff;
+	padding: 3px;
+	font-size: 14px;
+	font-family: 新宋体;
+	text-align: center;
+}
+</style>
+<style>
+#alert-dialog-modal-body, #openone-dialog-modal-body {
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+#alert-dialog-modal-body::-webkit-scrollbar-track {
+	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+	background-color: #F5F5F5;
+	border-radius: 10px;
+}
+
+#alert-dialog-modal-body::-webkit-scrollbar {
+	width: 10px;
+	background-color: #F5F5F5;
+}
+
+#alert-dialog-modal-body::-webkit-scrollbar-thumb {
+	background-color: #E0E0E0;
+	border-radius: 5px;
+}
+
+#openone-dialog-modal-body::-webkit-scrollbar-track {
+	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+	background-color: #F5F5F5;
+	border-radius: 10px;
+}
+
+#openone-dialog-modal-body::-webkit-scrollbar {
+	width: 10px;
+	background-color: #F5F5F5;
+}
+
+#openone-dialog-modal-body::-webkit-scrollbar-thumb {
+	background-color: #E0E0E0;
+	border-radius: 5px;
+}
+</style>
+</head>
+<body>
+	<div id="baiduMap"></div>
+	<div id="device-openArry" tabindex="-1" role="dialog"
+		aria-labelledby="device-openArry-title"
+		class="modal fade bs-example-modal-lg">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<span class="modal-title" id="device-openArry-title"></span>
+				</div>
+				<div id="alert-dialog-modal-body" class="modal-body">
+					<table class="table" id="device-openArry-table"></table>
+				</div>
+				<div class="modal-footer"></div>
+			</div>
+		</div>
+	</div>
+	<div id="device-openone" tabindex="-1" role="dialog"
+		aria-labelledby="device-openone-title"
+		class="modal fade bs-example-modal-lg">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<ul id="device-openone-title" class="nav nav-tabs modal-title"
+						role="tablist">
+						<li><a href="#device-open-a" role="tab">设备台账信息</a></li>
+						<li><a href="#device-open-b" role="tab">设备贡献月统计</a></li>
+						<li><a href="#device-open-c" role="tab">设备贡献周统计</a></li>
+						<li><a href="#device-open-d" role="tab">设备监测分析</a></li>
+					</ul>
+				</div>
+				<div id="openone-dialog-modal-body" class="modal-body">
+					<div id="device-open-content" class="tab-content">
+						<div class="tab-pane fade in active " id="device-open-a">
+							<table class="table">
+								<tr>
+									<td>设备ID</td>
+									<td><span id="device_ID"></span></td>
+								</tr>
+								<tr>
+									<td>设备MAC</td>
+									<td><span id="device_mac"></span></td>
+								</tr>
+								<tr>
+									<td>固件版本</td>
+									<td><span id="device_firmware"></span></td>
+								</tr>
+								<tr>
+									<td>无线模块</td>
+									<td><span id="device_module_name"></span></td>
+								</tr>
+								<tr>
+									<td>激活时间</td>
+									<td><span id="device_install_date"></span></td>
+								</tr>
+								<tr>
+									<td>运行时长</td>
+									<td><span id="device_status_time"></span></td>
+								</tr>
+								<tr>
+									<td>最新同步</td>
+									<td><span id="device_online_time"></span></td>
+								</tr>
+								<tr>
+									<td>是否在线</td>
+									<td><span id="device_online"></span></td>
+								</tr>
+								<tr>
+									<td>设备别名</td>
+									<td><span id="device_name"></span></td>
+								</tr>
+								<tr>
+									<td>所属商户</td>
+									<td><span id="device_merchant"></span></td>
+								</tr>
+								<tr>
+									<td>设备位置</td>
+									<td><span id="device_position"></span></td>
+								</tr>
+								<tr>
+									<td>联网IP</td>
+									<td><span id="device_ip"></span></td>
+								</tr>
+								<tr>
+									<td>消费金额（￥）</td>
+									<td style="color: red"><span id="device_charge_count"></span></td>
+								</tr>
+							</table>
+						</div>
+						<div class="tab-pane fade in active " id="device-open-b">
+							<div class="panel panel-default">
+								<div class="panel-heading">设备贡献月统计</div>
+								<div class="panel-body">
+									<div id="deviceOfferMonth" style="width: 500px; height:200px;"></div>
+								</div>
+								<div class="panel-footer"></div>
+							</div>
+							<table id="tableData_deviceOfferMonth">
+								<tfoot>
+									<tr>
+										<td></td>
+										<td></td>
+										<td>总计:<span style="color: red"
+											id='deviceOfferMonth_funds'></span>
+										</td>
+										<td>总计:<span style="color: red"
+											id='deviceOfferMonth_counts'></span>
+										</td>
+									<tr>
+								</tfoot>
+							</table>
+						</div>
+						<div class="tab-pane fade in active " id="device-open-c">
+							<div class="panel panel-default">
+								<div class="panel-heading">设备贡献周统计</div>
+								<div class="panel-body">
+									<div id="deviceOfferWeek" style="width: 500px; height:200px;"></div>
+								</div>
+								<div class="panel-footer"></div>
+							</div>
+							<table id="tableData_deviceOfferWeek">
+								<tfoot>
+									<tr>
+										<td></td>
+										<td></td>
+										<td>总计:<span style="color: red"
+											id='deviceOfferWeek_funds'></span>
+										</td>
+										<td>总计:<span style="color: red"
+											id='deviceOfferWeek_counts'></span>
+										</td>
+									<tr>
+								</tfoot>
+							</table>
+						</div>
+						<div class="tab-pane fade in active " id="device-open-d">
+							<div class='tabbable tabs-left'>
+
+								<ul class='nav nav-tabs'>
+									<li class='active'><a href='#tab1' data-toggle='tab'>天</a></li>
+									<li><a href='#tab2' data-toggle='tab'>周</a></li>
+									<li><a href='#tab3' data-toggle='tab'>月</a></li>
+									<li><a href='#tab4' data-toggle='tab'>年</a></li>
+								</ul>
+							</div>
+							<div class='tab-content'>
+								<div class='tab-pane active' id='tab1'
+									style="margin-left: 50px;">
+									<div class="panel panel-default">
+										<div class="panel-heading">PM2.5统计表（天）</div>
+										<div class="panel-body">
+											<div id="getLastDayHourStats"
+												style="width:450px;height:150px;"></div>
+										</div>
+										<div id="getLastDayHourStatsTime" class="panel-footer"></div>
+									</div>
+								</div>
+								<div class='tab-pane' id='tab2' style="margin-left: 50px;">
+									<div class="panel panel-default">
+										<div class="panel-heading">PM2.5统计表（周）</div>
+										<div class="panel-body">
+											<div id="getLastWeekDayStats"
+												style="width:450px;height:150px;"></div>
+										</div>
+										<div id="getLastWeekDayStatsTime" class="panel-footer"></div>
+									</div>
+								</div>
+								<div class='tab-pane' id='tab3' style="margin-left: 50px;">
+									<div class="panel panel-default">
+										<div class="panel-heading">PM2.5统计表（月）</div>
+										<div class="panel-body">
+											<div id="getLastMonthDayStats"
+												style="width:450px;height:150px;"></div>
+										</div>
+										<div id="getLastMonthDayStatsTime" class="panel-footer"></div>
+									</div>
+								</div>
+								<div class='tab-pane' id='tab4' style="margin-left: 50px;">
+									<div class="panel panel-default">
+										<div class="panel-heading">PM2.5统计表（年）</div>
+										<div class="panel-body">
+											<div id="getLastYearMonthStats"
+												style="width:450px;height:150px;"></div>
+										</div>
+										<div id="getLastYearMonthStatsTime" class="panel-footer"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+<script type="text/javascript">
+	$(function() {
+		$api.Initialize();
+		var h = $api.getFuncHeight();
+		$('#baiduMap').css('height', h + 'px');
+		$gis.Initialize('baiduMap', function() {
+			var ps = $gis.getShow();
+			$dev.selectByGisRect(ps, function(ret) {
+				var ds = createDevices(ret.data);
+				if (ds.length > 0) {
+					$gis.clearMap();
+				}
+				$gis.createDevices(ds, onDevice);
+			}, function() {});
+		});
+		$("#device-openone-title a").click(function(e) {
+			e.preventDefault();
+			$(this).tab("show");
+		});
+		var h = $(document).height() - 150;
+		h = h < 300 ? 300 : h;
+		$('#alert-dialog-modal-body').css('height', h + 'px');
+		$('#openone-dialog-modal-body').css('height', h + 'px');
+	});
+	function fromUnixtime(unixtime) {
+		var time = unixtime;
+		var timestamp = time / 1000;
+		//直接用 new Date(时间戳) 格式转化获得当前时间
+		var timestamp = new Date(parseInt(timestamp) * 1000);
+		//再利用拼接正则等手段转化为yyyy-MM-dd hh:mm:ss 格式
+		beijing_datetime = timestamp.toLocaleDateString().replace(/\//g, "-") + " " + timestamp.toTimeString().substr(0, 8);
+		return beijing_datetime;
+	}
+</script>
+<script type="text/javascript">
+	function createDevices(data) {
+		var ds = [];
+		$.each(data, function(i, d) {
+			if (d.ownerName.indexOf('易净优智') > -1) {
+				//
+			} else {
+				ds.push(d);
+			}
+		});
+		return ds;
+	}
+	function onDevice(e) {
+		var data = e.target.$data;
+		if ($api.isNull(data.arry)) {
+			openOne(data);
+		} else {
+			if (data.arry.length == 1) {
+				openOne(data.arry[0]);
+			} else {
+				openArry(data);
+			}
+		}
+	}
+	function openOne(d) {
+		var deviceId = '';
+		var data = {};
+		if (typeof d == 'string') {
+			deviceId = d;
+		} else {
+			deviceId = d.deviceId;
+		}
+		data.deviceId = deviceId;
+		$('#device-openone').modal('show');
+		$('#device-openone-title a:first').tab('show');
+
+		deviceAccountQuery(data);
+		deviceOfferMonthQuery(data);
+		deviceOfferWeekQuery(data);
+		createPmStata(data);
+	}
+	function openArry(data) {
+		$('#device-openArry').modal('show');
+		$('#device-openArry-title').text(data.ownerName);
+		var tabcols = [];
+		tabcols.push({
+			title : '序号',
+			formatter : function(value, row, index) {
+				return index + 1;
+			}
+		});
+		tabcols.push({
+			field : 'deviceMac',
+			title : '设备MAC',
+			align : 'center',
+			sortable : true
+		});
+		tabcols.push({
+			field : 'position',
+			title : '部署位置',
+			align : 'center',
+			sortable : true
+		});
+		tabcols.push({
+			field : 'isOnline',
+			title : '运行状态',
+			align : 'center',
+			sortable : true,
+			formatter : function(value, row, index) {
+				return value == true ? '在线' : '离线';
+			}
+				
+		});
+		tabcols.push({
+			title : '操作',
+			align : 'center',
+			formatter : function(value, row, index) {
+				var c = '<button type="button" class="btn btn-success btn-xs" onclick="openOne(\'' + row.deviceId + '\')">设备详情</button>';
+				return c;
+			}
+		});
+		$('#device-openArry-table').bootstrapTable('destroy');
+		$('#device-openArry-table').bootstrapTable({
+			data : data.arry,
+			columns : tabcols,
+			formatLoadingMessage : function() {
+				return '';
+			}
+		});
+	}
+	function deviceAccountQuery(data) {
+		$("#device_ID").text('');
+		$("#device_mac").text('');
+		$("#device_firmware").text('');
+		$("#device_module_name").text('');
+		$("#device_install_date").text('');
+		$("#device_status_time").text('');
+		$("#device_online_time").text('');
+		$("#device_online").text('');
+		$("#device_name").text('');
+		$("#device_merchant").text('');
+		$("#device_position").text('');
+		$("#device_ip").text('');
+		$("#device_charge_count").text('');
+		$query.deviceAccountQuery(data, function(ret) {
+			if ($api.isNull(ret.data) || ret.data.length <= 0) {
+				return;
+			}
+			var value = ret.data[0];
+			$("#device_ID").text(value['device_id']);
+			$("#device_mac").text(value['MAC']);
+			$("#device_firmware").text(value['固件版本']);
+			$("#device_module_name").text(value['无线模块']);
+			$("#device_install_date").text($api.fromUnixtime(value['激活时间']));
+			$("#device_status_time").text(function() {
+				var min = value['运行时间（分钟）'];
+				if (min > 0) {
+					var h = parseInt(min / 60);
+					var m = min - 60 * h;
+					var str = '';
+					if (String(h).length > 1) {
+						str = h + '小时';
+					}
+					if (String(m).length > 1) {
+						str += m + '分钟';
+					}
+					return str;
+				} else {
+					return '';
+				}
+			});
+			$("#device_online_time").text($api.fromUnixtime(value['最新同步']));
+			$("#device_online").text(value['是否在线']);
+			$("#device_name").text(value['设备名称']);
+			$("#device_merchant").text(value['商户名称']);
+			$("#device_position").text(value['安装位置']);
+			$("#device_ip").text(value['IP']);
+			$("#device_charge_count").text(value['消费金额（￥）']);
+
+		}, function() {});
+	}
+	function deviceOfferMonthQuery(data) {
+		$('#tableData_deviceOfferMonth').bootstrapTable('destroy');
+		$('#deviceOfferMonth_funds').text(0);
+		$('#deviceOfferMonth_counts').text(0);
+		echarts.init(document.getElementById('deviceOfferMonth')).clear();
+		/* 设备贡献月统计*/
+		var sumfund = 0;
+		var counts = 0;
+
+		$query.deviceOfferMonthQuery(data,
+			function(ret) {
+				if ($api.isNull(ret) || $api.isNull(ret.data) || ret.data.length <= 0) {
+					return;
+				}
+				var obj = ret.data;
+				for (i in obj) {
+					var merchantfund = $api.roundNumber(obj[i]['fund'], 2);
+					var count = $api.roundNumber(obj[i]['count'], 2);
+					sumfund = sumfund + merchantfund;
+					counts = counts + count;
+				}
+				sumfund = $api.roundNumber(sumfund, 2);
+				$('#deviceOfferMonth_funds').text(sumfund);
+				$('#deviceOfferMonth_counts').text(counts);
+				//$("#tableData_deviceOfferMonth").bootstrapTable('load', obj);
+				var labels = $stats.createNames_merchantOfferMonth(ret.data);
+				var keys = $stats.createKeys_merchantOfferMonth(ret.data);
+				var datasets = [];
+				$.each(keys, function(i, key) {
+					var datas = $stats.createCounts_merchantOfferMonth(key, labels, obj);
+					datasets.push({
+						name : key,
+						type : 'bar',
+						data : datas,
+						itemStyle : {
+							normal : {
+								color : $cfg.createColor(i)
+							}
+						}
+					});
+				});
+				var option = {
+					tooltip : {
+						trigger : 'axis',
+						axisPointer : { // 坐标轴指示器，坐标轴触发有效
+							type : 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+						}
+					},
+					legend : {
+						type : 'scroll',
+						left : 'center',
+						right : 5,
+						top : 280,
+						bottom : 5,
+						data : keys
+					},
+					grid : {
+						left : 5,
+						right : 5,
+						top : 5,
+						bottom : 25,
+						containLabel : true
+					},
+					yAxis : [
+						{
+							type : 'category',
+							type : 'value'
+						}
+
+					],
+					xAxis : [
+						{
+							data : labels,
+							axisLabel : {
+								interval : 0, //横轴信息全部显示
+								rotate : 40,
+								fontSize : '12'
+							}
+						}
+					],
+					series : datasets
+				};
+				var myChart = echarts.init(document.getElementById('deviceOfferMonth'));
+				myChart.setOption(option);
+				window.addEventListener('resize', function() {
+					myChart.resize();
+				})
+				//bootstrap-Table获取数据
+				$('#tableData_deviceOfferMonth').bootstrapTable({
+					data : obj, //最终的JSON数据放在这里
+					striped : true,
+					pagination : true,
+					pageNumber : 1,
+					pageSize : 100,
+					pageList : [ 5, 10, 20, 50, 100 ],
+					sidePagination : "client",
+					minimunCountColumns : 2,
+					columns : [
+						{
+							title : '编号',
+							formatter : function(value, row, index) {
+								return index + 1;
+							}
+						},
+						{
+							field : 'date',
+							title : '月份',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'fund',
+							title : '资金回流（元）',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'count',
+							title : '使用频次',
+							align : 'center',
+							sortable : true
+						},
+					],
+					formatNoMatches : function() {
+						return "没有相关的匹配结果";
+					},
+					formatLoadingMessage : function() {
+						return "";
+					},
+				});
+			},
+			function() {});
+	}
+	function deviceOfferWeekQuery(data) {
+		$('#tableData_deviceOfferWeek').bootstrapTable('destroy');
+		$('#deviceOfferWeek_funds').text(0);
+		$('#deviceOfferWeek_counts').text(0);
+		echarts.init(document.getElementById('deviceOfferWeek')).clear();
+		/* 设备贡献周统计*/
+		var sumfund = 0;
+		var counts = 0;
+		var sumfundWeek = 0;
+		var countsWeek = 0;
+
+		$query.deviceOfferWeekQuery(data,
+			function(ret) {
+				if ($api.isNull(ret) || $api.isNull(ret.data) || ret.data.length <= 0) {
+					return;
+				}
+				var obj = ret.data;
+				for (i in obj) {
+					var merchantfund = $api.roundNumber(obj[i]['fund'], 2);
+					var count = $api.roundNumber(obj[i]['count'], 2);
+					sumfund = sumfund + merchantfund;
+					counts = counts + count;
+				}
+				sumfund = $api.roundNumber(sumfund, 2);
+				$('#deviceOfferWeek_funds').text(sumfund);
+				$('#deviceOfferWeek_counts').text(counts);
+				//$("#tableData_deviceOfferWeek").bootstrapTable('load', obj);
+
+				var OfferWeeklabels = $stats.createNames_merchantOfferWeek(ret.data);
+				var OfferWeekkeys = $stats.createKeys_merchantOfferWeek(ret.data);
+				var datasets = [];
+				$.each(OfferWeekkeys, function(i, key) {
+					var datas = $stats.createCounts_merchantOfferWeek(key, OfferWeeklabels, obj);
+
+					datasets.push({
+						name : key,
+						type : 'bar',
+						data : datas,
+						itemStyle : {
+							normal : {
+								color : $cfg.createColor(i)
+							}
+						}
+					});
+				});
+				var option = {
+					tooltip : {
+						trigger : 'axis',
+						axisPointer : { // 坐标轴指示器，坐标轴触发有效
+							type : 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+						}
+					},
+					legend : {
+						type : 'scroll',
+						left : 'center',
+						right : 5,
+						top : 280,
+						bottom : 5,
+						data : OfferWeekkeys
+					},
+					grid : {
+						left : 5,
+						right : 5,
+						top : 5,
+						bottom : 25,
+						containLabel : true
+					},
+					yAxis : [
+						{
+							type : 'category',
+							type : 'value'
+						}
+
+					],
+					xAxis : [
+						{
+							data : OfferWeeklabels,
+							axisLabel : {
+								interval : 0, //横轴信息全部显示
+								rotate : 40,
+								fontSize : '12'
+							}
+						}
+					],
+					series : datasets
+				};
+				var myChart = echarts.init(document.getElementById('deviceOfferWeek'));
+				myChart.setOption(option);
+				window.addEventListener('resize', function() {
+					myChart.resize();
+				});
+				//bootstrap-Table获取数据
+				$('#tableData_deviceOfferWeek').bootstrapTable({
+					data : obj, //最终的JSON数据放在这里
+					striped : true,
+					pagination : true,
+					pageNumber : 1,
+					pageSize : 5,
+					pageList : [ 5, 10, 20, 50, 100 ],
+					sidePagination : "client",
+					minimunCountColumns : 2,
+					columns : [
+						{
+							title : '编号',
+							formatter : function(value, row, index) {
+								return index + 1;
+							}
+						},
+						{
+							field : 'weekno',
+							title : '时间',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'fund',
+							title : '资金回流（元）',
+							align : 'center',
+							sortable : true
+						},
+						{
+							field : 'count',
+							title : '使用频次',
+							align : 'center',
+							sortable : true
+						},
+					],
+					formatNoMatches : function() {
+						return "没有相关的匹配结果";
+					},
+					formatLoadingMessage : function() {
+						return "";
+					},
+				});
+			},
+			function() {});
+	}
+	function createPmStata(data) {
+		var pm = {};
+		pm.deviceId = data.deviceId;
+		pm.type = "avg";
+		getLastDayHourStats(pm);
+		getLastWeekDayStats(pm);
+		getLastMonthDayStats(pm);
+		getLastYearMonthStats(pm);
+
+		getLastDayHourStatsTime();
+		getLastWeekDayStatsTime();
+		getLastMonthDayStatsTime();
+		getLastYearMonthStatsTime();
+	}
+	function getLastDayHourStats(pm) {
+		echarts.init(document.getElementById('getLastDayHourStats')).clear();
+		$('#getLastDayHourStats').css('width', '1px');
+		$('#getLastDayHourStats').css('height', '1px');
+		$dev.getLastDayHourStats(pm, function(ret) {
+			if ($api.isNull(ret) || $api.isNull(ret.data) || ret.data.length <= 0) {
+				return;
+			}
+			if (ret.data.length > 0) {
+				$('#getLastDayHourStats').css('width', '530px');
+				$('#getLastDayHourStats').css('height', '150px');
+				getLastDayHourStatsTime();
+			} else {
+				return;
+			}
+			var ret = ret.data;
+			var PMS = [];
+			var dtimes = [];
+			for (i in ret) {
+				PMS.push(ret[i].p);
+				dtimes.push(ret[i].dtime);
+			}
+			var option = {
+				tooltip : {
+					trigger : 'axis',
+					axisPointer : { // 坐标轴指示器，坐标轴触发有效
+						type : 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+					},
+					formatter : function(params) {
+						var sum = 0;
+						var res = '<div>';
+						res += '<strong>' + params[0].name + '点PM2.5</strong>'
+						for (var i = 0, l = params.length; i < l; i++) {
+							sum = sum + params[i].value;
+							var spanColor = $cfg.createColor(i);
+							res += '<br/>' + '<span style="color:' + spanColor + ';font-size:20px;">●  </span>	' + params[i].value + '（ug/m³）'
+						}
+						return res;
+					}
+				},
+				legend : {
+					type : 'scroll',
+					left : 'center',
+					top : 270,
+					bottom : 5,
+					data : dtimes
+				},
+				grid : {
+					top : 5,
+					left : 5,
+					right : 5,
+					bottom : 5,
+					containLabel : true
+				},
+				xAxis : {
+					type : 'category',
+					data : dtimes
+				},
+				yAxis : {
+					type : 'value'
+				},
+				series : [ {
+					data : PMS,
+					type : 'line'
+				} ]
+			};
+			var myChart = echarts.init(document.getElementById('getLastDayHourStats'));
+			myChart.setOption(option);
+			window.addEventListener('resize', function() {
+				myChart.resize();
+			});
+		}, function() {});
+	}
+	function getLastWeekDayStats(pm) {
+		echarts.init(document.getElementById('getLastWeekDayStats')).clear();
+		$('#getLastWeekDayStats').css('width', '1px');
+		$('#getLastWeekDayStats').css('height', '1px');
+		$dev.getLastWeekDayStats(pm, function(ret) {
+			if ($api.isNull(ret) || $api.isNull(ret.data) || ret.data.length <= 0) {
+				return;
+			}
+			if (ret.data.length > 0) {
+				$('#getLastWeekDayStats').css('width', '530px');
+				$('#getLastWeekDayStats').css('height', '150px');
+			} else {
+				return false;
+			}
+			var ret = ret.data;
+			var PMS2 = [];
+			var dtimes = [];
+			for (i in ret) {
+				PMS2.push(ret[i].p);
+				dtimes.push(ret[i].dtime);
+			}
+			var option = {
+				tooltip : {
+					trigger : 'axis',
+					axisPointer : { // 坐标轴指示器，坐标轴触发有效
+						type : 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+					},
+					formatter : function(params) {
+						var sum = 0;
+						var res = '<div>';
+						res += '<strong>' + params[0].name + 'PM2.5</strong>'
+						for (var i = 0, l = params.length; i < l; i++) {
+							sum = sum + params[i].value;
+							var spanColor = $cfg.createColor(i);
+							res += '<br/>' + '<span style="color:' + spanColor + ';font-size:20px;">●  </span>	' + params[i].value + '（ug/m³）'
+						}
+						return res;
+					}
+				},
+				legend : {
+					type : 'scroll',
+					left : 'center',
+					top : 270,
+					bottom : 5,
+					data : dtimes
+				},
+				grid : {
+					top : 5,
+					left : 5,
+					right : 5,
+					bottom : 5,
+					containLabel : true
+				},
+				xAxis : {
+					type : 'category',
+					data : dtimes
+				},
+				yAxis : {
+					type : 'value'
+				},
+				series : [ {
+					data : PMS2,
+					type : 'line'
+				} ]
+			};
+			var myChart = echarts.init(document.getElementById('getLastWeekDayStats'));
+			myChart.setOption(option);
+			window.addEventListener('resize', function() {
+				myChart.resize();
+			});
+		}, function() {});
+	}
+	function getLastMonthDayStats(pm) {
+		echarts.init(document.getElementById('getLastMonthDayStats')).clear();
+		$('#getLastMonthDayStats').css('width', '1px');
+		$('#getLastMonthDayStats').css('height', '1px');
+		$dev.getLastMonthDayStats(pm, function(ret) {
+			if ($api.isNull(ret) || $api.isNull(ret.data) || ret.data.length <= 0) {
+				return;
+			}
+			if (ret.data.length > 0) {
+				$('#getLastMonthDayStats').css('width', '530px');
+				$('#getLastMonthDayStats').css('height', '150px');
+			} else {
+				return false;
+			}
+			var ret = ret.data;
+			var PMS = [];
+			var dtimes = [];
+			for (i in ret) {
+				PMS.push(ret[i].p);
+				dtimes.push(ret[i].dtime);
+			}
+			var option = {
+				tooltip : {
+					trigger : 'axis',
+					axisPointer : { // 坐标轴指示器，坐标轴触发有效
+						type : 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+					},
+					formatter : function(params) {
+						var sum = 0;
+						var res = '<div>';
+						res += '<strong>' + params[0].name + 'PM2.5</strong>'
+						for (var i = 0, l = params.length; i < l; i++) {
+							sum = sum + params[i].value;
+							var spanColor = $cfg.createColor(i);
+							res += '<br/>' + '<span style="color:' + spanColor + ';font-size:20px;">●  </span>	' + params[i].value + '（ug/m³）'
+						}
+						return res;
+					}
+				},
+				legend : {
+					type : 'scroll',
+					left : 'center',
+					top : 270,
+					bottom : 5,
+					data : dtimes
+				},
+				grid : {
+					top : 5,
+					left : 5,
+					right : 5,
+					bottom : 5,
+					containLabel : true
+				},
+				xAxis : {
+					type : 'category',
+					data : dtimes
+				},
+				yAxis : {
+					type : 'value'
+				},
+				series : [ {
+					data : PMS,
+					type : 'line'
+				} ]
+			};
+			var myChart = echarts.init(document.getElementById('getLastMonthDayStats'));
+			myChart.setOption(option);
+			window.addEventListener('resize', function() {
+				myChart.resize();
+			});
+		}, function() {});
+	}
+	function getLastYearMonthStats(pm) {
+		echarts.init(document.getElementById('getLastYearMonthStats')).clear();
+		$('#getLastYearMonthStats').css('width', '1px');
+		$('#getLastYearMonthStats').css('height', '1px');
+		$dev.getLastYearMonthStats(pm, function(ret) {
+			if ($api.isNull(ret) || $api.isNull(ret.data) || ret.data.length <= 0) {
+				return;
+			}
+			if (ret.data.length > 0) {
+				$('#getLastYearMonthStats').css('width', '530px');
+				$('#getLastYearMonthStats').css('height', '150px');
+			} else {
+				return false;
+			}
+			var ret = ret.data;
+			var PMS = [];
+			var dtimes = [];
+			for (i in ret) {
+				PMS.push(ret[i].p);
+				dtimes.push(ret[i].dtime);
+			}
+			var option = {
+				tooltip : {
+					trigger : 'axis',
+					axisPointer : { // 坐标轴指示器，坐标轴触发有效
+						type : 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+					},
+					formatter : function(params) {
+						var sum = 0;
+						var res = '<div>';
+						res += '<strong>' + params[0].name + 'PM2.5</strong>'
+						for (var i = 0, l = params.length; i < l; i++) {
+							sum = sum + params[i].value;
+							var spanColor = $cfg.createColor(i);
+							res += '<br/>' + '<span style="color:' + spanColor + ';font-size:20px;">●  </span>	' + params[i].value + '（ug/m³）'
+						}
+						return res;
+					}
+				},
+				legend : {
+					type : 'scroll',
+					left : 'center',
+					top : 270,
+					bottom : 5,
+					data : dtimes
+				},
+				grid : {
+					top : 5,
+					left : 5,
+					right : 5,
+					bottom : 5,
+					containLabel : true
+				},
+				xAxis : {
+					type : 'category',
+					data : dtimes
+				},
+				yAxis : {
+					type : 'value'
+				},
+				series : [ {
+					data : PMS,
+					type : 'line'
+				} ]
+			};
+			var myChart = echarts.init(document.getElementById('getLastYearMonthStats'));
+			myChart.setOption(option);
+			window.addEventListener('resize', function() {
+				myChart.resize();
+			});
+		}, function() {});
+	}
+	function getLastDayHourStatsTime() {
+		var dt1 = new Date();
+		var time = dt1.getTime();
+		time = time - (24 * 60 * 60 * 1000);
+		var dt0 = new Date(time);
+		var txt = '数据范围：' + dt0.pattern('yyyy年MM月dd日HH时') + '至' + dt1.pattern('yyyy年MM月dd日HH时');
+		$('#getLastDayHourStatsTime').text(txt);
+	}
+	function getLastWeekDayStatsTime() {
+		var dt1 = new Date();
+		var time = dt1.getTime();
+		time = time - (24 * 60 * 60 * 1000 * 7);
+		var dt0 = new Date(time);
+		var txt = '数据范围：' + dt0.pattern('yyyy年MM月dd日') + '至' + dt1.pattern('yyyy年MM月dd日');
+		$('#getLastWeekDayStatsTime').text(txt);
+	}
+	function getLastMonthDayStatsTime() {
+		var dt1 = new Date();
+		var time = dt1.getTime();
+		time = time - (24 * 60 * 60 * 1000 * 30);
+		var dt0 = new Date(time);
+		var txt = '数据范围：' + dt0.pattern('yyyy年MM月dd日') + '至' + dt1.pattern('yyyy年MM月dd日');
+		$('#getLastMonthDayStatsTime').text(txt);
+	}
+	function getLastYearMonthStatsTime() {
+		var dt1 = new Date();
+		var time = dt1.getTime();
+		time = time - (24 * 60 * 60 * 1000 * 365);
+		var dt0 = new Date(time);
+		var txt = '数据范围：' + dt0.pattern('yyyy年MM月') + '至' + dt1.pattern('yyyy年MM月');
+		$('#getLastYearMonthStatsTime').text(txt);
+	}
+</script>

@@ -1,0 +1,5 @@
+package com.yjyz.iot.sms;
+
+public interface ISendSMS {
+	public SMSResult send(String tel, String verCode);
+}

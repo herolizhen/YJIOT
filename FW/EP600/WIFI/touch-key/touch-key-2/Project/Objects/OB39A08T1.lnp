@@ -1,0 +1,9 @@
+".\Objects\STARTUP.obj",
+".\Objects\InitROM.obj",
+".\Objects\Main.obj",
+".\Objects\data.obj",
+".\Objects\led.obj",
+".\Objects\touch.obj",
+".\Objects\timer.obj" 
+TO ".\Objects\OB39A08T1" 
+PRINT(".\Listings\OB39A08T1.m51") RAMSIZE(256) 

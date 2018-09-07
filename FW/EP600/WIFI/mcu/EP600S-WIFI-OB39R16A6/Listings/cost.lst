@@ -1,0 +1,29 @@
+C51 COMPILER V9.52.0.0   COST                                                              08/31/2017 16:54:17 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE COST
+OBJECT MODULE PLACED IN .\Objects\cost.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\COST\cost.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\USER\IIC;.\USER
+                    -\UART;.\USER\TM1618;.\USER\Sensor;.\USER;.\USER\PWM;.\USER\DC_MOTOR;.\USER\timer;.\USER\inc;.\USER\EXINT;.\USER\touch_ke
+                    -y;.\USER\SYS_RUN;.\USER\step_motor;.\USER\BUZZER;.\USER\UART;.\USER\common;.\USER\lib;.\USER\UV;.\USER\ION;.\USER\COST;.
+                    -\USER\EEPROM;.\USER\TM1620) DEBUG OBJECTEXTEND PRINT(.\Listings\cost.lst) TABS(2) OBJECT(.\Objects\cost.obj)
+
+line level    source
+
+   1          #include "cost.h"
+   2          
+   3          Cost_Typedef cost_info;
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   ----    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =     12    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.staticfile.org/flat-ui/2.3.0/css/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.staticfile.org/flat-ui/2.3.0/css/flat-ui.min.css" rel="stylesheet" />
+    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <script src="https://cdn.staticfile.org/flat-ui/2.3.0/js/vendor/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/flat-ui/2.3.0/js/flat-ui.min.js"></script>
+    <title>易净物联网</title>
+</head>
+<body>
+    <div class="container">
+        <div class="login-screen">
+            <div class="login-icon" style="margin-left:15px;">
+                <img src="http://www.bootcss.com/p/flat-ui/images/illustrations/book.png" />
+                <h4>欢迎 使用<small>易净物联网</small></h4>
+            </div>
+            <div class="login-form">
+                <div class="form-group">
+                    <input type="text" class="form-control login-field" value="" placeholder="Enter your name" id="login-name">
+                    <label class="login-field-icon fui-user" for="login-name"></label>
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control login-field" value="" placeholder="Password" id="login-pass">
+                    <label class="login-field-icon fui-lock" for="login-pass"></label>
+                </div>
+                <a class="btn btn-primary btn-lg btn-block" onclick="onLogin()">Log in</a>
+                <a class="login-link" href="#">Lost your password?</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script>
+    function onLogin() {
+        window.location.href = 'main.html';
+    }
+</script>

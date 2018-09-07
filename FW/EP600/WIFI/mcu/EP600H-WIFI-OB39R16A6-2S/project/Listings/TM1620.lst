@@ -1,0 +1,384 @@
+C51 COMPILER V9.52.0.0   TM1620                                                            01/17/2018 13:37:25 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE TM1620
+OBJECT MODULE PLACED IN .\Objects\TM1620.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\TM1620\TM1620.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(..\project;.\
+                    -USER\BUZZER;.\USER\DC_MOTOR;.\USER\EXINT;.\USER\IIC;.\USER\inc;.\USER\ION;.\USER\PWM;.\USER\step_motor;.\USER\SYS_RUN;.\
+                    -USER\timer;.\USER\TM1620;.\USER\touch_key;.\USER\UART;.\USER\UV;.\USER\Sensor;.\USER\user_timer) DEBUG OBJECTEXTEND PRIN
+                    -T(.\Listings\TM1620.lst) TABS(2) OBJECT(.\Objects\TM1620.obj)
+
+line level    source
+
+   1          #include "TM1620.h"
+   2          #include "sensor.h"
+   3          
+   4          //buff[0]-buff[9]分别表示显示0-9，buff[10]表示数码管灭
+   5          const unsigned char led_display_buff[11] = {
+   6           //0-4
+   7           0x3F,0x06,0x5B,0x4F,0x66,
+   8          //5-9
+   9          0x6D,0x7D,0x07,0x7F,0x6F,
+  10          //灭
+  11          0x00
+  12          
+  13          
+  14          };
+  15          
+  16          static void mydelay(int num)
+  17          {
+  18   1          while(num--);
+  19   1      }
+  20            
+  21          
+  22          
+  23          void TM1620_Pin_Config(void)
+  24          {
+  25   1          //PIN设置为推挽输出，PxM0对应的位置1，PxM1对应的位置0
+  26   1          P0M0 |= ((1 << 1) | (1 << 2));
+  27   1          P0M1 &= ~((1 << 1) | (1 << 2));
+  28   1          P2M0 |= (1 << 4);
+  29   1          P2M1 &= ~(1 << 4);
+  30   1          TM1620_STB_PIN = 1;
+  31   1          TM1620_CLK_PIN = 1;
+  32   1          TM1620_DIO_PIN = 1;
+  33   1        
+  34   1      }
+  35          
+  36          
+  37          
+  38          //刚上电后设置显示模式5位7段，把TM1620的显示寄存器0xC0-0xCD全部写0
+  39          void TM1620_Init(void)
+  40          {
+  41   1          TM1620_Pin_Config();
+  42   1          TM1620_SetMode();
+  43   1          TM1620_Clear_Framebuff();
+  44   1          TM1620_Display_On();
+  45   1      }
+  46          
+  47          
+  48          void TM1620_WriteOneByte(unsigned char senddata)
+  49          {
+  50   1          unsigned char i = 0;
+  51   1          unsigned char tempdata = 0;
+  52   1        
+C51 COMPILER V9.52.0.0   TM1620                                                            01/17/2018 13:37:25 PAGE 2   
+
+  53   1          tempdata = senddata;
+  54   1          //TM1620_STB_PIN = 0;
+  55   1        
+  56   1          
+  57   1          for(i = 0;i < 8;i++)
+  58   1          {
+  59   2              TM1620_CLK_PIN = 0;
+  60   2              if(tempdata & 0x01)
+  61   2              {
+  62   3                  TM1620_DIO_PIN = 1;
+  63   3              }
+  64   2              else
+  65   2              {
+  66   3                  TM1620_DIO_PIN = 0;
+  67   3              }
+  68   2              //TM1620_CLK_PIN = 0;
+  69   2              mydelay(1);
+  70   2              TM1620_CLK_PIN = 1;
+  71   2              mydelay(1);
+  72   2              
+  73   2              tempdata = tempdata >> 1;       
+  74   2          }
+  75   1          //TM1620_STB_PIN = 1;    
+  76   1      }
+  77          
+  78          /*
+  79          void TM1620_WriteBytes(const unsigned char *senddata,unsigned char num)
+  80          {
+  81              unsigned char i,j = 0;
+  82              unsigned char tempdata = 0;
+  83            
+  84              //TM1620_STB_PIN = 0;
+  85            
+  86              for(j = 0;j < num;j++)
+  87              {
+  88                  tempdata = *(senddata + j);
+  89                  for(i = 0;i < 8;i++)
+  90                  {
+  91                      TM1620_CLK_PIN = 0;
+  92                      if(tempdata & 0x01)
+  93                      {
+  94                          TM1620_DIO_PIN = 1;
+  95                      }
+  96                      else
+  97                      {
+  98                          TM1620_DIO_PIN = 0;
+  99                      }           
+ 100                      mydelay(2);
+ 101                      TM1620_CLK_PIN = 1;
+ 102                      mydelay(1);
+ 103                  
+ 104                      tempdata = tempdata >> 1;       
+ 105                  }
+ 106              }
+ 107              //TM1620_STB_PIN = 1;    
+ 108          }
+ 109          */
+ 110          
+ 111          //设置为5位7段模式
+ 112          void TM1620_SetMode(void)
+ 113          {
+ 114   1          TM1620_STB_PIN = 0;
+C51 COMPILER V9.52.0.0   TM1620                                                            01/17/2018 13:37:25 PAGE 3   
+
+ 115   1          TM1620_WriteOneByte(TM1620_MODE_CMD);
+ 116   1          TM1620_STB_PIN = 1;
+ 117   1      }
+ 118          
+ 119          //设置数据命令
+ 120          void TM1620_SetDataMode(void)
+ 121          {
+ 122   1          TM1620_STB_PIN = 0;
+ 123   1          TM1620_WriteOneByte(TM1620_DATA_CMD);
+ 124   1          TM1620_STB_PIN = 1;
+ 125   1      }
+ 126          
+ 127          //往TM1620的显示寄存器中写数据，该函数指针对GRID1 GRID2 GRID3控制的数码管
+ 128          void TM1620_WriteFrameRegister(unsigned char sensortype,unsigned char grid_num,unsigned char *displaybuff,
+             -unsigned char bufferlength)
+ 129          {
+ 130   1          unsigned char i = 0;
+ 131   1          unsigned char address = 0;
+ 132   1          unsigned char senddata = 0;
+ 133   1         
+ 134   1          if(grid_num >= GRID_MAX || grid_num == 0)
+ 135   1          {
+ 136   2              return;
+ 137   2          }
+ 138   1          
+ 139   1          if(bufferlength > ((7 - grid_num) * 2))
+ 140   1          {
+ 141   2              //采用的是6位8段模式，要写入显示寄存器的长度不能超过显示寄存器的范围
+ 142   2              return;
+ 143   2          }
+ 144   1          
+ 145   1          address = TM1620_ADDR_CMD_BASE + (grid_num - 1) * 2;
+ 146   1        
+ 147   1          TM1620_SetDataMode();
+ 148   1          mydelay(2);
+ 149   1          TM1620_STB_PIN = 0; 
+ 150   1          //设置数据传送寄存器首地址  
+ 151   1          TM1620_WriteOneByte(address);
+ 152   1          for(i = 0;i < bufferlength;i++)
+ 153   1          { 
+ 154   2              senddata = 0;
+ 155   2            
+ 156   2              if(sensortype == SENSOR_HCHO && i == 4)
+ 157   2              {
+ 158   3                  //显示甲醛数据的话需要增加小数点
+ 159   3                  senddata = led_display_buff[displaybuff[i]] | (1 << 7);
+ 160   3              }
+ 161   2              else
+ 162   2              {
+ 163   3                  senddata = led_display_buff[displaybuff[i]];
+ 164   3              }          
+ 165   2              //TM1620_WriteOneByte(led_display_buff[displaybuff[i]] | (1 << 7)); 
+ 166   2              TM1620_WriteOneByte(senddata);  
+ 167   2                  
+ 168   2          }
+ 169   1          TM1620_STB_PIN = 1;
+ 170   1      }
+ 171          
+ 172          //把显示寄存器清零
+ 173          void TM1620_Clear_Framebuff(void)
+ 174          {
+ 175   1          unsigned char i = 0;
+C51 COMPILER V9.52.0.0   TM1620                                                            01/17/2018 13:37:25 PAGE 4   
+
+ 176   1        
+ 177   1          TM1620_SetDataMode();
+ 178   1        
+ 179   1          TM1620_STB_PIN = 0;
+ 180   1          TM1620_WriteOneByte(TM1620_ADDR_CMD_BASE);
+ 181   1          for(i = 0;i < 12;i++)
+ 182   1          {
+ 183   2              TM1620_WriteOneByte(0x00);
+ 184   2          }     
+ 185   1          TM1620_STB_PIN = 1;
+ 186   1        
+ 187   1      }
+ 188          
+ 189          void TM1620_Display_On(void)
+ 190          {
+ 191   1          TM1620_STB_PIN = 0;
+ 192   1          TM1620_WriteOneByte(TM1620_PULSE_WIDTH_10_16);
+ 193   1          TM1620_STB_PIN = 1;
+ 194   1      }
+ 195          
+ 196          /*
+ 197          void TM1620_Display_Off(void)
+ 198          {
+ 199              TM1620_STB_PIN = 0;
+ 200              TM1620_WriteOneByte(TM1620_OFF);
+ 201              TM1620_STB_PIN = 1;
+ 202          }
+ 203          */
+ 204          
+ 205          void TM1620_DispalyData(unsigned char sensor,float sensordata)
+ 206          {
+ 207   1          unsigned char j = 0;
+ 208   1          unsigned char displaybuff[5] = {0};
+ 209   1          unsigned int displaydata = 0;
+ 210   1          if(sensor == SENSOR_HCHO)
+ 211   1          {
+ 212   2              if(sensordata >= 10)
+ 213   2              {
+ 214   3                  displaydata = 999;         
+ 215   3              }
+ 216   2              else
+ 217   2              {
+ 218   3                  displaydata = (int)(sensordata * 100);
+ 219   3              }
+ 220   2      
+ 221   2          }
+ 222   1          else if(sensor == SENSOR_PM25)
+ 223   1          {
+ 224   2              if(sensordata >= 1000)
+ 225   2              {
+ 226   3                  displaydata = 999;
+ 227   3              }
+ 228   2              else
+ 229   2              {
+ 230   3                  displaydata = (int)sensordata;
+ 231   3              }
+ 232   2          }
+ 233   1          
+ 234   1      
+ 235   1      //    displaybuff[2] = displaydata / 100;
+ 236   1      //    displaybuff[1] = (displaydata % 100) / 10;
+ 237   1      //    displaybuff[0] = displaydata % 10;
+C51 COMPILER V9.52.0.0   TM1620                                                            01/17/2018 13:37:25 PAGE 5   
+
+ 238   1          //最左边数码管显示的数据
+ 239   1          displaybuff[4] = displaydata / 100;
+ 240   1          //displaybuff[1] = displaydata / 100;
+ 241   1          //中间数码管显示的数据
+ 242   1          displaybuff[2] = (displaydata % 100) / 10;
+ 243   1          //最右边数码管显示的数据
+ 244   1          displaybuff[0] = displaydata % 10;
+ 245   1          
+ 246   1          
+ 247   1          TM1620_WriteFrameRegister(sensor,GRID1,displaybuff,5);
+ 248   1          
+ 249   1          
+ 250   1      }
+ 251          
+ 252          
+ 253          void TM1620_LED_Control(unsigned char led,unsigned char on_off)
+ 254          {
+ 255   1          
+ 256   1          //static unsigned char led_group_data[4] = {0};
+ 257   1          static unsigned char led_group1_data = 0;
+ 258   1          static unsigned char led_group2_data = 0;
+ 259   1        
+ 260   1          unsigned char register_addr = 0x00;
+ 261   1          unsigned char register_data = 0x00;
+ 262   1          //unsigned char grid = 0;
+ 263   1            
+ 264   1          if(led >= LED_MAX_NUM || on_off >= 2)
+ 265   1          {
+ 266   2              return;
+ 267   2          }
+ 268   1          
+ 269   1          if(led <= LED_UV)
+ 270   1          {
+ 271   2              //register_addr = TM1620_ADDR_CMD_BASE + (LED_GROUP1_GRID_NUM - 1) * 2;  
+ 272   2              if(on_off == 1)
+ 273   2              {
+ 274   3                  if(led >= LED_QUIET && led <= LED_SPEED_HIGH)
+ 275   3                  {
+ 276   4                      led_group1_data &= ~((1 << LED_QUIET) | (1 << LED_SPEED_LOW) | (1 << LED_SPEED_MID) | (1 <
+             -< LED_SPEED_HIGH));
+ 277   4                  }
+ 278   3                  led_group1_data |= (1 << led);
+ 279   3              } 
+ 280   2              else
+ 281   2              {
+ 282   3                  led_group1_data &= ~(1 << led);
+ 283   3              } 
+ 284   2              register_addr = TM1620_ADDR_CMD_BASE + 0x08;  
+ 285   2              register_data = led_group1_data; 
+ 286   2                     
+ 287   2          }
+ 288   1          else if(led < LED_ALL)
+ 289   1          {
+ 290   2              //register_addr = TM1620_ADDR_CMD_BASE + (LED_GROUP2_GRID_NUM - 1) * 2;   
+ 291   2              if(on_off == 1)
+ 292   2              {
+ 293   3                  led_group2_data |= (1 << (led - LED_ION));
+ 294   3                  if(led == LED_TIMER_2H)
+ 295   3                  {
+ 296   4                      led_group2_data &= ~(1 << (led - LED_ION + 1));
+ 297   4                  }
+ 298   3                  else if(led == LED_TIMER_4H)
+C51 COMPILER V9.52.0.0   TM1620                                                            01/17/2018 13:37:25 PAGE 6   
+
+ 299   3                  {
+ 300   4                      led_group2_data &= ~(1 << (led - LED_ION -1));
+ 301   4                  }
+ 302   3                  
+ 303   3              } 
+ 304   2              else
+ 305   2              {
+ 306   3                  led_group2_data &= ~(1 << (led - LED_ION));
+ 307   3              } 
+ 308   2              register_addr = TM1620_ADDR_CMD_BASE + 0x0A;  
+ 309   2              register_data = led_group2_data;         
+ 310   2          }
+ 311   1          else if(led == LED_ALL)
+ 312   1          {
+ 313   2              if(on_off == 1)
+ 314   2              {
+ 315   3                  led_group1_data = 0x7F;
+ 316   3                  led_group2_data = 0x7F;
+ 317   3              } 
+ 318   2              else
+ 319   2              {
+ 320   3                  led_group1_data = (1 << LED_POWER);
+ 321   3                  led_group2_data = 0x00;
+ 322   3              } 
+ 323   2              register_addr = TM1620_ADDR_CMD_BASE + 0x08;           
+ 324   2          }
+ 325   1          
+ 326   1          //TM1620_WriteFrameRegister(GRID5,led_group_data,1);
+ 327   1          TM1620_SetDataMode();
+ 328   1          mydelay(2);
+ 329   1          TM1620_STB_PIN = 0; 
+ 330   1          //设置数据传送寄存器首地址  
+ 331   1          TM1620_WriteOneByte(register_addr);
+ 332   1          if(led != LED_ALL)
+ 333   1          {
+ 334   2              TM1620_WriteOneByte(register_data);   
+ 335   2          }
+ 336   1          else
+ 337   1          {
+ 338   2              TM1620_WriteOneByte(led_group1_data);
+ 339   2              TM1620_WriteOneByte(led_group2_data);
+ 340   2          }
+ 341   1      
+ 342   1          TM1620_STB_PIN = 1;
+ 343   1          
+ 344   1      }
+ 345          
+ 346          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    890    ----
+   CONSTANT SIZE    =      5    ----
+   XDATA SIZE       =     13      21
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

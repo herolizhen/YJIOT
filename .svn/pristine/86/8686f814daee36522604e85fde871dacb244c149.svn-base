@@ -1,0 +1,207 @@
+C51 COMPILER V9.52.0.0   CHARGE                                                            10/19/2017 16:56:49 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE CHARGE
+OBJECT MODULE PLACED IN .\Objects\charge.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\charge\charge.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\USER\IIC;.\
+                    -USER\UART;.\USER\TM1618;.\USER\Sensor;.\USER;.\USER\PWM;.\USER\DC_MOTOR;.\USER\timer;.\USER\inc;.\USER\EXINT;.\USER\touc
+                    -h_key;.\USER\SYS_RUN;.\USER\step_motor;.\USER\BUZZER;.\USER\UART;.\USER\common;.\USER\lib;.\USER\UV;.\USER\ION;.\USER\EE
+                    -PROM;.\USER\TM1620;.\USER\charge) DEBUG OBJECTEXTEND PRINT(.\Listings\charge.lst) TABS(2) OBJECT(.\Objects\charge.obj)
+
+line level    source
+
+   1          #include <stdio.h>
+   2          #include "charge.h"
+   3          #include "global.h"
+   4          #include "timer.h"
+   5          #include "wifi_uart.h"
+   6          #include "common.h"
+   7          #include "debug_uart.h"
+   8          #include "touch_key.h"
+   9          #include "sys_run.h"
+  10          
+  11          Cost_Typedef cost_info;
+  12          
+  13          
+  14          //…œµÁœ»ªÒ»°wifiµƒº∆∑—–≈œ¢
+  15          void charge_init(void)
+  16          {
+  17   1          unsigned long nowtime = 0;
+  18   1          unsigned long msdelay = 2000;
+  19   1          unsigned long nexttime = 0;
+  20   1          //unsigned char receive_buff[13] = {0};
+  21   1          unsigned char debug_buff[30] = {0};
+  22   1          //unsigned char recv_num = 0;
+  23   1          
+  24   1          cost_info.IsCostType = 0;
+  25   1          cost_info.IsHavetime = 0;
+  26   1          cost_info.lefttime = 0;
+  27   1          
+  28   1        
+  29   1          nowtime = get_sys_mstime();
+  30   1          nexttime = nowtime + msdelay;
+  31   1          get_wifi_charge_cmd();
+  32   1         
+  33   1          //»Áπ˚MCUŒﬁ∑®ªÒµ√º∆∑—–≈œ¢£¨‘Ú≤ª∆Ù∂Ø
+  34   1          while(1)
+  35   1          {
+  36   2              nowtime = get_sys_mstime();    
+  37   2              if(_test_timeflag(g_100ms_flag))
+  38   2              {
+  39   3                g_100ms_flag = 0;
+  40   3                Deal_Wifi_Uart_Data();        
+  41   3              } 
+  42   2              if(nowtime >= nexttime)
+  43   2              {
+  44   3      //            mymemset(receive_buff,0,13);
+  45   3      //            recv_num = Wifi_Uart_ReceiveOnePackage(receive_buff,13);
+  46   3      //           
+  47   3      //            mymemset(debug_buff,0,50);
+  48   3      //            sprintf(debug_buff,"recv_num:%d\n",(unsigned int)recv_num);  
+  49   3      //            DEBUG_Uart_Sendbytes(debug_buff,mystrlen(debug_buff));
+  50   3                  if(cost_info.IsGetChargeInfo == 0)
+  51   3                  {
+  52   4                      mymemset(debug_buff,0,30);
+C51 COMPILER V9.52.0.0   CHARGE                                                            10/19/2017 16:56:49 PAGE 2   
+
+  53   4                      sprintf(debug_buff,"get charge info failed\n");  
+  54   4                      DEBUG_Uart_Sendbytes(debug_buff,mystrlen(debug_buff));                
+  55   4                      get_wifi_charge_cmd();   
+  56   4                      
+  57   4                  }
+  58   3                  else if(cost_info.IsGetChargeInfo == 1)
+  59   3                  {
+  60   4                      mymemset(debug_buff,0,30);
+  61   4                      sprintf(debug_buff,"lefttime:0x%x\n",(unsigned int)cost_info.lefttime);  
+  62   4                      DEBUG_Uart_Sendbytes(debug_buff,mystrlen(debug_buff));
+  63   4                      if(cost_info.IsCostType == 1 && cost_info.IsHavetime == 1)
+  64   4                      {
+  65   5                          sys_start();  
+  66   5                      }
+  67   4                      Clear_Touch_Info();
+  68   4                      
+  69   4                      break;
+  70   4                  }
+  71   3                  
+  72   3                  nexttime = nowtime + msdelay; 
+  73   3              }
+  74   2      
+  75   2          }
+  76   1      }
+  77          
+  78          
+  79          
+  80          void get_charge_info(void)
+  81          {
+  82   1          static unsigned long time_triger = (GET_TIME_INTERVAL | 0x00);
+  83   1          // «∑Ò∑¢ÀÕ¡ÀªÒ»°º∆∑—–≈œ¢µƒ√¸¡Ó±Í÷æŒª£¨∑¿÷π÷ÿ∏¥∑¢ÀÕ√¸¡Ó
+  84   1          static bit Is_cmd_send = 0;
+  85   1          static bit Is_Power_On = 1;
+  86   1          unsigned long nowtime = 0;
+  87   1          //unsigned char debug_buff[20] = {0};
+  88   1        
+  89   1          nowtime = get_sys_mstime();
+  90   1        
+  91   1          if(Is_Power_On == 1)
+  92   1          {
+  93   2              time_triger = nowtime + (GET_TIME_INTERVAL | 0x00);
+  94   2              Is_Power_On = 0;
+  95   2             
+  96   2          }
+  97   1          if(nowtime <= (GET_TIME_INTERVAL | 0x00) && time_triger >= (0xFFFFFFFF - (GET_TIME_INTERVAL | 0x00)) )
+  98   1          {
+  99   2              //∑¿÷π ±º‰“Á≥ˆ
+ 100   2              time_triger = nowtime + (GET_TIME_INTERVAL | 0x00);
+ 101   2          }
+ 102   1          
+ 103   1          //œ»∑¢ÀÕªÒ»°º∆∑—–≈œ¢µƒ√¸¡Ó£¨1√Î∫Û‘ŸºÏ≤‚ «∑ÒΩ” ’µΩ¡À ˝æ›,æ≠≤‚ ‘∑¢ÀÕ√¸¡Ó∫Û500ms√ª”–∑µªÿµƒ∏≈¬ ”–µ„∏ﬂ£¨∑¢À
+             -Õ√¸¡Ó∫Û1√Î∫Û ˝æ›ª˘±æ∂º∑µªÿ¿¥¡À
+ 104   1          //2√Î÷”¥”wifiƒ£øÈªÒ»°“ª¥Œº∆∑—–≈œ¢£¨ªÒ»°µΩ–≈œ¢∫Û—” ±1√Î∑¢ÀÕ√¸¡Ó£¨∑¢ÀÕ√¸¡Ó∫Û—” ±1√ÎºÏ≤‚ ˝æ› «∑Ò ’µΩ£¨æ≠≤
+             -‚ ‘£¨¥À÷÷∑Ω Ω≥…π¶¬ ∫‹∏ﬂ
+ 105   1          if(nowtime >= (time_triger - 1000) && Is_cmd_send == 0 )
+ 106   1          {
+ 107   2              get_wifi_charge_cmd();
+ 108   2              Is_cmd_send = 1;
+ 109   2          }
+ 110   1          if(nowtime >= time_triger)
+ 111   1          {
+ 112   2              if(cost_info.IsGetChargeInfo == 0)
+C51 COMPILER V9.52.0.0   CHARGE                                                            10/19/2017 16:56:49 PAGE 3   
+
+ 113   2              {
+ 114   3                  cost_info.get_charge_info_failtimes += 1;
+ 115   3                
+ 116   3      //            mymemset(debug_buff,0,20);
+ 117   3      //            sprintf(debug_buff,"failtimes:0x%x\n",(unsigned int)cost_info.get_charge_info_failtimes);  
+ 118   3      //            DEBUG_Uart_Sendbytes(debug_buff,mystrlen(debug_buff));
+ 119   3                
+ 120   3                  if(cost_info.get_charge_info_failtimes >= UART_FAIL_MAX_TIMES )
+ 121   3                  {
+ 122   4                      //ø™∆Ù◊‘º∆∑—ƒ£ Ω
+ 123   4                      cost_info.IsSelfChargeMode = 1;
+ 124   4                      cost_info.StartSelfCharge = 1;
+ 125   4                  }
+ 126   3                
+ 127   3              }
+ 128   2              else if(cost_info.IsGetChargeInfo == 1)
+ 129   2              {
+ 130   3                  cost_info.IsSelfChargeMode = 0;
+ 131   3                  cost_info.StartSelfCharge = 0;
+ 132   3                  cost_info.get_charge_info_failtimes = 0;
+ 133   3              }
+ 134   2              Is_cmd_send = 0;
+ 135   2              time_triger = nowtime + (GET_TIME_INTERVAL | 0x00);
+ 136   2          }
+ 137   1      }
+ 138          
+ 139          
+ 140          void mcu_self_charge(void)
+ 141          {
+ 142   1         static unsigned long time_triger = 0;
+ 143   1         unsigned long nowtime = 0;
+ 144   1        
+ 145   1         nowtime = get_sys_mstime();
+ 146   1         if(nowtime <= (MIN_TO_MS | 0x00) && time_triger >= (0xFFFFFFFF - (MIN_TO_MS | 0x00)) )
+ 147   1         {
+ 148   2             //∑¿÷π ±º‰“Á≥ˆ
+ 149   2             time_triger = nowtime + (MIN_TO_MS | 0x00);
+ 150   2         }
+ 151   1         
+ 152   1         if(cost_info.StartSelfCharge == 1)
+ 153   1         {
+ 154   2             time_triger = nowtime + (MIN_TO_MS | 0x00);
+ 155   2             cost_info.StartSelfCharge = 0;
+ 156   2         }
+ 157   1         
+ 158   1         if(nowtime >= time_triger)
+ 159   1         {
+ 160   2             if(cost_info.IsCostType == 1 && cost_info.IsHavetime == 1)
+ 161   2             {
+ 162   3                 if(cost_info.lefttime > 0)
+ 163   3                 {
+ 164   4                     cost_info.lefttime -= 1;
+ 165   4                 }
+ 166   3                 if(cost_info.lefttime == 0)
+ 167   3                 {
+ 168   4                     cost_info.IsHavetime = 0;
+ 169   4                 }
+ 170   3             }
+ 171   2             time_triger = time_triger + (MIN_TO_MS | 0x00);
+ 172   2         }
+ 173   1      }
+
+C51 COMPILER V9.52.0.0   CHARGE                                                            10/19/2017 16:56:49 PAGE 4   
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1037    ----
+   CONSTANT SIZE    =     69    ----
+   XDATA SIZE       =     27      50
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      2    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

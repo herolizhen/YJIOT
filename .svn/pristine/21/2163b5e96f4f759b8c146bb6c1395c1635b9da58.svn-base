@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>物流管理</title>
+<meta charset="UTF-8">
+<meta name="keywords" content="keyword1,keyword2,keyword3">
+<meta name="description" content="this is my page">
+<link href="../../compontents/bootstarp/css/bootstrap-UI.css.css"
+	rel="stylesheet" media="screen">
+<link href="../../compontents/iot/css/table.css" rel="stylesheet" />
+<link
+	href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"
+	rel="stylesheet" />
+
+<script
+	src="https://cdn.staticfile.org/flat-ui/2.3.0/js/vendor/jquery.min.js"></script>
+<script src="https://cdn.staticfile.org/flat-ui/2.3.0/js/flat-ui.min.js"></script>
+<script src="https://cdn.staticfile.org/vue/2.2.6/vue.min.js"></script>
+<script src="../../compontents/bootstarp/js/bootstrap-table.js"></script>
+<script
+	src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
+<script src="../../compontents/iot/js/api.js"></script>
+</head>
+<style type="text/css">
+body {
+	font-family: "华文细黑";
+	width: 100%;
+	height: auto;
+	background: #f7f7f7;
+	margin-left: 30px;
+	padding-right: 50px;
+}
+</style>
+<body>
+
+	<div class="modal fade myModal" id="myModalUpd" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div id="modalDialog" class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">×</button>
+					<h4 class="modal-title" id="myModalLabel">用户添加</h4>
+				</div>
+				<div class="modal-body">
+				<div class="col-md-12" style="margin-left:30px">
+						<div class="col-md-6">
+
+							<div class="input-group">
+								<span class="input-group-addon">目&nbsp;&nbsp;的&nbsp;&nbsp;地</span>
+								<input type="text" id="opDest" class="form-control"
+									placeholder="请输入目的地" style="width:160px;height:40px ">
+							</div>
+							<br>
+							<div class="input-group">
+								<input type="hidden" id="guid" class="form-control"
+									placeholder="guid" style="width:355px;height:40px ">
+							</div>
+							<br>
+							<div class="input-group">
+								<span class="input-group-addon">备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注</span>
+								<input type="text" id="opMemo" class="form-control"
+									placeholder="请输入描述信息" style="width:355px;height:40px ">
+							</div>
+
+						</div>
+						<div>
+
+							<div class="input-group">
+								<span class="input-group-addon">操作类型</span><select id="opType"
+									class="form-control" style="width:100px;height:40px ">
+									<option value="1">出厂</option>
+									<option value="2">入库</option>
+									<option value="3">出库</option>
+								</select>
+							</div>
+
+							<br>
+
+
+						</div>
+					</div>
+					<div style=" clear:both"></div>
+				</div>
+
+				<div class="modal-footer">
+
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消
+					</button>
+					<button type="button" class="btn btn-primary" onclick="saveLogisticeInfo()">确认</button>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<h4 style="margin-bottom: -15px;margin-top: 2px">物流列表</h4>
+	<hr
+		style="height:1px;border:none;border-top:3px solid #028cfd;margin-bottom: 15px;" />
+	<div class="input-group col-md-1"
+		style=" float: left; margin-bottom: 5px">
+		<span class="input-group-addon" style="height: 34px;">MAC码</span> <input
+			type="text" id="deviceMac" class="form-control" placeholder="请输入MAC码"
+			style="width:142px;height:35px ">
+	</div>
+	<button class="btn btn-primary " style="float:left; margin-left: 5px ;"
+		onclick="refreshTableData()">物流查询</button>
+	<table id="tableData"></table>
+
+
+
+</body>
+
+<script type="text/javascript">
+	//初始化 资源信息
+	var appId = $api.getCurrApp();
+	function initTable() {
+		$api.ui_openLoading('提示', '资源信息加载中，请耐心等待......');
+		window.setTimeout(function() {
+			$api.ui_closeLoading();
+		}, 500);
+		var data = {};
+		data.deviceMac = "";
+		console.log(data);
+		$dev.selLogisticeInfoByMac(data, success, error);
+		function success(ret) {
+			var obj = ret.data;
+			for (i in obj) {
+				if (1 == obj[i].opType) {
+					obj[i].opType = "出厂";
+				} else if (2 == obj[i].opType) {
+					obj[i].opType = "入库";
+				} else if (3 == obj[i].opType) {
+					obj[i].opType = "出库";
+				}
+				//时间戳转换
+				var time = obj[i].opDate; //获取时间戳 
+				var timestamp = time / 1000;
+				// 减少8个小时，北京时间比utc时间多八个时区
+				timestamp = timestamp - 8 * 60 * 60;
+				//直接用 new Date(时间戳) 格式转化获得当前时间
+				var timestamp = new Date(parseInt(timestamp) * 1000);
+				//再利用拼接正则等手段转化为yyyy-MM-dd hh:mm:ss 格式
+				beijing_datetime = timestamp.toLocaleDateString().replace(/\//g, "-") + " " + timestamp.toTimeString().substr(0, 8);
+				obj[i].createtime = beijing_datetime;
+
+			}
+			$table = $('#tableData').bootstrapTable({
+				data : obj, //最终的JSON数据放在这里
+				height : $(window).height() - 100,
+				striped : true,
+				pagination : true,
+				pageNumber : 1,
+				pageSize : 10,
+				pageList : [ 5, 10, 20, 50, 100 ],
+				sidePagination : "client",
+				minimunCountColumns : 2,
+				columns : [
+					{
+						title : '序号',
+						formatter : function(value, row, index) {
+							return index + 1;
+						}
+					},
+					{
+						field : 'opDest',
+						title : '目的地',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : 'opUser',
+						title : '用户',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : 'opType',
+						title : '操作类别',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : 'opDate',
+						title : '操作时间',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : 'opMemo',
+						title : '备注',
+						align : 'center',
+						sortable : true
+					},
+					{
+						field : 'operate',
+						title : '操作',
+						align : 'center',
+						formatter : function(value, row, index) {
+							var a = '<button type="button" class="btn btn-danger  btn-sm" style="margin-right:15px;"  onclick="delLogisticeInfo(\'' + row.guid + '\')">删除</button>';
+							var b = '<button type="button" class="btn btn-warning  btn-sm" style="margin-right:15px;" data-toggle="modal" data-target="#myModalUpd" onclick="updLogisticeInfo(\'' + row.guid + '\',\'' + row.opDest + '\',\'' + row.opType + '\',\'' + row.opMemo + '\')">修改</button>';
+							return a + b;
+						}
+					} ],
+				formatNoMatches : function() {
+					return "没有相关的匹配结果";
+				},
+				formatLoadingMessage : function() {
+					return "";
+				}
+			});
+		}
+		;
+		function error() {
+		}
+		;
+
+	}
+	function refreshTableData() {
+		var deviceMac = $("#deviceMac").val();
+		var data = {}
+		data.deviceMac = deviceMac;
+		$dev.selLogisticeInfoByMac(data, success, error);
+		function success(ret) {
+			var obj = ret.data;
+			for (i in obj) {
+				if (1 == obj[i].opType) {
+					obj[i].opType = "出厂";
+				} else if (2 == obj[i].opType) {
+					obj[i].opType = "入库";
+				} else if (3 == obj[i].opType) {
+					obj[i].opType = "出库";
+				}
+				//时间戳转换
+				var time = obj[i].opDate; //获取时间戳 
+				var timestamp = time / 1000;
+				// 减少8个小时，北京时间比utc时间多八个时区
+				timestamp = timestamp - 8 * 60 * 60;
+				//直接用 new Date(时间戳) 格式转化获得当前时间
+				var timestamp = new Date(parseInt(timestamp) * 1000);
+				//再利用拼接正则等手段转化为yyyy-MM-dd hh:mm:ss 格式
+				beijing_datetime = timestamp.toLocaleDateString().replace(/\//g, "-") + " " + timestamp.toTimeString().substr(0, 8);
+				obj[i].opDate = beijing_datetime;
+
+			}
+			$("#tableData").bootstrapTable('load', obj);
+		}
+		function error() {
+		}
+
+	}
+</script>
+<script type="text/javascript">
+	function clearFrom() {
+		$(':input', '#userform')
+			.not(':button, :submit, :reset, :hidden')
+			.val('')
+			.removeAttr('checked')
+			.removeAttr('selected');
+
+	}
+</script>
+<script type="text/javascript">
+	function updLogisticeInfo(guid, opDest, opType, opMemo) {
+		$("#guid").val(guid);
+		$("#opDest").val(opDest);
+		$("#opMemo").val(opMemo);
+		$('#opType option').each(function() {
+			var self = $(this);
+			var selfVal = self.text();
+			if (selfVal == opType) self.attr('selected', 'true');
+		});
+	}
+	//提交修改
+	function saveLogisticeInfo() {
+		var guid = $("#guid").val();
+		var opDest = $("#opDest").val();
+		var opMemo = $("#opMemo").val();
+		var opType = $("#opType").val();
+		var data = {};
+		data.guid = guid;
+		data.opDest = opDest;
+		data.opMemo = opMemo;
+		data.opType = opType;
+		$dev.updLogisticeInfo(data, success, error);
+		function success(ret) {
+			refreshTableData();
+			$("#myModalUpd").modal("hide");
+		}
+		;
+		function error() {
+			alert("修改失败");
+		}
+		;
+	}
+</script>
+<script type="text/javascript">
+	function delLogisticeInfo(resName, resId) {
+		$api.ui_openAlert('物流信息删除', '请确认是否要删除资源：' + resName, function(tag) {
+			if (tag) {
+				var data = {};
+				data.appId = appId;
+				data.resId = resId;
+				$pow.delResource(data, success, error);
+				function success() {
+					refreshTableData();
+				}
+				;
+				function error() {
+					$api.ui_openAlert('删除提示', '删除失败!');
+				}
+				;
+			}
+		});
+	}
+</script>
+<script type="text/javascript">
+	$(function() {
+		$api.Initialize();
+		initTable();
+	});
+</script>
+</html>

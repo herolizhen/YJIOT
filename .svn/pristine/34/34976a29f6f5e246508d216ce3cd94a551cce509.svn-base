@@ -1,0 +1,147 @@
+C51 COMPILER V9.52.0.0   PWM1                                                              12/11/2017 16:21:17 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE PWM1
+OBJECT MODULE PLACED IN .\Objects\PWM1.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\PWM\PWM1.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(..\project;.\USER\
+                    -BUZZER;.\USER\charge;.\USER\common;.\USER\DC_MOTOR;.\USER\EEPROM;.\USER\EXINT;.\USER\IIC;.\USER\inc;.\USER\ION;.\USER\M2
+                    -6;.\USER\PWM;.\USER\Sensor;.\USER\step_motor;.\USER\SYS_RUN;.\USER\timer;.\USER\TM1620;.\USER\touch_key;.\USER\UART;.\US
+                    -ER\UV;.\USER\LVI) DEBUG OBJECTEXTEND PRINT(.\Listings\PWM1.lst) TABS(2) OBJECT(.\Objects\PWM1.obj)
+
+line level    source
+
+   1          #include "OB39R32T1.h"
+   2          #include "PWM.h"
+   3          #include "intrins.h"
+   4          
+   5          
+   6          
+   7          
+   8          //=============================================================================================
+   9          //
+  10          //=============================================================================================
+  11          void PWM_Init(void)
+  12          {
+  13   1      //    _push_(PAGESEL);
+  14   1      //    PAGESEL     = PAGE_1;
+  15   1      //    PWMEN       &= ~(PWM7 | PWM6 | PWM5 | PWM4 );
+  16   1      //    PWMTBC0     = (PWMTB_PRESCALE );
+  17   1      //    PWMOPMOD    = (PWMOP3MOD | PWMOP2MOD);
+  18   1      //    PERIODH     = PWM_PERIOD / 256 ;
+  19   1      //    PERIODL     = PWM_PERIOD % 256 ;
+  20   1      //    PWMTBC1     = (0x90 | PWM_INTERRUPT);
+  21   1      //    DUTY2L  = 0;
+  22   1      //    DUTY2H  = 0;
+  23   1      //    DUTY3L  = 0;
+  24   1      //    DUTY3H  = 0;
+  25   1      //    _pop_(PAGESEL);
+  26   1         
+  27   1          //FOSC不分频，开启PWM1
+  28   1          PWMC = ((0 << 5) |(1 << 1));
+  29   1        
+  30   1          //PWMMD设置1023
+  31   1          PWMMDH = 3;
+  32   1          PWMMDL = 0xFF;
+  33   1        
+  34   1          PWMD1H = 0;
+  35   1          PWMD1L = 0;
+  36   1        
+  37   1      }
+  38          
+  39          //void PWM_Control(unsigned char pwm_num,unsigned char on_off)
+  40          //{
+  41          //    _push_(PAGESEL);
+  42          //    PAGESEL     = PAGE_1;
+  43          //  
+  44          //    if(on_off == PWM_OFF)
+  45          //    {
+  46          //        PWMEN &= ~(1 << pwm_num);
+  47          //    }
+  48          //    else if(on_off == PWM_ON)
+  49          //    {
+  50          //        PWMEN |= (1 << pwm_num);
+  51          //    }
+  52          //    
+C51 COMPILER V9.52.0.0   PWM1                                                              12/11/2017 16:21:17 PAGE 2   
+
+  53          //    _pop_(PAGESEL);
+  54          //
+  55          //}
+  56          
+  57          void PWM_Set_Duty(unsigned char pwm_num,unsigned int duty)
+  58          {
+  59   1        
+  60   1          if(duty > PWM_MAX_DUTY)
+  61   1          {
+  62   2              return;
+  63   2          }
+  64   1      //    _push_(PAGESEL);
+  65   1      //    PAGESEL = PAGE_1;
+  66   1      //    switch(pwm_num)
+  67   1      //    {
+  68   1      //      case PWM4_NUM:
+  69   1      //      case PWM5_NUM:
+  70   1      //          DUTY2L  = duty % 256;
+  71   1      //          DUTY2H  = duty / 256;
+  72   1      //          break;
+  73   1      //      case PWM6_NUM:
+  74   1      //      case PWM7_NUM:
+  75   1      //          DUTY3L  = duty % 256;
+  76   1      //          DUTY3H  = duty / 256;
+  77   1      //          break;  
+  78   1      //      default:
+  79   1      //          break;        
+  80   1      //    }
+  81   1      //    _pop_(PAGESEL);
+  82   1          
+  83   1          switch(pwm_num)
+  84   1          {
+  85   2            case PWM0_NUM:
+  86   2              PWMD0L = duty % 256;
+  87   2              PWMD0H = duty / 256;
+  88   2              break;
+  89   2            case PWM1_NUM:
+  90   2              PWMD1L = duty % 256;
+  91   2              PWMD1H = duty / 256;
+  92   2              break;
+  93   2            case PWM2_NUM:
+  94   2              PWMD2L = duty % 256;
+  95   2              PWMD2H = duty / 256;
+  96   2              break;
+  97   2             case PWM3_NUM:
+  98   2              PWMD3L = duty % 256;
+  99   2              PWMD3H = duty / 256;
+ 100   2              break;
+ 101   2             default:
+ 102   2              break;
+ 103   2          }
+ 104   1      }
+ 105          
+ 106          
+ 107          
+ 108          //=============================================================================================
+ 109          //
+ 110          //=============================================================================================
+ 111          void PWM_ISR(void) interrupt d_PWM_Vector
+ 112          {
+ 113   1      //    _push_(PAGESEL);
+ 114   1      //    PAGESEL  = PAGE_1;
+C51 COMPILER V9.52.0.0   PWM1                                                              12/11/2017 16:21:17 PAGE 3   
+
+ 115   1      //    PWMINTF &= 0xFE;
+ 116   1      //    _pop_(PAGESEL);
+ 117   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     71    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

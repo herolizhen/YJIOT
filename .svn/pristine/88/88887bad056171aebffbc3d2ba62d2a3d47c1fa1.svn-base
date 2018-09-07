@@ -1,0 +1,83 @@
+package com.yjyz.iot.notice.entity;
+
+public class NoticeRule {
+	private String productId;
+
+	private Boolean deviceOpen;
+
+	private Boolean smsOpen;
+
+	private Boolean noticeOpen;
+
+	private Boolean voiceOpen;
+
+	private Boolean timeOpen;
+
+	private String timeOpenStart;
+
+	private String timeOpenStop;
+
+	public String getProductId() {
+		return productId;
+	}
+
+	public void setProductId(String productId) {
+		this.productId = productId == null ? null : productId.trim();
+	}
+
+	public Boolean getDeviceOpen() {
+		return deviceOpen;
+	}
+
+	public void setDeviceOpen(Boolean deviceOpen) {
+		this.deviceOpen = deviceOpen;
+	}
+
+	public Boolean getSmsOpen() {
+		return smsOpen;
+	}
+
+	public void setSmsOpen(Boolean smsOpen) {
+		this.smsOpen = smsOpen;
+	}
+
+	public Boolean getNoticeOpen() {
+		return noticeOpen;
+	}
+
+	public void setNoticeOpen(Boolean noticeOpen) {
+		this.noticeOpen = noticeOpen;
+	}
+
+	public Boolean getVoiceOpen() {
+		return voiceOpen;
+	}
+
+	public void setVoiceOpen(Boolean voiceOpen) {
+		this.voiceOpen = voiceOpen;
+	}
+
+	public Boolean getTimeOpen() {
+		return timeOpen;
+	}
+
+	public void setTimeOpen(Boolean timeOpen) {
+		this.timeOpen = timeOpen;
+	}
+
+	public String getTimeOpenStart() {
+		return timeOpenStart;
+	}
+
+	public void setTimeOpenStart(String timeOpenStart) {
+		this.timeOpenStart = timeOpenStart == null ? null : timeOpenStart.trim();
+	}
+
+	public String getTimeOpenStop() {
+		return timeOpenStop;
+	}
+
+	public void setTimeOpenStop(String timeOpenStop) {
+		this.timeOpenStop = timeOpenStop == null ? null : timeOpenStop.trim();
+	}
+}

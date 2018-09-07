@@ -1,0 +1,360 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.staticfile.org/flat-ui/2.3.0/css/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.staticfile.org/flat-ui/2.3.0/css/flat-ui.min.css" rel="stylesheet" />
+    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="https://cdn.bootcss.com/metisMenu/2.7.1/metisMenu.min.css" rel="stylesheet" />
+    <script src="https://cdn.staticfile.org/flat-ui/2.3.0/js/vendor/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/flat-ui/2.3.0/js/flat-ui.min.js"></script>
+    <script src="https://cdn.bootcss.com/metisMenu/2.7.1/metisMenu.min.js"></script>
+    <script src="https://cdn.staticfile.org/vue/2.2.6/vue.min.js"></script>
+    <script src="/scripts/stomp.min.js"></script>
+    <script src="/scripts/config.js?v=1.0.0"></script>
+    <script src="/scripts/api.js?v=1.0.0"></script>
+    <script src="/scripts/iot.js?v=1.0.0"></script>
+    <script src="/scripts/power.js?v=1.0.0"></script>
+    <script src="/scripts/ota.js?v=1.0.0"></script>
+    <script src="/scripts/main.js?v=1.0.0"></script>
+    <style>
+        .sidebar-nav {
+            background: #212529;
+            height:100%;
+        }
+
+            .sidebar-nav ul {
+                padding: 0;
+                margin: 0;
+                list-style: none;
+                background: #343a40;
+            }
+
+            .sidebar-nav .metismenu {
+                background: #212529;
+                display: -webkit-box;
+                display: -ms-flexbox;
+                display: flex;
+                -webkit-box-orient: vertical;
+                -webkit-box-direction: normal;
+                -ms-flex-direction: column;
+                flex-direction: column;
+                padding-left:5px;
+                padding-right:5px;
+            }
+
+                .sidebar-nav .metismenu li + li {
+                    margin-top: 5px;
+                }
+
+                .sidebar-nav .metismenu li:first-child {
+                    margin-top: 5px;
+                }
+
+                .sidebar-nav .metismenu li:last-child {
+                    margin-bottom: 5px;
+                }
+
+
+                .sidebar-nav .metismenu > li {
+                    display: -webkit-box;
+                    display: -ms-flexbox;
+                    display: flex;
+                    -webkit-box-orient: vertical;
+                    -webkit-box-direction: normal;
+                    -ms-flex-direction: column;
+                    flex-direction: column;
+                    position: relative;
+                }
+
+                .sidebar-nav .metismenu a {
+                    position: relative;
+                    display: block;
+                    padding: 13px 15px;
+                    color: #adb5bd;
+                    outline-width: 0;
+                    transition: all .3s ease-out;
+                }
+
+                .sidebar-nav .metismenu .disabled {
+                    color: rgba(0,0,0,.75);
+                    cursor: not-allowed;
+                    background-color: #bdc3c7;
+                    filter: alpha(opacity=70);
+                    opacity: .7;
+                }
+
+                .sidebar-nav .metismenu ul a {
+                    padding: 10px 15px 10px 30px;
+                }
+
+                .sidebar-nav .metismenu ul ul a {
+                    padding: 10px 15px 10px 45px;
+                }
+
+                .sidebar-nav .metismenu a:hover:not(.disabled),
+                .sidebar-nav .metismenu a:focus:not(.disabled),
+                .sidebar-nav .metismenu a:active:not(.disabled) {
+                    color: #f8f9fa;
+                    text-decoration: none;
+                    background: #0b7285;
+                }
+
+                .sidebar-nav .metismenu .active {
+                    color: #f8f9fa;
+                    text-decoration: none;
+                    background: #0b7285;
+                }
+
+        .frame {
+            margin:0;
+            padding:0;
+        }
+        .frame-hr{
+            display:block;
+            width:100%;
+            height:5px;
+            background:#212529;
+        }
+        .frame-box{
+            padding:0;
+            margin:0;
+        }
+    </style>
+    <title>易净物联网</title>
+</head>
+<body>
+    <div id="content-frame" class="container-fluid">
+        <div class="row">
+            <nav class="navbar navbar-inverse navbar-lg" style="margin:0;" role="navigation">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-7">
+                    <span class="fui-list-columned"></span>
+                </button>
+                <div class="navbar-header">
+                    <div class="navbar-brand">
+                        <span>易净物联网</span>
+                    </div>
+                </div>
+                <div class="collapse navbar-collapse" id="navbar-collapse-7">
+                    <ul id="content-menu" class="nav navbar-nav">
+                        <li v-for="item in frameMenu" v-bind:id="item.id" v-bind:class="item.tag" v-on:click="onMenu(item.id)">
+                            <a href="#">
+                                <span v-bind:class="item.icon"></span>
+                                {{item.name}}
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{appModel.curr.name}}<b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li v-for="item in appModel.items">
+                                    <a v-on:click="onAppItem(item.id,item.name)" href="#">{{item.name}}</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <span class="visible-sm visible-xs">
+                                    <span class="fa fa-power-off fa-lg"></span>
+                                </span>
+                                <span class="visible-md visible-lg">
+                                    <span class="fa fa-power-off fa-lg"></span>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div><!-- /.navbar-collapse -->
+            </nav>
+        </div>
+        <div class="row">
+            <div class="col-lg-2 col-md-2 frame-box">
+                <aside class="sidebar-nav" id="func-menu">
+                    <ul class="metismenu">
+                        <li v-for="item in funcMenu">
+                            <a aria-expanded="false" href="#">
+                                <span v-bind:class="item.icon"></span>
+                                {{item.name}}
+                            </a>
+                            <ul aria-expanded="false">
+                                <li v-bind:id="func.id" v-for="func in item.funcs" v-on:click="onFunc(func.id)" v-bind:data-func="func.src">
+                                    <a href="#" v-bind:class="func.tag">
+                                        <span v-bind:class="func.icon"></span>
+                                        {{func.name}}
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </aside>
+            </div>
+            <div class="col-lg-10 col-md-10 frame-box">
+                <div class="frame-hr"></div>
+                <iframe id="func-frame"  name="func-frame" class="frame" width="100%" height="100%" frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
+    <!--loading -->
+    <div class="modal fade bs-example-modal-lg" id="input-loading" tabindex="-1" role="dialog" aria-labelledby="loading-modal-title">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="loading-modal-title"></h4>
+                </div>
+                <div id="loading-modal-body" class="modal-body">
+                    ...
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--loading -->
+    <!--对话框 -->
+    <div class="modal fade bs-example-modal-sm" id="alert-dialog" tabindex="-1" role="dialog" aria-labelledby="alert-dialog-modal-title">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="alert-dialog-modal-title"></h4>
+                </div>
+                <div id="alert-dialog-modal-body" class="modal-body">
+                    
+                </div>
+                <div class="modal-footer">
+                    <button id="modal-dialog-close" onclick="onWarning()" type="button" class="btn btn-warning">关闭</button>
+                    <button id="modal-dialog-ok" onclick="onPrimary()" type="button" class="btn btn-primary">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--对话框 -->
+</body>
+</html>
+<script>
+    var content;
+    $(function () {
+        ui_main.Initialize();
+        initContent();
+        $api.ui_openLoading();
+        window.setTimeout(function () {
+            initApp();
+            initFrameMenu();
+            $api.ui_closeLoading();
+        }, 2000);
+        
+    });
+    function initContent() {
+        content = new Vue({
+            el: '#content-frame',
+            data: {
+                appModel: {
+                    curr: {
+                        id: '',
+                        name: ''
+                    },
+                    items: []
+                },
+                frameMenu: [],
+                funcMenu: []
+            }
+        });
+        $('#func-menu').metisMenu();
+    }
+    function initApp() {
+        var appitems = [];
+        appitems.push({
+            id: 'app-1',
+            name:'应用-1'
+        });
+        appitems.push({
+            id: 'app-2',
+            name: '应用-2'
+        });
+        appitems.push({
+            id: 'app-3',
+            name: '应用-3'
+        });
+        content.appModel.items = appitems;
+        onAppItem(appitems[0].id, appitems[0].name);
+    }
+    function initFrameMenu() {
+        var menu = [];
+        menu.push({
+            id: 'menu-1',
+            name: '权限管理',
+            icon: 'fa fa-fw fa-superpowers fa-lg',
+            tag:''
+        });
+        menu.push({
+            id: 'menu-2',
+            name: '生产管理',
+            icon: 'fa fa-fw fa-anchor fa-lg',
+            tag: ''
+        });
+        menu.push({
+            id: 'menu-3',
+            name: '运维管理',
+            icon: 'fa fa-fw fa-tty fa-lg',
+            tag: 'disabled'
+        });
+        menu.push({
+            id: 'menu-4',
+            name: '运营管理',
+            icon: 'fa fa-fw fa-users fa-lg',
+            tag: ''
+        });
+        content.frameMenu = [];
+        content.frameMenu = menu;
+    }
+    function onMenu(id) {
+        var yes = ui_main.onMenu(id);
+        if (!yes) { return;}
+        var name = '';
+        var icon = '';
+        $.each(content.frameMenu, function (i, f) {
+            if (f.id == id) {
+                name = f.name;
+                icon = f.icon;
+                return;
+            }
+        });
+        var funcmenu = [{
+            name: name,
+            icon: icon,
+            funcs: [{
+                id:'f-li-1',
+                name: '消息队列',
+                icon: 'fa fa-github fa-lg',
+                src: '../func/mqtt.html',
+                tag: ''
+            }, {
+                id: 'f-li-2',
+                name: '功能模块',
+                icon: 'fa fa-github fa-lg',
+                src: '',
+                tag: ''
+            }, {
+                id: 'f-li-3',
+                name: '禁用功能',
+                icon: 'fa fa-github fa-lg',
+                src: '',
+                tag: 'disabled'
+            }]
+        }];
+        content.funcMenu = [];
+        content.funcMenu = funcmenu;
+    }
+    function onFunc(id) {
+        ui_main.onFunc(id);
+    }
+    function onAppItem(id, name) {
+        content.appModel.curr.id = id;
+        content.appModel.curr.name = name;
+    }
+    function onPrimary() {
+        ui_main.closeAlert(true);
+    }
+    function onWarning() {
+        ui_main.closeAlert(false);
+    }
+</script>

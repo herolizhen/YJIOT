@@ -1,0 +1,562 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>商户信息</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <META HTTP-EQUIV="pragma" CONTENT="no-cache" />
+    <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate" />
+<link href="../../compontents/bootstarp/css/bootstrap-UI.css.css"
+	rel="stylesheet" media="screen">    <link href="../../compontents/iot/css/table.css" rel="stylesheet" />
+    <script src="https://cdn.staticfile.org/flat-ui/2.3.0/js/vendor/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/flat-ui/2.3.0/js/flat-ui.min.js"></script>
+    <script src="../../compontents/bootstarp/js/bootstrap-table.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=Z0TDGSIYG7CylToornHBOYhWVQmWRTx0"></script>
+    <script type="text/javascript" src="https://api.map.baidu.com/library/TextIconOverlay/1.2/src/TextIconOverlay_min.js"></script>
+    <script type="text/javascript" src="../../compontents/baidumap/js/MarkerClusterer.js"></script>
+    <script src="../../compontents/echart/echarts.js"></script>
+    <script src="../../compontents/iot/js/api.js"></script>
+    <script src="../../compontents/baidumap/js/gis.js"></script>
+    <style>
+        #baiduMap {
+            width: 100%;
+            height: 600px;
+            overflow: hidden;
+        }
+
+            #baiduMap label {
+                max-width: none;
+            }
+    </style>
+    <style>
+        #alert-dialog-modal-body{
+            overflow-y:auto;
+            overflow-x:hidden;
+        }
+        #alert-dialog-modal-body::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+            background-color: #F5F5F5;
+            border-radius: 10px;
+        }
+
+        #alert-dialog-modal-body::-webkit-scrollbar {
+            width: 10px;
+            background-color: #F5F5F5;
+        }
+
+        #alert-dialog-modal-body::-webkit-scrollbar-thumb {
+            background-color: #E0E0E0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="baiduMap"></div>
+    <div id="merchant-open" tabindex="-1" role="dialog" aria-labelledby="merchant-open-title" class="modal fade bs-example-modal-lg">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <ul id="merchant-open-title" class="nav nav-tabs modal-title" role="tablist">
+                        <li><a href="#merchant-open-a" role="tab">商户信息</a></li>
+                        <li><a href="#merchant-open-b" role="tab">商户贡献月统计</a></li>
+                        <li><a href="#merchant-open-c" role="tab">商户贡献周统计</a></li>
+                    </ul>
+                </div>
+                <div id="alert-dialog-modal-body" class="modal-body">
+                    <div id="merchant-open-content" class="tab-content">
+                        <div class="tab-pane fade in active " id="merchant-open-a">
+                            <table class="table">
+                                <tr>
+                                    <td>商户名称</td>
+                                    <td><span id="merchant_name"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>成立日期</td>
+                                    <td><span id="merchant_found_date"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>经营范围</td>
+                                    <td><span id="merchant_business_scope"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>商户地址</td>
+                                    <td><span id="merchant_address"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>信用ID</td>
+                                    <td><span id="merchant_credit_id"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>市场负责人</td>
+                                    <td><span id="merchant_buss_leader"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>收费类别</td>
+                                    <td><span id="merchant_charge_type"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>资金总回流（￥）</td>
+                                    <td style="color: red"><span id="merchant_charge_count"></span></td>
+                                </tr>
+                                <tr class="active">
+                                    <th colspan="2" style="text-align:left;">
+                                        设备概述
+                                    </th>
+                                </tr>
+                                <tr class="info">
+                                    <td>数量</td>
+                                    <td><span id="merchant_count"></span></td>
+                                </tr>
+                                <tr class="success">
+                                    <td>在线</td>
+                                    <td><span id="merchant_online"></span></td>
+                                </tr>
+                                <tr class="warning">
+                                    <td>离线一天</td>
+                                    <td><span id="merchant_off1"></span></td>
+                                </tr>
+                                <tr class="warning">
+                                    <td>离线一周</td>
+                                    <td><span id="merchant_off7"></span></td>
+                                </tr>
+                                <tr class="danger">
+                                    <td>长期离线</td>
+                                    <td><span id="merchant_off"></span></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="tab-pane fade " id="merchant-open-b">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">商户贡献月统计</div>
+                                <div class="panel-body">
+                                    <div id="merchantOfferMonth"
+                                         style="width: 500px; height:200px;"></div>
+                                </div>
+                                <div class="panel-footer"></div>
+                            </div>
+                            <table id="tableData_merchantOfferMonth">
+                                <tfoot>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            总计:<span style="color: red"
+                                                     id='merchantOfferMonth_funds'></span>
+                                        </td>
+                                        <td>
+                                            总计:<span style="color: red"
+                                                     id='merchantOfferMonth_counts'></span>
+                                        </td>
+                                    <tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="tab-pane fade " id="merchant-open-c">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">商户贡献周统计</div>
+                                <div class="panel-body">
+                                    <div id="merchantOfferWeek" style="width: 500px; height:200px;"></div>
+                                </div>
+                                <div class="panel-footer"></div>
+                            </div>
+                            <table id="tableData_merchantOfferWeek">
+                                <tfoot>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            总计:<span style="color: red"
+                                                     id='merchantOfferWeek_funds'></span>
+                                        </td>
+                                        <td>
+                                            总计:<span style="color: red"
+                                                     id='merchantOfferWeek_counts'></span>
+                                        </td>
+                                    <tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    $(function () {
+        $api.Initialize();
+        var h = $api.getFuncHeight();
+        $('#baiduMap').css('height', h + 'px');
+        $gis.Initialize('baiduMap', function () {
+            var ps = $gis.getShow();
+            $dict.selMerchantByGisRect(ps, function (ret) {
+                var ms = createMerchant(ret.data);
+                if (ms.length > 0) {
+                    $gis.clearMap();
+                }
+                $gis.createMerchants(ms, onMerchant);
+            }, function () { });
+        });
+        $("#merchant-open-title a").click(function (e) {
+            e.preventDefault();
+            $(this).tab("show");
+        });
+        var h = $(document).height() - 150;
+        h = h < 300 ? 300 : h;
+        $('#alert-dialog-modal-body').css('height', h + 'px');
+    });
+</script>
+<script type="text/javascript">
+    function createMerchant(data) {
+        var ms = [];
+        $.each(data, function (i, m) {
+            if (m.merchantCode.length > 4) {
+                ms.push(m);
+            }
+        });
+        return ms;
+    }
+    function onMerchant(e) {
+        var marker = this;
+
+        openMerchcant(marker.$data);
+    }
+    function openMerchcant(m) {
+        $('#merchant-open').modal('show');
+        $('#merchant-open-title a:first').tab('show');
+        createAccount(m);
+        merchantOfferMonthQuery(m);
+        merchantOfferWeekQuery(m);
+    }
+    function createAccount(m) {
+        var data = {
+            "merchantName": m.name
+        };
+        /* 商户基本信息 */
+        $('#merchant_name').text('');
+        $('#merchant_found_date').text('');
+        $('#merchant_business_scope').text('');
+        $('#merchant_address').text('');
+        $('#merchant_credit_id').text('');
+        $('#merchant_buss_leader').text('');
+        $('#merchant_charge_type').text('');
+        $('#merchant_charge_count').text('');
+        $('#merchant_count').text('');
+        $('#merchant_online').text('');
+        $('#merchant_off1').text('');
+        $('#merchant_off7').text('');
+        $('#merchant_off').text('');
+
+        $query.merchantAccountQuery(data, function (ret) {
+            $('#merchant_name').text(m.name);
+            if ($api.isNull(ret) || $api.isNull(ret.data) || ret.data.length <= 0) {
+                return;
+            }
+            var value = ret.data[0];
+            //时间转换
+            var merchant_found_date = function () {
+                var time = value['成立日期'];
+                var timestamp = time / 1000;
+                // 减少8个小时，北京时间比utc时间多八个时区
+                timestamp = timestamp - 8 * 60 * 60;
+                //直接用 new Date(时间戳) 格式转化获得当前时间
+                var timestamp = new Date(parseInt(timestamp) * 1000);
+                //再利用拼接正则等手段转化为yyyy-MM-dd hh:mm:ss 格式
+                beijing_datetime = timestamp.toLocaleDateString().replace(/\//g, "-");
+                return beijing_datetime;
+            };
+            $('#merchant_found_date').text(merchant_found_date);
+            $('#merchant_business_scope').text(value['经营范围']);
+            $('#merchant_address').text(value['地址']);
+            $('#merchant_credit_id').text(value['信用ID']);
+            $('#merchant_buss_leader').text(value['销售员']);
+            $('#merchant_charge_type').text(value['收费类别']);
+            $('#merchant_charge_count').text(value['资金总回流（￥）']);
+            $('#merchant_count').text(value['设备数量']);
+            $('#merchant_online').text(value['在线']);
+            $('#merchant_off1').text(value['离线一天']);
+            $('#merchant_off7').text(value['离线一周']);
+            $('#merchant_off').text(value['长期离线']);
+
+        }, function () { });
+    }
+    function merchantOfferMonthQuery(m) {
+        echarts.init(document.getElementById('merchantOfferMonth')).clear();
+        $('#tableData_merchantOfferMonth').bootstrapTable('destroy');
+        $('#merchantOfferMonth_funds').text(0);
+        $('#merchantOfferMonth_counts').text(0);
+        /* 商户贡献月统计*/
+        var sumfund = 0;
+        var counts = 0;
+        var data = {};
+        data.merchantCode = m.merchantCode;
+
+        $query.merchantOfferMonthQuery(data,
+			function (ret) {
+			    if ($api.isNull(ret) || $api.isNull(ret.data) || ret.data.length <= 0) {
+			        return;
+			    }
+			    var obj = ret.data;
+			    for (i in obj) {
+			        var merchantfund = $api.roundNumber(obj[i]['fund'], 2);
+			        var count = $api.roundNumber(obj[i]['count'], 2);
+			        sumfund = sumfund + merchantfund;
+			        counts = counts + count;
+			    }
+			    sumfund = $api.roundNumber(sumfund, 2);
+			    $('#merchantOfferMonth_funds').text(sumfund);
+			    $('#merchantOfferMonth_counts').text(counts);
+			    //$("#tableData_merchantOfferMonth").bootstrapTable('load', obj);
+			    var labels = $stats.createNames_merchantOfferMonth(ret.data);
+			    var keys = $stats.createKeys_merchantOfferMonth(ret.data);
+			    var datasets = [];
+			    $.each(keys, function (i, key) {
+			        var datas = $stats.createCounts_merchantOfferMonth(key, labels, obj);
+			        datasets.push({
+			            name: key,
+			            type: 'bar',
+			            data: datas,
+			            itemStyle: {
+			                normal: {
+			                    color: $cfg.createColor(i)
+			                }
+			            }
+			        });
+			    });
+			    var option = {
+			        tooltip: {
+			            trigger: 'axis',
+			            axisPointer: { // 坐标轴指示器，坐标轴触发有效
+			                type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+			            }
+			        },
+			        legend: {
+			            type: 'scroll',
+			            left: 'center',
+			            right: 5,
+			            top: 280,
+			            bottom: 5,
+			            data: keys
+			        },
+			        grid: {
+			            left: 5,
+			            right: 5,
+			            top: 5,
+			            bottom: 25,
+			            containLabel: true
+			        },
+			        yAxis: [
+						{
+						    type: 'category',
+						    type: 'value'
+						}
+
+			        ],
+			        xAxis: [
+						{
+						    data: labels,
+						    axisLabel: {
+						        interval: 0, //横轴信息全部显示
+						        rotate: 40,
+						        fontSize: '12'
+						    }
+						}
+			        ],
+			        series: datasets
+			    };
+			    var myChart = echarts.init(document.getElementById('merchantOfferMonth'));
+			    myChart.setOption(option);
+			    window.addEventListener('resize', function () {
+			        myChart.resize();
+			    });
+			    //bootstrap-Table获取数据
+			    $('#tableData_merchantOfferMonth').bootstrapTable({
+			        data: obj, //最终的JSON数据放在这里
+			        striped: true,
+			        pagination: true,
+			        pageNumber: 1,
+			        pageSize: 100,
+			        pageList: [5, 10, 20, 50, 100],
+			        sidePagination: "client",
+			        minimunCountColumns: 2,
+			        columns: [
+						{
+						    title: '编号',
+						    formatter: function (value, row, index) {
+						        return index + 1;
+						    }
+						},
+						{
+						    field: 'date',
+						    title: '月份',
+						    align: 'center',
+						    sortable: true
+						},
+						{
+						    field: 'fund',
+						    title: '资金回流（元）',
+						    align: 'center',
+						    sortable: true
+						},
+						{
+						    field: 'count',
+						    title: '使用频次',
+						    align: 'center',
+						    sortable: true
+						},
+			        ],
+			        formatNoMatches: function () {
+			            return "没有相关的匹配结果";
+			        },
+			        formatLoadingMessage: function () {
+			            return "";
+			        },
+			    });
+			},
+			function () { });
+    }
+    function merchantOfferWeekQuery(m) {
+        echarts.init(document.getElementById('merchantOfferWeek')).clear();
+        $('#tableData_merchantOfferWeek').bootstrapTable('destroy');
+        $('#merchantOfferWeek_funds').text(0);
+        $('#merchantOfferWeek_counts').text(0);
+        /* 商户贡献周统计*/
+        var sumfund = 0;
+        var counts = 0;
+        var sumfundWeek = 0;
+        var countsWeek = 0;
+        var data = {};
+        data.merchantCode = m.merchantCode;
+
+        $query.merchantOfferWeekQuery(data,
+			function (ret) {
+			    if ($api.isNull(ret) || $api.isNull(ret.data) || ret.data.length <= 0) {
+			        return;
+			    }
+			    var obj = ret.data;
+			    for (i in obj) {
+			        var merchantfund = $api.roundNumber(obj[i]['fund'], 2);
+			        var count = $api.roundNumber(obj[i]['count'], 2);
+			        sumfund = sumfund + merchantfund;
+			        counts = counts + count;
+			    }
+			    sumfund = $api.roundNumber(sumfund, 2);
+			    $('#merchantOfferWeek_funds').text(sumfund);
+			    $('#merchantOfferWeek_counts').text(counts);
+			    //$("#tableData_merchantOfferWeek").bootstrapTable('load', obj);
+			    var OfferWeeklabels = $stats.createNames_merchantOfferWeek(ret.data);
+			    var OfferWeekkeys = $stats.createKeys_merchantOfferWeek(ret.data);
+			    var datasets = [];
+			    $.each(OfferWeekkeys, function (i, key) {
+			        var datas = $stats.createCounts_merchantOfferWeek(key, OfferWeeklabels, obj);
+
+			        datasets.push({
+			            name: key,
+			            type: 'bar',
+			            data: datas,
+			            itemStyle: {
+			                normal: {
+			                    color: $cfg.createColor(i)
+			                }
+			            }
+			        });
+			    });
+			    var option = {
+			        tooltip: {
+			            trigger: 'axis',
+			            axisPointer: { // 坐标轴指示器，坐标轴触发有效
+			                type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+			            }
+			        },
+			        legend: {
+			            type: 'scroll',
+			            left: 'center',
+			            right: 5,
+			            top: 280,
+			            bottom: 5,
+			            data: OfferWeekkeys
+			        },
+			        grid: {
+			            left: 5,
+			            right: 5,
+			            top: 5,
+			            bottom: 25,
+			            containLabel: true
+			        },
+			        yAxis: [
+						{
+						    type: 'category',
+						    type: 'value'
+						}
+
+			        ],
+			        xAxis: [
+						{
+						    data: OfferWeeklabels,
+						    axisLabel: {
+						        interval: 0, //横轴信息全部显示
+						        rotate: 40,
+						        fontSize: '12'
+						    }
+						}
+			        ],
+			        series: datasets
+			    };
+			    var myChart = echarts.init(document.getElementById('merchantOfferWeek'));
+			    myChart.setOption(option);
+			    window.addEventListener('resize', function () {
+			        myChart.resize();
+			    })
+			    //bootstrap-Table获取数据
+			    $('#tableData_merchantOfferWeek').bootstrapTable('destroy');
+			    $('#tableData_merchantOfferWeek').bootstrapTable({
+			        data: obj, //最终的JSON数据放在这里
+			        striped: true,
+			        pagination: true,
+			        pageNumber: 1,
+			        pageSize: 5,
+			        pageList: [5, 10, 20, 50, 100],
+			        sidePagination: "client",
+			        minimunCountColumns: 2,
+			        columns: [
+						{
+						    title: '编号',
+						    formatter: function (value, row, index) {
+						        return index + 1;
+						    }
+						},
+						{
+						    field: 'weekno',
+						    title: '时间',
+						    align: 'center',
+						    sortable: true
+						},
+						{
+						    field: 'fund',
+						    title: '资金回流（元）',
+						    align: 'center',
+						    sortable: true
+						},
+						{
+						    field: 'count',
+						    title: '使用频次',
+						    align: 'center',
+						    sortable: true
+						},
+			        ],
+			        formatNoMatches: function () {
+			            return "没有相关的匹配结果";
+			        },
+			        formatLoadingMessage: function () {
+			            return "";
+			        },
+			    });
+			},
+			function () { });
+    }
+</script>

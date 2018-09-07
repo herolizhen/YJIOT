@@ -1,0 +1,878 @@
+C51 COMPILER V9.52.0.0   SYS_RUN                                                           01/03/2018 18:09:19 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE SYS_RUN
+OBJECT MODULE PLACED IN .\Objects\sys_run.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\SYS_RUN\sys_run.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\USER\IIC;
+                    -.\USER\UART;.\USER\TM1618;.\USER\Sensor;.\USER;.\USER\PWM;.\USER\DC_MOTOR;.\USER\timer;.\USER\inc;.\USER\EXINT;.\USER\to
+                    -uch_key;.\USER\SYS_RUN;.\USER\step_motor;.\USER\BUZZER;.\USER\UART;.\USER\common;.\USER\lib;.\USER\UV;.\USER\ION;.\USER\
+                    -EEPROM;.\USER\TM1620;.\USER\charge) DEBUG OBJECTEXTEND PRINT(.\Listings\sys_run.lst) TABS(2) OBJECT(.\Objects\sys_run.ob
+                    -j)
+
+line level    source
+
+   1          #include <stdio.h>
+   2          #include "global.h"
+   3          #include "sys_run.h"
+   4          #include "dc_motor.h"
+   5          #include "step_motor.h"
+   6          #include "sensor.h"
+   7          #include "buzzer.h"
+   8          #include "UV.h"
+   9          #include "wifi_uart.h"
+  10          #include "common.h"
+  11          #include "ION.h"
+  12          #include "debug_uart.h"
+  13          #include "TM1620.h"
+  14          #include "timer.h"
+  15          
+  16          
+  17          
+  18          void sys_data_clear(void)
+  19          {
+  20   1      
+  21   1      }
+  22          
+  23          //∑¿÷π≤÷√≈ªµ¡À£¨ø™ª˙ ±±ÿ–ÎΩ¯––≤÷√≈ºÏ≤‚°£»Áπ˚≤÷√≈ªµ¡À‘Ÿ¥Úø™∑Áª˙ø…ƒ‹ª·…’ªµ∑Áª˙
+  24          void sys_init_check(void)
+  25          {
+  26   1          unsigned char delay_1s_times = 0;
+  27   1          
+  28   1      //    if(sys_mode == STANDBY && IsStepMotorBusy == 0)
+  29   1      //    {
+  30   1      //        if(!DOOR_CHECK_PIN)
+  31   1      //        {
+  32   1      //            IsSysFault = 1;
+  33   1      //        }
+  34   1      //    }  
+  35   1        
+  36   1          if(!DOOR_CHECK_PIN)
+  37   1          {
+  38   2              Door_Close();
+  39   2          }
+  40   1          else
+  41   1          {
+  42   2              return;
+  43   2          }
+  44   1          while(delay_1s_times < 10)
+  45   1          {
+  46   2              if(_test_timeflag(g_2ms_flag))
+  47   2              {
+  48   3                  g_2ms_flag = 0;
+  49   3                  TurnMotor();           
+  50   3              } 
+  51   2            
+C51 COMPILER V9.52.0.0   SYS_RUN                                                           01/03/2018 18:09:19 PAGE 2   
+
+  52   2              if(_test_timeflag(g_1s_flag))
+  53   2              {
+  54   3                  g_1s_flag = 0;
+  55   3                  delay_1s_times += 1;
+  56   3                  if(beats == 0)
+  57   3                  {
+  58   4                      //IsSysFault = 0;
+  59   4                      return;
+  60   4                  }           
+  61   3              }
+  62   2          }
+  63   1      }
+  64          
+  65          
+  66          
+  67          void sys_start(void)
+  68          {
+  69   1          sys_start_time = get_sys_stime();
+  70   1          UV_On();
+  71   1          ION_On();
+  72   1          Buzzer_Power_On();
+  73   1          //ø™∆ÙUVµ∆∫Û—” ±“ª∂Œ ±º‰£¨≤ª»√À˘”–…Ë±∏Õ¨ ±∆Ù∂Ø  
+  74   1          while(get_sys_stime() < (sys_start_time + 2)) ;
+  75   1        
+  76   1            
+  77   1      
+  78   1          if(Is_Door_Open == 0 || (Is_Door_Open == 1 && DOOR_CHECK_PIN == 1))
+  79   1          {
+  80   2              Door_Open();
+  81   2          }
+  82   1          Start_DC_Motor();
+  83   1          
+  84   1          
+  85   1          sys_mode = RUNNING;
+  86   1          IsFanRunning = 1;
+  87   1          IsSpeedChanged = 1;
+  88   1          TM1620_LED_Control(LED_SLEEP_MODE,LED_OFF);
+  89   1          TM1620_LED_Control(LED_SPEED_LOW,LED_ON);
+  90   1      }
+  91          
+  92          void sys_stop(void)
+  93          {
+  94   1          sys_stop_time = get_sys_stime();
+  95   1          Buzzer_Power_Off();
+  96   1          sys_mode = STANDBY;
+  97   1          Stop_DC_Motor();
+  98   1          Door_Close();
+  99   1          UV_Off();
+ 100   1          ION_Off();
+ 101   1          sys_data_clear();   
+ 102   1          IsSpeedChanged = 1;
+ 103   1          TM1620_LED_Control(LED_ALL,LED_OFF);
+ 104   1          TM1620_LED_Control(LED_SLEEP_MODE,LED_ON);
+ 105   1        
+ 106   1          IsUVfault = 0;
+ 107   1        
+ 108   1          if(run_mode == 1)
+ 109   1          {  
+ 110   2             stop_sys_smart_mode();
+ 111   2          }
+ 112   1          
+ 113   1          if(is_sys_auto_check == 1)
+C51 COMPILER V9.52.0.0   SYS_RUN                                                           01/03/2018 18:09:19 PAGE 3   
+
+ 114   1          {
+ 115   2              stop_sys_auto_check();
+ 116   2          }
+ 117   1          
+ 118   1      }
+ 119          
+ 120          
+ 121          void sys_run(void)
+ 122          {
+ 123   1      //    unsigned char wifi_count_times = 0;
+ 124   1      //    unsigned long nowtimes = 0;
+ 125   1          //unsigned char debug_buff[30] = {0};
+ 126   1          
+ 127   1          //wifi≈‰Õ¯”¿‘∂”––ß,wifi≈‰Õ¯–Ë◊È∫œ∞¥º¸≥÷–¯∞¥œ¬≥¨π˝2√Î≤≈Ω¯»Î≈‰Õ¯ƒ£ Ω£¨∑¿÷πŒÛ≤Ÿ◊˜
+ 128   1          if(key_info.IsTouchedKey == 1 && key_info.WhichKey == KEY_WIFI)
+ 129   1          {
+ 130   2              wifi_easylink_cmd();
+ 131   2              Clear_Touch_Info();
+ 132   2          }
+ 133   1          
+ 134   1          //»Áπ˚”–»À∞—≤÷√≈πÿ±’¡À£¨‘Úª˙∆˜Ω¯»Î¥˝ª˙◊¥Ã¨
+ 135   1          if(is_sys_auto_check == 0)
+ 136   1          {
+ 137   2              check_if_doorclose_manual();
+ 138   2          }
+ 139   1          
+ 140   1          
+ 141   1          
+ 142   1          if(cost_info.IsCostType == 1 && cost_info.IsHavetime == 1 && cost_info.IsChargeStart == 1)
+ 143   1          {
+ 144   2              
+ 145   2              if(sys_mode == STANDBY)
+ 146   2              {          
+ 147   3                  sys_start();  
+ 148   3                  cost_info.IsChargeStart = 0;
+ 149   3                  //«Â≥˝∞¥º¸–≈œ¢£¨∑¿÷π‘⁄ø™∆Ù…Ë±∏«∞∂‘∞¥º¸”–≤Ÿ◊˜£¨∑Ò‘Úµ±¥Úø™…Ë±∏ ±£¨÷Æ«∞±£¡Ùµƒ∞¥º¸≤Ÿ◊˜ª·¬Ì…œ÷¥––
+ 150   3                  Clear_Touch_Info();
+ 151   3              }
+ 152   2              
+ 153   2          }
+ 154   1        
+ 155   1          //»Áπ˚ «º∆∑—ƒ£ Ω£¨∂¯«“√ª”– ±º‰¡À£¨‘Ú∞¥º¸ ß–ß
+ 156   1          if(cost_info.IsCostType == 1 && cost_info.IsHavetime == 0)
+ 157   1          {       
+ 158   2              if(is_sys_auto_check == 0 && is_sys_manual_check == 0)
+ 159   2              {
+ 160   3                  if(sys_mode == RUNNING)
+ 161   3                  {
+ 162   4                      sys_stop();  
+ 163   4                  }
+ 164   3                  return;
+ 165   3              }
+ 166   2          }
+ 167   1        
+ 168   1        
+ 169   1          if(key_info.IsTouchedKey == 1)
+ 170   1          {
+ 171   2              switch(key_info.WhichKey)
+ 172   2              {
+ 173   3                case KEY_POWER:            
+ 174   3                  if(is_sys_manual_check == 1)
+ 175   3                  {
+C51 COMPILER V9.52.0.0   SYS_RUN                                                           01/03/2018 18:09:19 PAGE 4   
+
+ 176   4                      sys_check_info.touch_key_check |= (1 << power_bit);
+ 177   4                  }
+ 178   3                  
+ 179   3                  if(sys_mode == STANDBY)
+ 180   3                  {
+ 181   4                      sys_start();             
+ 182   4                  }
+ 183   3                  else if(sys_mode == RUNNING)
+ 184   3                  { 
+ 185   4                      sys_stop();              
+ 186   4                  }
+ 187   3                  
+ 188   3                  break;
+ 189   3                case KEY_SPEED:
+ 190   3                  if(sys_mode == RUNNING)
+ 191   3                  {
+ 192   4                    
+ 193   4                      Buzzer_Speed();
+ 194   4                      if(speed_dang < HIGH_SPEED )
+ 195   4                      {
+ 196   5                          speed_dang++;
+ 197   5                          IsSpeedChanged = 1;
+ 198   5                      }
+ 199   4                      else if(speed_dang == HIGH_SPEED)
+ 200   4                      {
+ 201   5                          speed_dang = QUIET_SPEED;
+ 202   5                          IsSpeedChanged = 1;
+ 203   5                      }
+ 204   4                      else
+ 205   4                      {
+ 206   5                          break;
+ 207   5                      }
+ 208   4                      Set_DC_Motor_Speed(speed_dang);
+ 209   4                      
+ 210   4                      if(is_sys_manual_check == 1)
+ 211   4                      {
+ 212   5                          if(speed_dang == QUIET_SPEED)
+ 213   5                          {
+ 214   6                              sys_check_info.touch_key_check |= (1 << quiet_speed_bit);
+ 215   6                          }
+ 216   5                          else if(speed_dang == LOW_SPEED)
+ 217   5                          {
+ 218   6                              sys_check_info.touch_key_check |= (1 << low_speed_bit);
+ 219   6                          }
+ 220   5                          else if(speed_dang == MID_SPEED)
+ 221   5                          {
+ 222   6                              sys_check_info.touch_key_check |= (1 << mid_speed_bit);
+ 223   6                          }
+ 224   5                          else if(speed_dang == HIGH_SPEED)
+ 225   5                          {
+ 226   6                              sys_check_info.touch_key_check |= (1 << high_speed_bit);
+ 227   6                          }
+ 228   5                      }                
+ 229   4                      
+ 230   4                      //‘⁄◊‘∂Øƒ£ Ωœ¬£¨»Áπ˚ ÷∂Øµ˜Ω⁄∑Á¡ø¡À£¨‘Ú»°œ˚◊‘∂Øƒ£ Ω
+ 231   4                      if(run_mode == 1)
+ 232   4                      {
+ 233   5                          stop_sys_smart_mode();
+ 234   5                      }
+ 235   4                  }
+ 236   3                  else
+ 237   3                  {
+C51 COMPILER V9.52.0.0   SYS_RUN                                                           01/03/2018 18:09:19 PAGE 5   
+
+ 238   4                      break;
+ 239   4                  }
+ 240   3                  break;
+ 241   3                case KEY_TIMER:
+ 242   3                  if(is_sys_manual_check == 1)
+ 243   3                  {
+ 244   4                      sys_check_info.touch_key_check |= (1 << timer_bit);
+ 245   4                  }          
+ 246   3                  
+ 247   3                  break;
+ 248   3                case KEY_MODE:
+ 249   3                  if(is_sys_manual_check == 1)
+ 250   3                  {
+ 251   4                      sys_check_info.touch_key_check |= (1 << mode_bit);
+ 252   4                  }             
+ 253   3                  break;
+ 254   3                case KEY_WIFI:
+ 255   3                  //control wifi to easylink mode   
+ 256   3                  if(is_sys_manual_check == 1)
+ 257   3                  {
+ 258   4                      sys_check_info.touch_key_check |= (1 << wifi_bit);
+ 259   4                  }            
+ 260   3                  break;            
+ 261   3                  
+ 262   3                  
+ 263   3                default:
+ 264   3                  break;
+ 265   3                  
+ 266   3              
+ 267   3              }
+ 268   2              if(key_info.IsTouchedKey == 1 && key_info.WhichKey != KEY_WIFI)
+ 269   2              {
+ 270   3                  Clear_Touch_Info();
+ 271   3              }
+ 272   2              
+ 273   2          }
+ 274   1          
+ 275   1          //◊‘∂Øƒ£ Ωœ¬µƒ◊‘∂Øµ˜Ω⁄
+ 276   1          if(run_mode == 1)
+ 277   1          {
+ 278   2              sys_smart_mode();
+ 279   2          }
+ 280   1      
+ 281   1      }
+ 282          
+ 283          //µ±≤÷√≈πÿ±’ ±£¨≤÷√≈ºÏ≤‚“˝Ω≈ «∏ﬂµÁ∆Ω£ªµ±≤÷√≈¥Úø™ ±£¨≤÷√≈ºÏ≤‚“˝Ω≈ «µÕµÁ∆Ω
+ 284          //void sys_selfcheck(void)
+ 285          //{
+ 286          //    Is_selfcheck = 1;
+ 287          //    if(DOOR_CHECK_PIN == 0 )
+ 288          //    {
+ 289          //    
+ 290          //    }
+ 291          //    
+ 292          //}
+ 293          
+ 294          
+ 295          #define GET_SENSOR_TIME_INTERVAL    (2)
+ 296          #define RUN_CONTINUE_TIME    (1*60)
+ 297          #define STOP_CONTINUE_TIME   (10*60)   //10min
+ 298          #define STANDBY_UPDATA_DATA_INTERVAL  (15*60)   //15min
+ 299          //#define RUN_CONTINUE_TIME    (1*60)
+C51 COMPILER V9.52.0.0   SYS_RUN                                                           01/03/2018 18:09:19 PAGE 6   
+
+ 300          //#define STOP_CONTINUE_TIME   (1*60)   //10min
+ 301          //#define STANDBY_UPDATA_DATA_INTERVAL  (1*60)   //15min
+ 302          
+ 303          void display_pm_data(void)
+ 304          {
+ 305   1          static bit change_to_3min_updata = 0;
+ 306   1          static bit IsPowerOn = 0;
+ 307   1          static unsigned long get_pm_trigger_time = 0;
+ 308   1          static unsigned long standby_trigger_time = 0;
+ 309   1          static unsigned int temp_pm_value = 0;
+ 310   1          unsigned long nowtime = 0;
+ 311   1       
+ 312   1          //unsigned char pm_adjust = 0;
+ 313   1          //const unsigned int get_sensor_data_time_interval = 5 * 1000;
+ 314   1        
+ 315   1      //    unsigned char debug_buff[30] = {0};
+ 316   1          
+ 317   1          //unsigned long temp = 0;
+ 318   1      //    unsigned long temp_low,temp_high = 0;
+ 319   1      //    unsigned long temp_1 = 0;
+ 320   1        
+ 321   1        
+ 322   1          //get_sensor_data_time_interval = GET_SENSOR_TIME_INTERVAL;
+ 323   1        
+ 324   1          nowtime = get_sys_stime();
+ 325   1          
+ 326   1          if(nowtime <= GET_SENSOR_TIME_INTERVAL && get_pm_trigger_time >= (0xFFFFFFFF - GET_SENSOR_TIME_INTERVA
+             -L))
+ 327   1          {
+ 328   2              get_pm_trigger_time = nowtime + GET_SENSOR_TIME_INTERVAL;
+ 329   2          }
+ 330   1          
+ 331   1          // ÷‹∆⁄–‘ªÒ»°¥´∏–∆˜ ˝æ›£¨ ±º‰º‰∏Ù GET_SENSOR_TIME_INTERVAL £¨µ•Œªs
+ 332   1          if(nowtime >= get_pm_trigger_time)
+ 333   1          {
+ 334   2              PM25_value = Read_PMSensor_Data();
+ 335   2              get_pm_trigger_time = nowtime + (GET_SENSOR_TIME_INTERVAL | 0x00);
+ 336   2              
+ 337   2            
+ 338   2              //5√Î÷”∏¸–¬“ª¥Œ ˝¬Îπ‹œ‘ æµƒ ˝æ›
+ 339   2              if(is_sys_auto_check == 0)
+ 340   2              {
+ 341   3                  TM1620_DispalyData(SENSOR_PM25,display_pm_value);
+ 342   3                  //TM1620_DispalyData(SENSOR_PM25,PM25_value);
+ 343   3              }
+ 344   2              
+ 345   2          }
+ 346   1          if(sys_mode == RUNNING)
+ 347   1          {
+ 348   2              if(IsPowerOn == 0)
+ 349   2              {
+ 350   3                  IsPowerOn = 1;
+ 351   3              }
+ 352   2              if(change_to_3min_updata == 1)
+ 353   2              {
+ 354   3                  change_to_3min_updata = 0;
+ 355   3              }
+ 356   2              
+ 357   2              if(nowtime <= (sys_start_time + (RUN_CONTINUE_TIME | 0x00)))
+ 358   2              {
+ 359   3                  //¥Úø™…Ë±∏∫Ûµƒ 60 √Îƒ⁄œ‘ æø™ª˙«∞µƒ ˝÷µ
+ 360   3                  if(nowtime <= 180)
+C51 COMPILER V9.52.0.0   SYS_RUN                                                           01/03/2018 18:09:19 PAGE 7   
+
+ 361   3                  {
+ 362   4                      //…Ë±∏∏’…œµÁ£¨¥À ±œ‘ æ µ ± ˝÷µ
+ 363   4                      if(PM25_value_bak < PM25_value)
+ 364   4                      {
+ 365   5                          display_pm_value = (unsigned int)PM25_value;
+ 366   5                          PM25_value_bak = (unsigned int)PM25_value;
+ 367   5                      }
+ 368   4                      else
+ 369   4                      {
+ 370   5                          display_pm_value = PM25_value_bak;
+ 371   5                      }
+ 372   4      
+ 373   4                    
+ 374   4      //               mymemset(debug_buff,0,30);
+ 375   4      //               sprintf(debug_buff,"step1\n");
+ 376   4      //               DEBUG_Uart_Sendbytes(debug_buff,mystrlen(debug_buff));
+ 377   4                  }
+ 378   3                  else
+ 379   3                  {
+ 380   4                      //¥À÷÷«Èøˆ «…Ë±∏“—æ≠…œµÁ“ª∂Œ ±º‰£¨¥”¥˝ª˙Ω¯»Î‘À––ƒ£ Ω£¨Œ™¡À∑¿÷πœ‘ æµƒ ˝÷µ…œ’«£¨œ‘ æ¥˝ª˙ ±µƒ
+             - ˝÷µ
+ 381   4                      display_pm_value = (unsigned int)PM25_value_bak;
+ 382   4                    
+ 383   4                    
+ 384   4      //               mymemset(debug_buff,0,30);
+ 385   4      //               sprintf(debug_buff,"step2\n");
+ 386   4      //               DEBUG_Uart_Sendbytes(debug_buff,mystrlen(debug_buff));              
+ 387   4                    
+ 388   4                  }
+ 389   3      
+ 390   3              }
+ 391   2              else
+ 392   2              {
+ 393   3                  //»°¡Ω¥ŒªÒ»°µΩµƒ ˝æ›µƒ∆Ωæ˘÷µ£¨∑¿÷π ˝æ›Ã¯±‰π˝øÏ
+ 394   3                  display_pm_value = ((unsigned int)PM25_value + PM25_value_bak) / 2;
+ 395   3                  PM25_value_bak = (unsigned int)PM25_value;
+ 396   3              }
+ 397   2      
+ 398   2          }
+ 399   1          else if(sys_mode == STANDBY)
+ 400   1          {
+ 401   2              
+ 402   2              //œµÕ≥¥˝ª˙∫Û£¨’˝≥£«Èøˆœ¬PM2.5 ˝æ›ª·œ¬Ωµ£¨¥À¥¶ ˝æ›Ω¯––¥¶¿Ì£¨¥˝ª˙∫Û10∑÷÷”ƒ⁄»Áπ˚ ˝æ›œ¬Ωµ‘Úœ‘ æ∏’¥˝ª˙ 
+             -±µƒ ˝æ›
+ 403   2              if(IsPowerOn == 0)
+ 404   2              {
+ 405   3                  //∏’ø™ª˙«∞3∑÷÷”ƒ⁄œ‘ æ µ ± ˝æ›
+ 406   3                  if(nowtime < (STANDBY_UPDATA_DATA_INTERVAL | 0x00))
+ 407   3                  {
+ 408   4                      if(PM25_value_bak < (unsigned int)PM25_value)
+ 409   4                      {
+ 410   5                          PM25_value_bak = (unsigned int)PM25_value;
+ 411   5                      }
+ 412   4                      display_pm_value = PM25_value_bak; 
+ 413   4                      goto exit;              
+ 414   4                  }
+ 415   3                  else
+ 416   3                  {
+ 417   4                      IsPowerOn = 1;
+ 418   4                      change_to_3min_updata = 1;
+ 419   4                      temp_pm_value = 0;
+ 420   4                      standby_trigger_time = nowtime + (STANDBY_UPDATA_DATA_INTERVAL | 0x00);
+C51 COMPILER V9.52.0.0   SYS_RUN                                                           01/03/2018 18:09:19 PAGE 8   
+
+ 421   4                  }
+ 422   3              }
+ 423   2              else
+ 424   2              {
+ 425   3                  if(change_to_3min_updata == 0)
+ 426   3                  {
+ 427   4                      if(nowtime < (sys_stop_time + (STOP_CONTINUE_TIME | 0x00)))
+ 428   4                      {
+ 429   5                          //¥”‘À––ƒ£ ΩΩ¯»Î¥˝ª˙∫Ûµƒ10minƒ⁄£¨PMµƒ ˝æ›≤ªƒ‹–°”⁄∏’Ω¯»Î¥˝ª˙ƒ£ Ω ±µƒ ˝æ›
+ 430   5                          if(PM25_value < PM25_value_bak)
+ 431   5                          {
+ 432   6                              //»°∆Ωæ˘÷µ «Œ™¡À∑¿÷πœ‘ æ ˝æ›±‰ªØ¥Û
+ 433   6                              display_pm_value = (PM25_value_bak + display_pm_value) / 2;
+ 434   6                          }
+ 435   5                          else
+ 436   5                          {
+ 437   6                              //∑¿÷π∏’Ω¯»Î¥˝ª˙ ± ˝æ›±‰ªØ∑∂ŒßÃ´¥Û
+ 438   6                              display_pm_value = ((unsigned int)PM25_value + display_pm_value + PM25_value_bak) 
+             -/ 3;
+ 439   6                          }                        
+ 440   5                      } 
+ 441   4                      else
+ 442   4                      {
+ 443   5                          change_to_3min_updata = 1; 
+ 444   5                          temp_pm_value = 0;
+ 445   5                          standby_trigger_time = nowtime + (STANDBY_UPDATA_DATA_INTERVAL | 0x00);
+ 446   5                      }                  
+ 447   4                  }
+ 448   3                  else
+ 449   3                  {
+ 450   4                      //ªÒ»° STANDBY_UPDATA_DATA_INTERVAL  ∑÷÷”ƒ⁄◊Ó¥Ûµƒ ˝æ›£¨”√”⁄œ‘ æ
+ 451   4                      if(temp_pm_value <= (unsigned int)PM25_value)
+ 452   4                      {
+ 453   5                          temp_pm_value = (unsigned int)PM25_value;
+ 454   5      
+ 455   5                      }
+ 456   4                      
+ 457   4                      if(PM25_value_bak < (unsigned int)PM25_value)
+ 458   4                      {
+ 459   5                          PM25_value_bak = (unsigned int)PM25_value;
+ 460   5                          display_pm_value = ((unsigned int)PM25_value + display_pm_value) / 2;
+ 461   5                              
+ 462   5                      }               
+ 463   4                  
+ 464   4                      if(nowtime >= standby_trigger_time)
+ 465   4                      {
+ 466   5                          //…œ¥Œœ‘ æµƒ ˝æ›∫Õ’‚¥ŒªÒ»°µΩµƒ◊Ó¥Û÷µ«Û∫Õ£¨»ª∫Û»°∆Ωæ˘÷µ£¨≤ª»ªø…ƒ‹ª·µº÷¬2¥Œœ‘ æµƒ ˝æ›Ã¯±
+             -‰±»Ωœ¥Û
+ 467   5                          display_pm_value = (temp_pm_value + PM25_value_bak) / 2;
+ 468   5                          PM25_value_bak = display_pm_value;
+ 469   5                          temp_pm_value = 0;
+ 470   5                           
+ 471   5                          standby_trigger_time += (STANDBY_UPDATA_DATA_INTERVAL | 0x00);
+ 472   5                        
+ 473   5                        
+ 474   5      //                    temp_low = standby_trigger_time & 0xFFFF;     
+ 475   5      //                    temp_high = (standby_trigger_time >> 16) & 0xFFFF;   
+ 476   5      //                    mymemset(debug_buff,0,30);
+ 477   5      //                    sprintf(debug_buff,"trigger time:0x%x%4x\n",(unsigned int)temp_high,(unsigned int)te
+             -mp_low);
+ 478   5      //                    DEBUG_Uart_Sendbytes(debug_buff,mystrlen(debug_buff));  
+ 479   5                      } 
+C51 COMPILER V9.52.0.0   SYS_RUN                                                           01/03/2018 18:09:19 PAGE 9   
+
+ 480   4                    
+ 481   4                  }
+ 482   3            
+ 483   3              }
+ 484   2              
+ 485   2          }
+ 486   1          
+ 487   1       exit:
+ 488   1          
+ 489   1          if(display_pm_value < 2)
+ 490   1          {
+ 491   2              display_pm_value = 2;
+ 492   2          }
+ 493   1          
+ 494   1          return;
+ 495   1          
+ 496   1          
+ 497   1      }
+ 498          
+ 499          
+ 500          
+ 501          //‘⁄◊‘∂Øƒ£ Ωœ¬£¨∑Áª˙µµŒª«–ªª∫Û10√Î÷”ƒ⁄≤ª‘ –Ì‘Ÿ¥Œ«–ªª£¨∑Ò‘ÚPM‘⁄¡ŸΩÁ÷µ ±ª·∑«≥£∆µ∑±µƒ«–ªªµµŒª£¨ÃÂ—È≤ª∫√
+ 502          void sys_smart_mode(void)
+ 503          {
+ 504   1          
+ 505   1          static bit speed_changed = 0;   //∑¿÷πPM≈®∂»‘⁄¡ŸΩÁ÷µ ±£¨∆µ∑±«–ªªµµŒª
+ 506   1          static bit IsLedChange = 0;
+ 507   1          static unsigned long speed_changed_time = 0;   //…œ¥Œ«–ªª∑Áµ≤ ±µƒ ±º‰
+ 508   1        
+ 509   1          const unsigned char speed_continue_time = 10;  //10√Î÷”ƒ⁄≤ªƒ‹‘Ÿ¥Œ«–ªª∑Áµ≤
+ 510   1        
+ 511   1          unsigned long nowtime = 0;
+ 512   1        
+ 513   1          
+ 514   1        
+ 515   1          if((cost_info.IsCostType == 1 && cost_info.IsHavetime == 0) || sys_mode == STANDBY)
+ 516   1          {
+ 517   2              return;
+ 518   2          }
+ 519   1          
+ 520   1          nowtime = get_sys_stime();
+ 521   1          
+ 522   1          if(speed_changed == 1)
+ 523   1          {
+ 524   2              //∑Áª˙µµŒª∏’«–ªªπ˝£¨10√Î“‘∫Û≤≈ƒ‹«–ªª
+ 525   2              if(nowtime <= (speed_changed_time + speed_continue_time))
+ 526   2              {
+ 527   3                  return;
+ 528   3              }
+ 529   2              else
+ 530   2              {
+ 531   3                  speed_changed = 0;
+ 532   3              }
+ 533   2              
+ 534   2          }
+ 535   1          
+ 536   1          if(display_pm_value < PM25_QUIET_SPEED )
+ 537   1          {
+ 538   2              if(speed_dang != QUIET_SPEED)
+ 539   2              {
+ 540   3                  speed_dang = QUIET_SPEED;
+ 541   3                  IsSpeedChanged = 1;
+C51 COMPILER V9.52.0.0   SYS_RUN                                                           01/03/2018 18:09:19 PAGE 10  
+
+ 542   3                  speed_changed = 1;
+ 543   3                  IsLedChange = 1;
+ 544   3              }       
+ 545   2          }
+ 546   1          else if(display_pm_value < PM25_LOW_SPEED)
+ 547   1          {
+ 548   2              if(speed_dang != LOW_SPEED)
+ 549   2              {
+ 550   3                  speed_dang = LOW_SPEED;
+ 551   3                  IsSpeedChanged = 1;
+ 552   3                  speed_changed = 1;
+ 553   3                  IsLedChange = 1;
+ 554   3              }  
+ 555   2          }
+ 556   1          else
+ 557   1          {
+ 558   2              if(speed_dang != HIGH_SPEED)
+ 559   2              {
+ 560   3                  speed_dang = HIGH_SPEED;
+ 561   3                  IsSpeedChanged = 1;
+ 562   3                  speed_changed = 1;
+ 563   3                  IsLedChange = 1;
+ 564   3              }
+ 565   2          }   
+ 566   1      
+ 567   1          if(IsLedChange == 1)
+ 568   1          {
+ 569   2              //◊‘∂Øƒ£ Ωœ¬£¨∑Áµ≤±‰∫Û£¨LEDµ∆“≤“™œ‡”¶µƒ±‰ªØ
+ 570   2              TM1620_LED_Control(speed_dang + 1,LED_ON);
+ 571   2              IsLedChange = 0;       
+ 572   2          }      
+ 573   1      
+ 574   1      }
+ 575          
+ 576          
+ 577          
+ 578          
+ 579          
+ 580          //œµÕ≥‘À–– ±£¨»Áπ˚”–»À ÷∂Ø∞—≤÷√≈πÿ±’¡À£¨‘Úª˙∆˜Ω¯»Î¥˝ª˙ƒ£ Ω
+ 581          //ºÏ≤‚∑Ω∑®£∫100msºÏ≤‚“ª¥Œ≤÷√≈£¨»Áπ˚¡¨–¯2√Î÷”≤÷√≈∂º «πÿ±’µƒ£¨‘Úª˙∆˜Ω¯»Î¥˝ª˙ƒ£ Ω
+ 582          #define MAX_DOOR_CLOSE_TIMES    20
+ 583          void check_if_doorclose_manual(void)
+ 584          {
+ 585   1          static unsigned char check_doorclose_times = 0;
+ 586   1          unsigned long nowtime = 0;
+ 587   1          
+ 588   1        
+ 589   1          if(sys_mode == RUNNING)
+ 590   1          {
+ 591   2              nowtime = get_sys_stime();
+ 592   2              if(nowtime >= (sys_start_time + 10))
+ 593   2              {
+ 594   3                  if(g_100ms_flag == 1)
+ 595   3                  {
+ 596   4                      if(DOOR_CHECK_PIN == 1)
+ 597   4                      {
+ 598   5                          check_doorclose_times += 1;
+ 599   5                      }
+ 600   4                      else
+ 601   4                      {
+ 602   5                          check_doorclose_times = 0;
+ 603   5                      }
+C51 COMPILER V9.52.0.0   SYS_RUN                                                           01/03/2018 18:09:19 PAGE 11  
+
+ 604   4                      
+ 605   4                      if(check_doorclose_times >= MAX_DOOR_CLOSE_TIMES)
+ 606   4                      {
+ 607   5                          if(sys_mode == RUNNING)
+ 608   5                          {
+ 609   6                              sys_stop();
+ 610   6                              check_doorclose_times = 0;
+ 611   6                          }
+ 612   5      
+ 613   5                      }
+ 614   4                  }
+ 615   3              }
+ 616   2          }
+ 617   1      
+ 618   1      }
+ 619          
+ 620          
+ 621          void set_sys_to_smart_mode(void)
+ 622          {
+ 623   1          run_mode = 1;
+ 624   1          TM1620_LED_Control(LED_AUTO_MODE,LED_ON);
+ 625   1      }
+ 626          
+ 627          void stop_sys_smart_mode(void)
+ 628          {
+ 629   1          run_mode = 0;
+ 630   1          TM1620_LED_Control(LED_AUTO_MODE,LED_OFF);
+ 631   1      }
+ 632          
+ 633          
+ 634          
+ 635          //œµÕ≥◊‘ºÏ
+ 636          //µ±≤÷√≈πÿ±’ ±£¨≤÷√≈ºÏ≤‚“˝Ω≈ «∏ﬂµÁ∆Ω£ªµ±≤÷√≈¥Úø™ ±£¨≤÷√≈ºÏ≤‚“˝Ω≈ «µÕµÁ∆Ω
+ 637          //status «œµÕ≥ºÏ≤‚±Í÷æ£¨bit0±Ì æ≤÷√≈£¨bit1±Ì æ∑Áª˙£¨bit2±Ì æuvµ∆
+ 638          
+ 639          //sys_check_info.statusµƒbitŒªŒ™1±Ì æºÏ≤‚…Ë±∏”–Œ Ã‚£¨0±Ì æ’˝≥£
+ 640          
+ 641          //¥À∫Ø ˝µƒ÷¥––º‰∏Ù±ÿ–Î «100ms£¨“ÚŒ™FGcountµƒ≤…ºØ÷‹∆⁄ «100ms
+ 642          void sys_dev_auto_check(void)
+ 643          {
+ 644   1      
+ 645   1          //œµÕ≥ºÏ≤‚UV∫Õ∑Áª˙µƒ ±º‰
+ 646   1          static const unsigned long sys_check_time = 30;
+ 647   1          unsigned long nowtime = 0;
+ 648   1        
+ 649   1          sys_check_info.fg_count = FGcount;
+ 650   1          FGcount = 0;  
+ 651   1      
+ 652   1        
+ 653   1          //step0  πÿª˙
+ 654   1          if(sys_check_info.step == 0)
+ 655   1          {
+ 656   2              if(sys_mode == RUNNING)
+ 657   2              {
+ 658   3                  sys_stop();
+ 659   3                  //is_auto_check_complete = 0;
+ 660   3                  is_sys_auto_check = 1;
+ 661   3              }
+ 662   2              sys_check_info.step += 1;
+ 663   2              is_auto_check_complete = 0;
+ 664   2          }     
+ 665   1          else if(sys_check_info.step == 1)  //step1  ºÏ≤‚≤÷√≈ «∑Òø…“‘πÿ±’ªÚ’ﬂºÏ≤‚ø™πÿ «∑Ò”–Œ Ã‚
+C51 COMPILER V9.52.0.0   SYS_RUN                                                           01/03/2018 18:09:19 PAGE 12  
+
+ 666   1          {        
+ 667   2              if(beats == 0)
+ 668   2              {
+ 669   3                  if(DOOR_CHECK_PIN == 0)
+ 670   3                  {
+ 671   4                      //≤÷√≈π ’œ
+ 672   4                      //sys_check_info.status = ((1 << door_bit) | (1 << fan_bit) | (1 << uv_bit));
+ 673   4                      is_auto_check_complete = 1;
+ 674   4                      goto exit;
+ 675   4                  }
+ 676   3                  else
+ 677   3                  {               
+ 678   4                      sys_check_info.step += 1;
+ 679   4                  }
+ 680   3              }        
+ 681   2          }
+ 682   1          else if(sys_check_info.step == 2)    //step2  ¥Úø™ª˙∆˜
+ 683   1          {       
+ 684   2              sys_start();
+ 685   2              sys_check_info.step += 1;             
+ 686   2          }
+ 687   1          else if(sys_check_info.step == 3)    //step3 ºÏ≤‚≤÷√≈ «∑Ò¥Úø™
+ 688   1          {
+ 689   2              if(beats == 0)
+ 690   2              {
+ 691   3                  if(DOOR_CHECK_PIN == 0)
+ 692   3                  {
+ 693   4                      //≤÷√≈’˝≥£,∂‘”¶µƒbitŒª«Â¡„
+ 694   4                      sys_check_info.status &= ~(1 << door_bit);
+ 695   4                      //sys_check_info.status = 0;
+ 696   4                      sys_check_info.step += 1;
+ 697   4                  }
+ 698   3                  else
+ 699   3                  {  
+ 700   4                      //sys_check_info.status = ((1 << door_bit) | (1 << fan_bit) | (1 << uv_bit));
+ 701   4                      is_auto_check_complete = 1;
+ 702   4                      goto exit;
+ 703   4                  }
+ 704   3              }
+ 705   2                
+ 706   2              
+ 707   2          }
+ 708   1          else if(sys_check_info.step == 4)    //step4  ºÏ≤‚∑Áª˙∫ÕUVµ∆
+ 709   1          {
+ 710   2              nowtime = get_sys_stime();
+ 711   2              //ºÏ≤‚∑Áª˙∫ÕUVµ∆”––ß ±º‰20√Î
+ 712   2              if(nowtime >= (sys_start_time + 10) && nowtime <= (sys_start_time + sys_check_time))
+ 713   2              {
+ 714   3      //            if(IsUVfault == 1)
+ 715   3      //            {
+ 716   3      //                sys_check_info.status |= (1 << uv_bit);
+ 717   3      //            }
+ 718   3                  
+ 719   3      
+ 720   3                  if(sys_check_info.fg_count < (SPEED_FG_COUNT2 - 1) || sys_check_info.fg_count > (SPEED_FG_COUN
+             -T2 + 1))
+ 721   3                  //if(sys_check_info.fg_count < 12 || sys_check_info.fg_count > 14)
+ 722   3                  {              
+ 723   4                      if(sys_check_info.fan_check_fault_times < 0xFF)
+ 724   4                      {
+ 725   5                          sys_check_info.fan_check_fault_times += 1;
+ 726   5                      }
+C51 COMPILER V9.52.0.0   SYS_RUN                                                           01/03/2018 18:09:19 PAGE 13  
+
+ 727   4                  }
+ 728   3                               
+ 729   3                              
+ 730   3              }
+ 731   2              else if(nowtime > (sys_start_time + sys_check_time))
+ 732   2              {
+ 733   3                  //‘⁄Dcmoto_adj()∫Ø ˝÷–≈–∂œFGcount∑¥¿°–≈∫≈£¨100msºÏ≤‚“ª¥Œ£¨20√Îπ≤ºÏ≤‚200¥Œ£¨∑¥¿°–≈∫≈≤¢≤ª «“ª∏ˆπ
+             -Ã∂®÷µ£¨∂¯ «‘⁄“ª∂®∑∂Œßƒ⁄≤®∂Ø£¨∞¥≥ˆ¥Ì∏≈¬ Ω¯––ºÏ≤‚
+ 734   3                
+ 735   3                  if(IsUVfault == 0)
+ 736   3                  {
+ 737   4                      sys_check_info.status &= ~(1 << uv_bit);
+ 738   4                  }
+ 739   3                  
+ 740   3                  if(sys_check_info.fan_check_fault_times < 30)
+ 741   3                  {
+ 742   4                      sys_check_info.status &= ~(1 << fan_bit);
+ 743   4                  }
+ 744   3                  if((int)PM25_value > 0)
+ 745   3                  {
+ 746   4                      sys_check_info.status &= ~(1 << pm25_bit);
+ 747   4                  }
+ 748   3                  is_auto_check_complete = 1;
+ 749   3              }
+ 750   2          }
+ 751   1      
+ 752   1          
+ 753   1          
+ 754   1          
+ 755   1          
+ 756   1      exit:
+ 757   1          if(is_auto_check_complete == 1)
+ 758   1          {
+ 759   2              stop_sys_auto_check();        
+ 760   2          }
+ 761   1      }
+ 762          
+ 763          
+ 764          void start_sys_auto_check(void)
+ 765          {
+ 766   1          is_sys_auto_check = 1;
+ 767   1          is_auto_check_complete = 0;
+ 768   1          sys_check_info.step = 0;
+ 769   1          sys_check_info.status = 0xFF;
+ 770   1          sys_check_info.fan_check_fault_times = 0;  
+ 771   1          
+ 772   1      }
+ 773          
+ 774          void stop_sys_auto_check(void)
+ 775          {
+ 776   1          is_sys_auto_check = 0;
+ 777   1          
+ 778   1          if(is_auto_check_complete == 1)
+ 779   1          {
+ 780   2              sys_check_auto_result_upload();    
+ 781   2          }
+ 782   1          is_auto_check_complete = 0;
+ 783   1          if(sys_mode == RUNNING)
+ 784   1          {
+ 785   2              sys_stop();
+ 786   2          }
+ 787   1      }
+C51 COMPILER V9.52.0.0   SYS_RUN                                                           01/03/2018 18:09:19 PAGE 14  
+
+ 788          
+ 789          void start_sys_manual_check(void)
+ 790          {
+ 791   1          is_sys_manual_check = 1;
+ 792   1          sys_check_info.touch_key_check = 0;
+ 793   1          sys_check_info.start_time = get_sys_stime();
+ 794   1          Buzzer_Get_Charge();
+ 795   1          
+ 796   1      }
+ 797          
+ 798          void check_if_stop_manual_check(void)
+ 799          {
+ 800   1          // ÷∂ØºÏ≤‚µƒ◊Ó¥Û ±º‰£¨»Áπ˚3∑÷÷”ƒ⁄≤ªÕ£÷π‘Ú◊‘∂ØÕ£÷π
+ 801   1          const unsigned long check_max_time = 180;
+ 802   1          if(get_sys_stime() >= (sys_check_info.start_time + check_max_time))
+ 803   1          {        
+ 804   2              stop_sys_manual_check();
+ 805   2          }
+ 806   1      }
+ 807          
+ 808          
+ 809          void stop_sys_manual_check(void)
+ 810          {
+ 811   1          is_sys_manual_check = 0;
+ 812   1          sys_check_manual_result_upload();
+ 813   1          Buzzer_Get_Charge();
+ 814   1      }
+ 815          
+ 816          
+ 817          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   2607    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =     19      22
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      4    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

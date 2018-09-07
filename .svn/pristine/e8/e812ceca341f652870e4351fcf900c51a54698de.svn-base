@@ -1,0 +1,64 @@
+package com.yjyz.iot.ota.service.impl;
+
+import java.util.List;
+import java.util.UUID;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
+import com.yjyz.iot.ota.dao.OTAFileInfoMapper;
+import com.yjyz.iot.ota.entity.OTAFileInfo;
+import com.yjyz.iot.ota.service.IOTAFileService;
+
+@Service("otaFileService")
+public class OTAFileServiceImpl implements IOTAFileService {
+	@Resource
+	OTAFileInfoMapper OTAFileInfoDao;
+
+	@Override
+	public List<OTAFileInfo> selectByProduceId(String produceId) throws Exception {
+		return this.OTAFileInfoDao.selectByProductId(produceId);
+	}
+
+	@Override
+	public boolean deleteByPrimaryKey(Integer id) throws Exception {
+		int ret = this.OTAFileInfoDao.deleteByPrimaryKey(id);
+		if (ret == 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	// 需要增加非空保护
+	@Override
+	public OTAFileInfo insert(OTAFileInfo record) throws Exception {
+		int maxId = this.OTAFileInfoDao.getOTAFileInofMaxId();
+		record.setId(maxId + 1);
+		record.setOtaId(UUID.randomUUID().toString());
+		int ret = this.OTAFileInfoDao.insertSelective(record);
+		if (ret == 1) {
+			return record;
+		} else {
+			return null;
+		}
+
+	}
+
+	@Override
+	public boolean updateByPrimaryKey(OTAFileInfo record) throws Exception {
+		int ret = this.OTAFileInfoDao.updateByPrimaryKeySelective(record);
+		if (ret == 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public OTAFileInfo selectByPrimaryKey(Integer id) throws Exception {
+		return this.OTAFileInfoDao.selectByPrimaryKey(id);
+	}
+
+}

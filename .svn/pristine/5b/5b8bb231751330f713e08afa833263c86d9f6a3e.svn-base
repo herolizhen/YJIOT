@@ -1,0 +1,8 @@
+package com.yjyz.iot.device.service.impl;
+
+import org.springframework.stereotype.Service;
+
+@Service("devTestService")
+public class DevTestServiceImpl {
+
+}

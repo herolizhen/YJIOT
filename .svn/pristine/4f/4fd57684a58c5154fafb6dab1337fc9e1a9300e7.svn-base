@@ -1,0 +1,12 @@
+sms.taobao.url =http://gw.api.taobao.com/router/rest
+sms.taobao.appKey = 24497634
+sms.taobao.secret=3f154f2f69c6c6e751a770fdbdbd99ec
+sms.taobao.signName=\u6613\u51C0\u4F18\u667A
+sms.taobao.templateCode=SMS_74790010
+
+sms.ytx.url =app.cloopen.com
+sms.ytx.port=8883
+sms.ytx.sid = 8a48b551506fd26f015093900d066a8f
+sms.ytx.token=cbaabeed5cb941288882504c604f7060
+sms.ytx.appid=aaf98f8951a6249b0151aa71e9150889
+sms.ytx.templateCode=87820

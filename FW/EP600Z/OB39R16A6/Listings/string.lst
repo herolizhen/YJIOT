@@ -1,0 +1,584 @@
+C51 COMPILER V9.52.0.0   STRING                                                            08/24/2017 10:19:02 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE STRING
+OBJECT MODULE PLACED IN .\Objects\string.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE USER\lib\string.c LARGE OPTIMIZE(8,SPEED) BROWSE INCDIR(.\USER\IIC;.\USE
+                    -R\UART;.\USER\TM1618;.\USER\Sensor;.\USER;.\USER\PWM;.\USER\DC_MOTOR;.\USER\timer;.\USER\inc;.\USER\EXINT;.\USER\touch_k
+                    -ey;.\USER\SYS_RUN;.\USER\step_motor;.\USER\BUZZER;.\USER\UART;.\USER\common;.\USER\lib) DEBUG OBJECTEXTEND PRINT(.\Listi
+                    -ngs\string.lst) TABS(2) OBJECT(.\Objects\string.obj)
+
+line level    source
+
+   1          /*
+   2           *  linux/lib/string.c
+   3           *
+   4           *  Copyright (C) 1991, 1992  Linus Torvalds
+   5           */
+   6          
+   7          /*
+   8           * stupid library routines.. The optimized versions should generally be found
+   9           * as inline code in <asm-xx/string.h>
+  10           *
+  11           * These are buggy as well..
+  12           *
+  13           * * Fri Jun 25 1999, Ingo Oeser <ioe@informatik.tu-chemnitz.de>
+  14           * -  Added strsep() which will replace strtok() soon (because strsep() is
+  15           *    reentrant and should be faster). Use only strsep() in new code, please.
+  16           */
+  17          //#include <linux/types.h>
+  18          //#include <linux/string.h>
+  19          //#include "types.h"
+  20          #include "ctype.h"
+  21          #include "string.h"
+  22          
+  23          #ifndef __HAVE_ARCH_STRNICMP
+  24          /**
+  25           * strnicmp - Case insensitive, length-limited string comparison
+  26           * @s1: One string
+  27           * @s2: The other string
+  28           * @len: the maximum number of characters to compare
+  29           */
+  30          int strnicmp(const char *s1, const char *s2, size_t len)
+  31          {
+  32   1        /* Yes, Virginia, it had better be unsigned */
+  33   1        unsigned char c1, c2;
+  34   1      
+  35   1        c1 = 0; c2 = 0;
+  36   1        if (len) {
+  37   2          do {
+  38   3            c1 = *s1; c2 = *s2;
+  39   3            s1++; s2++;
+  40   3            if (!c1)
+  41   3              break;
+  42   3            if (!c2)
+  43   3              break;
+  44   3            if (c1 == c2)
+  45   3              continue;
+  46   3            c1 = tolower(c1);
+  47   3            c2 = tolower(c2);
+  48   3            if (c1 != c2)
+  49   3              break;
+  50   3          } while (--len);
+  51   2        }
+  52   1        return (int)c1 - (int)c2;
+C51 COMPILER V9.52.0.0   STRING                                                            08/24/2017 10:19:02 PAGE 2   
+
+  53   1      }
+  54          #endif
+  55          
+  56          char * ___strtok;
+  57          
+  58          #ifndef __HAVE_ARCH_STRCPY
+  59          /**
+  60           * strcpy - Copy a %NUL terminated string
+  61           * @dest: Where to copy the string to
+  62           * @src: Where to copy the string from
+  63           */
+  64          char * strcpy(char * dest,const char *src)
+  65          {
+  66   1        char *tmp = dest;
+  67   1      
+  68   1        while ((*dest++ = *src++) != '\0')
+  69   1          /* nothing */;
+  70   1        return tmp;
+  71   1      }
+*** WARNING C231 IN LINE 71 OF USER\lib\string.c: '_strcpy': attempt to redefine intrinsic function
+  72          #endif
+  73          
+  74          #ifndef __HAVE_ARCH_STRNCPY
+  75          /**
+  76           * strncpy - Copy a length-limited, %NUL-terminated string
+  77           * @dest: Where to copy the string to
+  78           * @src: Where to copy the string from
+  79           * @count: The maximum number of bytes to copy
+  80           *
+  81           * Note that unlike userspace strncpy, this does not %NUL-pad the buffer.
+  82           * However, the result is not %NUL-terminated if the source exceeds
+  83           * @count bytes.
+  84           */
+  85          char * strncpy(char * dest,const char *src,size_t count)
+  86          {
+  87   1        char *tmp = dest;
+  88   1      
+  89   1        while (count-- && (*dest++ = *src++) != '\0')
+  90   1          /* nothing */;
+  91   1      
+  92   1        return tmp;
+  93   1      }
+  94          #endif
+  95          
+  96          #ifndef __HAVE_ARCH_STRCAT
+  97          /**
+  98           * strcat - Append one %NUL-terminated string to another
+  99           * @dest: The string to be appended to
+ 100           * @src: The string to append to it
+ 101           */
+ 102          char * strcat(char * dest, const char * src)
+ 103          {
+ 104   1        char *tmp = dest;
+ 105   1      
+ 106   1        while (*dest)
+ 107   1          dest++;
+ 108   1        while ((*dest++ = *src++) != '\0')
+ 109   1          ;
+ 110   1      
+ 111   1        return tmp;
+ 112   1      }
+ 113          #endif
+C51 COMPILER V9.52.0.0   STRING                                                            08/24/2017 10:19:02 PAGE 3   
+
+ 114          
+ 115          #ifndef __HAVE_ARCH_STRNCAT
+ 116          /**
+ 117           * strncat - Append a length-limited, %NUL-terminated string to another
+ 118           * @dest: The string to be appended to
+ 119           * @src: The string to append to it
+ 120           * @count: The maximum numbers of bytes to copy
+ 121           *
+ 122           * Note that in contrast to strncpy, strncat ensures the result is
+ 123           * terminated.
+ 124           */
+ 125          char * strncat(char *dest, const char *src, size_t count)
+ 126          {
+ 127   1        char *tmp = dest;
+ 128   1      
+ 129   1        if (count) {
+ 130   2          while (*dest)
+ 131   2            dest++;
+ 132   2          while ((*dest++ = *src++)) {
+ 133   3            if (--count == 0) {
+ 134   4              *dest = '\0';
+ 135   4              break;
+ 136   4            }
+ 137   3          }
+ 138   2        }
+ 139   1      
+ 140   1        return tmp;
+ 141   1      }
+ 142          #endif
+ 143          
+ 144          #ifndef __HAVE_ARCH_STRCMP
+ 145          /**
+ 146           * strcmp - Compare two strings
+ 147           * @cs: One string
+ 148           * @ct: Another string
+ 149           */
+ 150          int strcmp(const char * cs,const char * ct)
+ 151          {
+ 152   1        register signed char __res;
+ 153   1      
+ 154   1        while (1) {
+ 155   2          if ((__res = *cs - *ct++) != 0 || !*cs++)
+ 156   2            break;
+ 157   2        }
+ 158   1      
+ 159   1        return __res;
+ 160   1      }
+*** WARNING C231 IN LINE 160 OF USER\lib\string.c: '_strcmp': attempt to redefine intrinsic function
+ 161          #endif
+ 162          
+ 163          #ifndef __HAVE_ARCH_STRNCMP
+ 164          /**
+ 165           * strncmp - Compare two length-limited strings
+ 166           * @cs: One string
+ 167           * @ct: Another string
+ 168           * @count: The maximum number of bytes to compare
+ 169           */
+ 170          int strncmp(const char * cs,const char * ct,size_t count)
+ 171          {
+ 172   1        register signed char __res = 0;
+ 173   1      
+ 174   1        while (count) {
+C51 COMPILER V9.52.0.0   STRING                                                            08/24/2017 10:19:02 PAGE 4   
+
+ 175   2          if ((__res = *cs - *ct++) != 0 || !*cs++)
+ 176   2            break;
+ 177   2          count--;
+ 178   2        }
+ 179   1      
+ 180   1        return __res;
+ 181   1      }
+ 182          #endif
+ 183          
+ 184          #ifndef __HAVE_ARCH_STRCHR
+ 185          /**
+ 186           * strchr - Find the first occurrence of a character in a string
+ 187           * @s: The string to be searched
+ 188           * @c: The character to search for
+ 189           */
+ 190          char * strchr(const char * s, int c)
+ 191          {
+ 192   1        for(; *s != (char) c; ++s)
+ 193   1          if (*s == '\0')
+ 194   1            return NULL;
+ 195   1        return (char *) s;
+ 196   1      }
+ 197          #endif
+ 198          
+ 199          #ifndef __HAVE_ARCH_STRRCHR
+ 200          /**
+ 201           * strrchr - Find the last occurrence of a character in a string
+ 202           * @s: The string to be searched
+ 203           * @c: The character to search for
+ 204           */
+ 205          char * strrchr(const char * s, int c)
+ 206          {
+ 207   1             const char *p = s + strlen(s);
+ 208   1             do {
+ 209   2                 if (*p == (char)c)
+ 210   2                     return (char *)p;
+ 211   2             } while (--p >= s);
+ 212   1             return NULL;
+ 213   1      }
+ 214          #endif
+ 215          
+ 216          #ifndef __HAVE_ARCH_STRLEN
+ 217          /**
+ 218           * strlen - Find the length of a string
+ 219           * @s: The string to be sized
+ 220           */
+ 221          size_t strlen(const char * s)
+ 222          {
+ 223   1        const char *sc;
+ 224   1      
+ 225   1        for (sc = s; *sc != '\0'; ++sc)
+ 226   1          /* nothing */;
+ 227   1        return sc - s;
+ 228   1      }
+ 229          #endif
+ 230          
+ 231          #ifndef __HAVE_ARCH_STRNLEN
+ 232          /**
+ 233           * strnlen - Find the length of a length-limited string
+ 234           * @s: The string to be sized
+ 235           * @count: The maximum number of bytes to search
+ 236           */
+C51 COMPILER V9.52.0.0   STRING                                                            08/24/2017 10:19:02 PAGE 5   
+
+ 237          size_t strnlen(const char * s, size_t count)
+ 238          {
+ 239   1        const char *sc;
+ 240   1      
+ 241   1        for (sc = s; count-- && *sc != '\0'; ++sc)
+ 242   1          /* nothing */;
+ 243   1        return sc - s;
+ 244   1      }
+ 245          #endif
+ 246          
+ 247          #ifndef __HAVE_ARCH_STRSPN
+ 248          /**
+ 249           * strspn - Calculate the length of the initial substring of @s which only
+ 250           *  contain letters in @accept
+ 251           * @s: The string to be searched
+ 252           * @accept: The string to search for
+ 253           */
+ 254          size_t strspn(const char *s, const char *accept)
+ 255          {
+ 256   1        const char *p;
+ 257   1        const char *a;
+ 258   1        size_t count = 0;
+ 259   1      
+ 260   1        for (p = s; *p != '\0'; ++p) {
+ 261   2          for (a = accept; *a != '\0'; ++a) {
+ 262   3            if (*p == *a)
+ 263   3              break;
+ 264   3          }
+ 265   2          if (*a == '\0')
+ 266   2            return count;
+ 267   2          ++count;
+ 268   2        }
+ 269   1      
+ 270   1        return count;
+ 271   1      }
+ 272          #endif
+ 273          
+ 274          #ifndef __HAVE_ARCH_STRPBRK
+ 275          /**
+ 276           * strpbrk - Find the first occurrence of a set of characters
+ 277           * @cs: The string to be searched
+ 278           * @ct: The characters to search for
+ 279           */
+ 280          char * strpbrk(const char * cs,const char * ct)
+ 281          {
+ 282   1        const char *sc1,*sc2;
+ 283   1      
+ 284   1        for( sc1 = cs; *sc1 != '\0'; ++sc1) {
+ 285   2          for( sc2 = ct; *sc2 != '\0'; ++sc2) {
+ 286   3            if (*sc1 == *sc2)
+ 287   3              return (char *) sc1;
+ 288   3          }
+ 289   2        }
+ 290   1        return NULL;
+ 291   1      }
+ 292          #endif
+ 293          
+ 294          #ifndef __HAVE_ARCH_STRTOK
+ 295          /**
+ 296           * strtok - Split a string into tokens
+ 297           * @s: The string to be searched
+ 298           * @ct: The characters to search for
+C51 COMPILER V9.52.0.0   STRING                                                            08/24/2017 10:19:02 PAGE 6   
+
+ 299           *
+ 300           * WARNING: strtok is deprecated, use strsep instead.
+ 301           */
+ 302          char * strtok(char * s,const char * ct)
+ 303          {
+ 304   1        char *sbegin, *send;
+ 305   1      
+ 306   1        sbegin  = s ? s : ___strtok;
+ 307   1        if (!sbegin) {
+ 308   2          return NULL;
+ 309   2        }
+ 310   1        sbegin += strspn(sbegin,ct);
+ 311   1        if (*sbegin == '\0') {
+ 312   2          ___strtok = NULL;
+ 313   2          return( NULL );
+ 314   2        }
+ 315   1        send = strpbrk( sbegin, ct);
+ 316   1        if (send && *send != '\0')
+ 317   1          *send++ = '\0';
+ 318   1        ___strtok = send;
+ 319   1        return (sbegin);
+ 320   1      }
+ 321          #endif
+ 322          
+ 323          #ifndef __HAVE_ARCH_STRSEP
+ 324          /**
+ 325           * strsep - Split a string into tokens
+ 326           * @s: The string to be searched
+ 327           * @ct: The characters to search for
+ 328           *
+ 329           * strsep() updates @s to point after the token, ready for the next call.
+ 330           *
+ 331           * It returns empty tokens, too, behaving exactly like the libc function
+ 332           * of that name. In fact, it was stolen from glibc2 and de-fancy-fied.
+ 333           * Same semantics, slimmer shape. ;)
+ 334           */
+ 335          char * strsep(char **s, const char *ct)
+ 336          {
+ 337   1        char *sbegin = *s, *end;
+ 338   1      
+ 339   1        if (sbegin == NULL)
+ 340   1          return NULL;
+ 341   1      
+ 342   1        end = strpbrk(sbegin, ct);
+ 343   1        if (end)
+ 344   1          *end++ = '\0';
+ 345   1        *s = end;
+ 346   1      
+ 347   1        return sbegin;
+ 348   1      }
+ 349          #endif
+ 350          
+ 351          #ifndef __HAVE_ARCH_MEMSET
+ 352          /**
+ 353           * memset - Fill a region of memory with the given value
+ 354           * @s: Pointer to the start of the area.
+ 355           * @c: The byte to fill the area with
+ 356           * @count: The size of the area.
+ 357           *
+ 358           * Do not use memset() to access IO space, use memset_io() instead.
+ 359           */
+ 360          void * memset(void * s,int c,size_t count)
+C51 COMPILER V9.52.0.0   STRING                                                            08/24/2017 10:19:02 PAGE 7   
+
+ 361          {
+ 362   1        char *xs = (char *) s;
+ 363   1      
+ 364   1        while (count--)
+ 365   1          *xs++ = c;
+ 366   1      
+ 367   1        return s;
+ 368   1      }
+*** WARNING C231 IN LINE 368 OF USER\lib\string.c: '_memset': attempt to redefine intrinsic function
+ 369          #endif
+ 370          
+ 371          #ifndef __HAVE_ARCH_BCOPY
+ 372          /**
+ 373           * bcopy - Copy one area of memory to another
+ 374           * @src: Where to copy from
+ 375           * @dest: Where to copy to
+ 376           * @count: The size of the area.
+ 377           *
+ 378           * Note that this is the same as memcpy(), with the arguments reversed.
+ 379           * memcpy() is the standard, bcopy() is a legacy BSD function.
+ 380           *
+ 381           * You should not use this function to access IO space, use memcpy_toio()
+ 382           * or memcpy_fromio() instead.
+ 383           */
+ 384          void bcopy(const void *src, void *dest, size_t count)
+ 385          {
+ 386   1        char *destTmp = (char *)dest;
+ 387   1        char *srcTmp = (char *)src;
+ 388   1      
+ 389   1        while (count--)
+ 390   1          *destTmp++ = *srcTmp++;
+ 391   1      }
+ 392          #endif
+ 393          
+ 394          #ifndef __HAVE_ARCH_MEMCPY
+ 395          /**
+ 396           * memcpy - Copy one area of memory to another
+ 397           * @dest: Where to copy to
+ 398           * @src: Where to copy from
+ 399           * @count: The size of the area.
+ 400           *
+ 401           * You should not use this function to access IO space, use memcpy_toio()
+ 402           * or memcpy_fromio() instead.
+ 403           */
+ 404          void * memcpy(void * dest,const void *src,size_t count)
+ 405          {
+ 406   1        char *tmp = (char *) dest, *s = (char *) src;
+ 407   1      
+ 408   1        while (count--)
+ 409   1          *tmp++ = *s++;
+ 410   1      
+ 411   1        return dest;
+ 412   1      }
+*** WARNING C231 IN LINE 412 OF USER\lib\string.c: '_memcpy': attempt to redefine intrinsic function
+ 413          #endif
+ 414          
+ 415          #ifndef __HAVE_ARCH_MEMMOVE
+ 416          /**
+ 417           * memmove - Copy one area of memory to another
+ 418           * @dest: Where to copy to
+ 419           * @src: Where to copy from
+ 420           * @count: The size of the area.
+C51 COMPILER V9.52.0.0   STRING                                                            08/24/2017 10:19:02 PAGE 8   
+
+ 421           *
+ 422           * Unlike memcpy(), memmove() copes with overlapping areas.
+ 423           */
+ 424          void * memmove(void * dest,const void *src,size_t count)
+ 425          {
+ 426   1        char *tmp, *s;
+ 427   1      
+ 428   1        if (dest <= src) {
+ 429   2          tmp = (char *) dest;
+ 430   2          s = (char *) src;
+ 431   2          while (count--)
+ 432   2            *tmp++ = *s++;
+ 433   2          }
+ 434   1        else {
+ 435   2          tmp = (char *) dest + count;
+ 436   2          s = (char *) src + count;
+ 437   2          while (count--)
+ 438   2            *--tmp = *--s;
+ 439   2          }
+ 440   1      
+ 441   1        return dest;
+ 442   1      }
+*** WARNING C231 IN LINE 442 OF USER\lib\string.c: '_memmove': attempt to redefine intrinsic function
+ 443          #endif
+ 444          
+ 445          #ifndef __HAVE_ARCH_MEMCMP
+ 446          /**
+ 447           * memcmp - Compare two areas of memory
+ 448           * @cs: One area of memory
+ 449           * @ct: Another area of memory
+ 450           * @count: The size of the area.
+ 451           */
+ 452          int memcmp(const void * cs,const void * ct,size_t count)
+ 453          {
+ 454   1        const unsigned char *su1, *su2;
+ 455   1        int res = 0;
+ 456   1      
+ 457   1        for( su1 = (const unsigned char *)cs, su2 = (const unsigned char *)ct; 0 < count; ++su1, ++su2, count--)
+ 458   1          if ((res = *su1 - *su2) != 0)
+ 459   1            break;
+ 460   1        return res;
+ 461   1      }
+*** WARNING C231 IN LINE 461 OF USER\lib\string.c: '_memcmp': attempt to redefine intrinsic function
+ 462          #endif
+ 463          
+ 464          #ifndef __HAVE_ARCH_MEMSCAN
+ 465          /**
+ 466           * memscan - Find a character in an area of memory.
+ 467           * @addr: The memory area
+ 468           * @c: The byte to search for
+ 469           * @size: The size of the area.
+ 470           *
+ 471           * returns the address of the first occurrence of @c, or 1 byte past
+ 472           * the area if @c is not found
+ 473           */
+ 474          void * memscan(void * addr, int c, size_t size)
+ 475          {
+ 476   1        unsigned char * p = (unsigned char *) addr;
+ 477   1      
+ 478   1        while (size) {
+ 479   2          if (*p == c)
+ 480   2            return (void *) p;
+C51 COMPILER V9.52.0.0   STRING                                                            08/24/2017 10:19:02 PAGE 9   
+
+ 481   2          p++;
+ 482   2          size--;
+ 483   2        }
+ 484   1          return (void *) p;
+ 485   1      }
+ 486          #endif
+ 487          
+ 488          #ifndef __HAVE_ARCH_STRSTR
+ 489          /**
+ 490           * strstr - Find the first substring in a %NUL terminated string
+ 491           * @s1: The string to be searched
+ 492           * @s2: The string to search for
+ 493           */
+ 494          char * strstr(const char * s1,const char * s2)
+ 495          {
+ 496   1        int l1, l2;
+ 497   1      
+ 498   1        l2 = strlen(s2);
+ 499   1        if (!l2)
+ 500   1          return (char *) s1;
+ 501   1        l1 = strlen(s1);
+ 502   1        while (l1 >= l2) {
+ 503   2          l1--;
+ 504   2          if (!memcmp(s1,s2,l2))
+ 505   2            return (char *) s1;
+ 506   2          s1++;
+ 507   2        }
+ 508   1        return NULL;
+ 509   1      }
+ 510          #endif
+ 511          
+ 512          #ifndef __HAVE_ARCH_MEMCHR
+ 513          /**
+ 514           * memchr - Find a character in an area of memory.
+ 515           * @s: The memory area
+ 516           * @c: The byte to search for
+ 517           * @n: The size of the area.
+ 518           *
+ 519           * returns the address of the first occurrence of @c, or %NULL
+ 520           * if @c is not found
+ 521           */
+ 522          void *memchr(const void *s, int c, size_t n)
+ 523          {
+ 524   1        const unsigned char *p = (const unsigned char *)s;
+ 525   1        while (n-- != 0) {
+ 526   2                if ((unsigned char)c == *p++) {
+ 527   3            return (void *)(p-1);
+ 528   3          }
+ 529   2        }
+ 530   1        return NULL;
+ 531   1      }
+*** WARNING C231 IN LINE 531 OF USER\lib\string.c: '_memchr': attempt to redefine intrinsic function
+ 532          
+ 533          #endif
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   2670    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      3     226
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+C51 COMPILER V9.52.0.0   STRING                                                            08/24/2017 10:19:02 PAGE 10  
+
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  7 WARNING(S),  0 ERROR(S)

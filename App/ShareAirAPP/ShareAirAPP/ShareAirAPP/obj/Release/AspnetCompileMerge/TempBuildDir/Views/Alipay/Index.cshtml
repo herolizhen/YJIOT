@@ -1,0 +1,1261 @@
+﻿@using YJIOT.ShareAirAPP.ViewModel
+@using YJIOT.ShareAirAPP.Models
+@model ShareProcessViewModel
+
+@if (Model.Step == ShareStep.Use)
+{
+    <div class="app-center app-content-bottom">
+        <div class="title">
+            <div class="title-logo">
+                <img src="~/Content/Icon/logo.png" class="logo" />
+            </div>
+            <img src="~/Content/Image/order-top.png" width="100%" />
+        </div>
+        <div class="dev-info">
+            <div class="weui-form-preview font-color">
+                <div class="weui-form-preview__bd">
+                    @if (Model.IsUse)
+                {
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">订单状态</label>
+                        <span class="weui-form-preview__value">此设备正在使用</span>
+                    </div>
+                    }
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">消费地点</label>
+                        <span class="weui-form-preview__value">@Model.OwnerName</span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">选择套餐</label>
+                        <span class="weui-form-preview__value">@Model.Attach["Use_typeName"]</span>
+                    </div>
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">支付金额</label>
+                        <span class="weui-form-preview__value">￥@Model.Attach["Use_totalFree"]</span>
+                    </div>
+                    @if (Model.IsUse)
+                {
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">剩余时长</label>
+                        <span class="weui-form-preview__value">@Model.Attach["Use_datetime"]</span>
+                    </div>
+                    }
+                    else
+                    {
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">使用时长</label>
+                        <span class="weui-form-preview__value">@Model.Attach["Use_chips"]</span>
+                    </div>
+                    }
+                    <div class="weui-form-preview__item">
+                        <label class="weui-form-preview__label">支付时间</label>
+                        <span class="weui-form-preview__value">@Model.Attach["Use_billBeing"]</span>
+                    </div>
+                </div>
+            </div>
+            @if (Model.IsUse)
+            {
+            <img src="~/Content/Image/use-1.png" class="dev-info-use" />
+            }
+            else
+            {
+            <img src="~/Content/Image/use-0.png" class="dev-info-use" />
+            }
+        </div>
+        <div class="weui-btn-area">
+            @if (Model.IsUse)
+            {
+            <a onclick="onSubmit(true)" class="weui-btn weui-btn_primary" style="background:#13B8F5;">继续使用</a>
+            }
+            else
+            {
+            <a onclick="onSubmit(false)" class="weui-btn weui-btn_primary" style="background:#13B8F5;">续费使用</a>
+            }
+        </div>
+        @using (Html.BeginForm("Index", "Alipay", FormMethod.Post, new { id = "ShareProcess" }))
+        {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Step)
+        @Html.HiddenFor(m => m.OpenID)
+        @Html.HiddenFor(m => m.IotToken)
+        @Html.HiddenFor(m => m.DeviceID)
+        @Html.HiddenFor(m => m.DevicePwd)
+        @Html.HiddenFor(m => m.DeviceMac)
+        @Html.HiddenFor(m => m.OwnerName)
+        @Html.HiddenFor(m => m.Position)
+        @Html.HiddenFor(m => m.Longitude)
+        @Html.HiddenFor(m => m.Latitude)
+        @Html.HiddenFor(m => m.IsAgree)
+        @Html.HiddenFor(m => m.IsUse)
+        }
+        <div class="weui-footer">
+            <p class="weui-footer__text">Copyright © 2017 一方净土•共享好空气</p>
+        </div>
+    </div>
+}
+@if (Model.Step == ShareStep.One)
+{
+    <div class="app-content app-content-bottom">
+        <img onclick="openUs()" src="~/Content/Icon/us.png" class="iconbtn" style="top:45%;" />
+        <img onclick="openFeedback()" src="~/Content/Icon/feedback.png" class="iconbtn" style="top:60%;" />
+        <div class="top">
+            <img id="img-title" src="/Content/Image/one-top-0.png" width="100%" />
+            <div class="top-title">
+                <p>
+                    <img src="~/Content/Icon/address.png" class="app-icon" />
+                    <span>@Model.OwnerName</span>
+                    <span>｜</span>
+                    <span style="margin-right:15px;">@Model.Position</span>
+                </p>
+                <p>
+                    <img src="~/Content/Icon/aqi-0.png" class="app-icon" />
+                    <span>室内空气质量：</span>
+                    <span id="aqi-text" style="margin-right:15px;">中度污染</span>
+                </p>
+            </div>
+        </div>
+        <div class="btn">
+            <img id="img-submit" onclick="onSubmit()" src="/Content/Icon/one-btn-0.png" width="100%" />
+        </div>
+        @using (Html.BeginForm("Index", "Alipay", FormMethod.Post, new { id = "ShareProcess" }))
+        {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Step)
+        @Html.HiddenFor(m => m.OpenID)
+        @Html.HiddenFor(m => m.IotToken)
+        @Html.HiddenFor(m => m.DeviceID)
+        @Html.HiddenFor(m => m.DevicePwd)
+        @Html.HiddenFor(m => m.DeviceMac)
+        @Html.HiddenFor(m => m.OwnerName)
+        @Html.HiddenFor(m => m.Position)
+        @Html.HiddenFor(m => m.Longitude)
+        @Html.HiddenFor(m => m.Latitude)
+
+        <p style="width:100%;text-align:center;">
+            @Html.CheckBoxFor(m => m.IsAgree, new { @class = "aui-checkbox" })
+            <span class="text">我已阅读并接受</span>
+            <a onclick="onAgreement()" class="btn-link">《用户服务协议》</a>
+        </p>
+
+        }
+    </div>
+    <div id="Agreement" class="weui-popup__container">
+        <div class="weui-popup__overlay"></div>
+        <div class="weui-popup__modal" style="background:#F8F8F8;">
+            @RenderPage("~/Views/Shared/Agreement.cshtml")
+        </div>
+    </div>
+    <div id="open-feedback" class="weui-popup__container">
+        <div class="weui-popup__overlay"></div>
+        <div class="weui-popup__modal" style="background:#F8F8F8;">
+            <div class="app-content">
+                <div class="weui-cells weui-cells_form">
+                    <div class="weui-cells__title">请留联系方式</div>
+                    <div class="weui-cells">
+                        <div class="weui-cell">
+                            <div class="weui-cell__bd">
+                                <input id="input-phone" class="weui-input" type="number" pattern="[0-9]*" placeholder="请输入您的手机号码" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="weui-cells__title">问题主题</div>
+                    <div class="weui-cells weui-cells_checkbox">
+                        <div class="weui-cell">
+                            <div class="weui-cell__bd">
+                                <input id="input-title" class="weui-input" type="text" placeholder="请输入问题主题">
+                            </div>
+                        </div>
+                        @for (int i = 0; i < Model.FeedbackTitle.Count; i++)
+                        {
+                        <label onclick="onRadioTitle('@Model.FeedbackTitle[i]');" class="weui-cell weui-check__label" for="radiotitle-@i">
+                            <div class="weui-cell__hd">
+                                <input type="radio" class="weui-check" name="radiotitle" id="radiotitle-@i" />
+                                <i class="weui-icon-checked"></i>
+                            </div>
+                            <div class="weui-cell__bd">
+                                <p>@Model.FeedbackTitle[i]</p>
+                            </div>
+                        </label>
+                        }
+                    </div>
+
+                    <div class="weui-cells__title">内容描述</div>
+                    <div class="weui-cells weui-cells_form">
+                        <div class="weui-cell">
+                            <div class="weui-cell__bd">
+                                <textarea id="input-content" class="weui-textarea" placeholder="请输入问题反馈内容描述" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="weui-btn-area" style="padding:15px 0;">
+                    <a onclick="submitFeedback()" class="weui-btn weui-btn_primary" style="background:#13B8F5;">提交</a>
+                    <a onclick="closeFeedback()" class="weui-btn weui-btn_warn">关闭</a>
+                </div>
+                <div class="weui-footer">
+                    <p class="weui-footer__text">Copyright © 2017 一方净土•共享好空气</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@if (Model.Step == ShareStep.Two)
+{
+    <div class="app-content app-content-bottom">
+        <div class="title">
+            <img src="~/Content/Icon/logo.png" class="logo" />
+        </div>
+        <div class="list-box">
+            <img src="~/Content/Image/page-hr.png" width="100%" class="hr" />
+            @foreach (var item in Model.Types)
+            {
+            <div class="list-item">
+                <div onclick="onSubmit(@item.Chips,@item.Price,{Type_Name:'@item.Type_Name',ChipsTitle:'@item.ChipsTitle',ChipsText:'@item.ChipsText'})" class="content-item">
+                    <div class="weui-flex">
+                        <div class="weui-flex__item content-item-title">
+                            <h3>@item.Type_Name</h3>
+                        </div>
+                        <div class="weui-flex__item content-item-text">
+                            <p><h4>￥@item.ChipsTitle</h4></p>
+                            <p>@item.ChipsText</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+        @using (Html.BeginForm("Index", "Alipay", FormMethod.Post, new { id = "ShareProcess" }))
+        {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Payment)
+        @Html.HiddenFor(m => m.Chips)
+        @Html.HiddenFor(m => m.Step)
+        @Html.HiddenFor(m => m.OpenID)
+        @Html.HiddenFor(m => m.IotToken)
+        @Html.HiddenFor(m => m.DeviceID)
+        @Html.HiddenFor(m => m.DevicePwd)
+        @Html.HiddenFor(m => m.DeviceMac)
+        @Html.HiddenFor(m => m.OwnerName)
+        @Html.HiddenFor(m => m.Position)
+        @Html.HiddenFor(m => m.Longitude)
+        @Html.HiddenFor(m => m.Latitude)
+        @Html.HiddenFor(m => m.jsonAttach)
+        }
+    </div>
+}
+@if (Model.Step == ShareStep.Three)
+{
+    <div class="app-content app-content-bottom">
+        <div class="title">
+            <img src="~/Content/Icon/logo-0.png" class="logo" />
+        </div>
+        <div class="weui-flex">
+            <div class="weui-flex__item app-center" style="padding:5px 0;">
+                <h3 class="app-font-color">一方净土——@Model.Attach["Type_Name"]</h3>
+            </div>
+        </div>
+        <div class="weui-form-preview app-background font-color">
+            <div class="weui-form-preview__hd">
+                <label class="weui-form-preview__label">本次支付</label>
+                <em class="weui-form-preview__value">¥@Model.Attach["Chips"]</em>
+            </div>
+            <div class="weui-form-preview__bd">
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">消费地点</label>
+                    <span class="weui-form-preview__value">@Model.OwnerName</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">选择套餐</label>
+                    <span class="weui-form-preview__value">@Model.Attach["Type_Name"]</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">支付时间</label>
+                    <span class="weui-form-preview__value">@Model.Attach["DateTime"]</span>
+                </div>
+                <div class="weui-form-preview__item">
+                    <label class="weui-form-preview__label">使用时长</label>
+                    <span class="weui-form-preview__value">@Model.Attach["ChipsText"]</span>
+                </div>
+            </div>
+            <div class="weui-btn-area">
+                <a onclick="onSubmit()" class="weui-btn weui-btn_primary" style="background:#13B8F5;">立即支付</a>
+            </div>
+        </div>
+    </div>
+    <div style="display:none;">
+        @MvcHtmlString.Create(@Model.AlipayForm)
+    </div>
+}
+@if (Model.Step == ShareStep.Four)
+{
+    <div class="app-content">
+        <img onclick="openUs()" src="~/Content/Icon/us.png" class="iconbtn" style="top:30%;" />
+        <img onclick="openFeedback()" src="~/Content/Icon/feedback.png" class="iconbtn" style="top:45%;" />
+        <div class="top">
+            <img src="~/Content/Image/Four-top.png" width="100%" />
+            <div class="weui-flex location">
+                <div class="weui-flex__item">
+                    <img src="~/Content/Icon/gps.png" class="app-icon" />
+                    <span id="weather-city"></span>
+                    <span id="weather-temperature">&nbsp;&nbsp;</span>
+                    <span id="weather-weather">&nbsp;&nbsp;</span>
+                </div>
+            </div>
+            <div class="weui-flex aqi">
+                <div class="weui-flex__item item">
+                    <p>
+                        <img src="~/Content/Icon/humidity.png" class="app-icon" />
+                        <span>空气湿度</span>
+                    </p>
+                    <p style="font-size:15px;font-weight:bold;" id="weather-humidity"></p>
+                </div>
+                <div class="weui-flex__item item">
+                    <p>
+                        <img src="~/Content/Icon/aqi.png" class="app-icon" />
+                        <span>空气质量</span>
+                    </p>
+                    <p style="font-size:15px;font-weight:bold;" id="weather-aqi"></p>
+                </div>
+                <div class="weui-flex__item item">
+                    <p>
+                        <img src="~/Content/Icon/wind.png" class="app-icon" />
+                        <span id="weather-windtitle"></span>
+                    </p>
+                    <p style="font-size:15px;font-weight:bold;" id="weather-windvalue"></p>
+                </div>
+            </div>
+        </div>
+        <div class="iaq-index">
+            <div class="iaq-index-box">
+                <img id="iaq-point" src="~/Content/Image/Four-disc-point.png" class="iaq-index-box-point" />
+                <p class="iaq-index-box-title">PM2.5</p>
+                <p id="p-value" class="iaq-index-box-value">123</p>
+                <p><span id="iaq-text" class="iaq-index-box-text">轻度污染</span></p>
+            </div>
+        </div>
+        <div class="weui-flex ctrl">
+            <div class="weui-flex__item">
+                <img id="ctrl-auto" onclick="onAuto()" class="ctrl-btn" src="~/Content/Icon/ctrl-auto-0.png" style="margin-top:30px;" />
+            </div>
+            <div class="weui-flex__item">
+                <img id="ctrl-uv" onclick="onUV()" class="ctrl-btn" src="~/Content/Icon/ctrl-uv-0.png" style="margin-top:7px;" />
+            </div>
+            <div class="weui-flex__item">
+                <img id="ctrl-wind" onclick="onFA()" class="ctrl-btn" src="~/Content/Icon/ctrl-wind-0.png" />
+            </div>
+            <div class="weui-flex__item">
+                <img id="ctrl-ni" onclick="onNI()" class="ctrl-btn" src="~/Content/Icon/ctrl-ni-0.png" style="margin-top:7px;" />
+            </div>
+            <div class="weui-flex__item">
+                <img id="ctrl-mute" onclick="onMute()" class="ctrl-btn" src="~/Content/Icon/ctrl-mute-0.png" style="margin-top:30px;" />
+            </div>
+        </div>
+        <div class="foot">
+            <img src="~/Content/Image/Four-foot.png" width="100%" />
+            <div class="foot-info">
+                <p style="font-size:12px;">剩余时长</p>
+                <p id="time-chips" style="font-size:40px;font-weight:bold;">00:00:00</p>
+                <p onclick="onRenew()">
+                    <img src="~/Content/Icon/renew.png" class="app-icon" style="vertical-align:bottom;" />
+                    <span style="font-size:12px;font-weight:bold;margin-left:5px;">续费</span>
+                </p>
+            </div>
+        </div>
+        @using (Html.BeginForm("Index", "Alipay", FormMethod.Post, new { id = "ShareProcess" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.Step)
+            @Html.HiddenFor(m => m.OpenID)
+            @Html.HiddenFor(m => m.IotToken)
+            @Html.HiddenFor(m => m.DeviceID)
+            @Html.HiddenFor(m => m.DevicePwd)
+            @Html.HiddenFor(m => m.DeviceMac)
+            @Html.HiddenFor(m => m.OwnerName)
+            @Html.HiddenFor(m => m.Position)
+            @Html.HiddenFor(m => m.Longitude)
+            @Html.HiddenFor(m => m.Latitude)
+            @Html.HiddenFor(m => m.IsAgree)
+        }
+    </div>
+    <div id="open-feedback" class="weui-popup__container">
+        <div class="weui-popup__overlay"></div>
+        <div class="weui-popup__modal" style="background:#F8F8F8;">
+            <div class="app-content">
+                <div class="weui-cells weui-cells_form">
+                    <div class="weui-cells__title">请留联系方式</div>
+                    <div class="weui-cells">
+                        <div class="weui-cell">
+                            <div class="weui-cell__bd">
+                                <input id="input-phone" class="weui-input" type="number" pattern="[0-9]*" placeholder="请输入您的手机号码" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="weui-cells__title">问题主题</div>
+                    <div class="weui-cells weui-cells_checkbox">
+                        <div class="weui-cell">
+                            <div class="weui-cell__bd">
+                                <input id="input-title" class="weui-input" type="text" placeholder="请输入问题主题">
+                            </div>
+                        </div>
+                        @for (int i = 0; i < Model.FeedbackTitle.Count; i++)
+                        {
+                            <label onclick="onRadioTitle('@Model.FeedbackTitle[i]');" class="weui-cell weui-check__label" for="radiotitle-@i">
+                                <div class="weui-cell__hd">
+                                    <input type="radio" class="weui-check" name="radiotitle" id="radiotitle-@i" />
+                                    <i class="weui-icon-checked"></i>
+                                </div>
+                                <div class="weui-cell__bd">
+                                    <p>@Model.FeedbackTitle[i]</p>
+                                </div>
+                            </label>
+                        }
+                    </div>
+
+                    <div class="weui-cells__title">内容描述</div>
+                    <div class="weui-cells weui-cells_form">
+                        <div class="weui-cell">
+                            <div class="weui-cell__bd">
+                                <textarea id="input-content" class="weui-textarea" placeholder="请输入问题反馈内容描述" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="weui-btn-area" style="padding:15px 0;">
+                    <a onclick="submitFeedback()" class="weui-btn weui-btn_primary" style="background:#13B8F5;">提交</a>
+                    <a onclick="closeFeedback()" class="weui-btn weui-btn_warn">关闭</a>
+                </div>
+                <div class="weui-footer">
+                    <p class="weui-footer__text">Copyright © 2017 一方净土•共享好空气</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Style{
+    @if (Model.Step == ShareStep.Use)
+    {
+        <style>
+            .title {
+                width: 100%;
+                height: auto;
+                font-size: 0;
+            }
+
+            .title-logo {
+                width: 100%;
+                height: 150px;
+                background: #13B8F5;
+                text-align: center;
+                font-size: 0;
+            }
+
+                .title-logo .logo {
+                    margin-top: 50px;
+                    padding: 0;
+                    width: 90px;
+                    height: 90px;
+                }
+
+            .font-color {
+                color: #949494;
+            }
+
+            .dev-info {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+                .dev-info .dev-info-use {
+                    position: absolute;
+                    left: 50%;
+                    top: 5px;
+                    width: 140px;
+                    height: 140px;
+                    margin-left: -70px;
+                }
+        </style>
+    }
+    @if (Model.Step == ShareStep.One)
+    {
+        <style>
+            .top {
+                position: relative;
+                width: 100%;
+                height: auto;
+                margin: 0;
+                padding: 0;
+                font-size: 0;
+            }
+
+            .top-title {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                padding-top: 5px;
+                font-size: 12px;
+                color: #898989;
+                text-align: right;
+            }
+
+            .btn {
+                width: 100%;
+                height: auto;
+                margin: 0;
+                padding: 0;
+                margin-bottom: 30px;
+                font-size: 0;
+            }
+
+            .text {
+                color: #898989;
+                font-size: 14px;
+            }
+
+            .btn-link {
+                color: #13B8F5;
+                font-size: 14px;
+                text-decoration: underline;
+            }
+            .iconbtn{
+                display:block;
+                margin:0;
+                padding:0;
+                position:absolute;
+                width:60px;
+                height:60px;
+                right:15px;
+                z-index:999;
+            }
+        </style>
+    }
+    @if (Model.Step == ShareStep.Two)
+    {
+        <style>
+            .title {
+                width: 100%;
+                height: 250px;
+                background: #13B8F5;
+                text-align: center;
+            }
+
+                .title .logo {
+                    margin-top: 80px;
+                    padding: 0;
+                    width: 90px;
+                    height: 90px;
+                }
+
+            .list-box {
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                color: #13B8F5;
+            }
+
+                .list-box .hr {
+                    margin-top: 20px;
+                    padding: 0;
+                }
+
+            .list-item {
+                width: 100%;
+                height: auto;
+                margin-top: 20px;
+            }
+
+                .list-item .content-item {
+                    width: 205px;
+                    height: 57px;
+                    border: solid 1px #13B8F5;
+                    border-radius: 5px;
+                    position: relative;
+                    top: 0;
+                    left: 50%;
+                    margin-left: -102.5px;
+                }
+
+                    .list-item .content-item .content-item-title {
+                        text-align: center;
+                        border-right: dashed 1px #13B8F5;
+                        height: 57px;
+                        line-height: 57px;
+                        vertical-align: middle;
+                    }
+
+                    .list-item .content-item .content-item-text {
+                        text-align: center;
+                    }
+
+                        .list-item .content-item .content-item-text p {
+                            margin: 0;
+                            padding: 0;
+                        }
+        </style>
+    }
+    @if (Model.Step == ShareStep.Three)
+    {
+        <style>
+            .title {
+                width: 100%;
+                height: 250px;
+                background: #0E8AB7;
+                text-align: center;
+            }
+
+                .title .logo {
+                    margin-top: 80px;
+                    padding: 0;
+                    width: 90px;
+                    height: 90px;
+                }
+
+            .font-color {
+                color: #949494;
+            }
+        </style>
+    }
+    @if (Model.Step == ShareStep.Four)
+    {
+        <style>
+            .iconbtn{
+                margin:0;
+                padding:0;
+                position:absolute;
+                width:60px;
+                height:60px;
+                right:5px;
+                z-index:999;
+            }
+            .top {
+                position: relative;
+                width: 100%;
+                height: auto;
+                margin: 0;
+                padding: 0;
+                font-size: 0;
+                color: #FFFFFF;
+            }
+
+                .top .location {
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    padding-left: 15px;
+                    padding-top: 15px;
+                    font-size: 12px;
+                }
+
+                .top .aqi {
+                    position: absolute;
+                    width: 100%;
+                    left: 0;
+                    top: 40px;
+                }
+
+                    .top .aqi .item {
+                        text-align: center;
+                    }
+
+                        .top .aqi .item p {
+                            font-size: 12px;
+                            color: #006C83;
+                        }
+
+            .iaq-index {
+                width: 100%;
+                height: auto;
+            }
+
+                .iaq-index .iaq-index-box {
+                    position: relative;
+                    padding: 0;
+                    margin: 0;
+                    left: 50%;
+                    margin-left: -100px;
+                    width: 200px;
+                    height: 200px;
+                    background-image: url(/Content/Image/Four-disc.png);
+                    background-repeat: no-repeat;
+                    background-size: cover;
+                    text-align: center;
+                }
+
+                    .iaq-index .iaq-index-box .iaq-index-box-point {
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        z-index: 1;
+                        width: 200px;
+                        height: 200px;
+                        margin: 0;
+                        padding: 0;
+                        -webkit-transform: rotate(50deg);
+                        transform: rotate(50deg);
+                    }
+
+                    .iaq-index .iaq-index-box .iaq-index-box-title {
+                        font-size: 12px;
+                        color: #FFFFFF;
+                        padding-top: 35px;
+                    }
+
+                    .iaq-index .iaq-index-box .iaq-index-box-value {
+                        font-size: 46px;
+                        font-weight: bold;
+                        color: #FFFFFF;
+                    }
+
+                    .iaq-index .iaq-index-box .iaq-index-box-text {
+                        font-size: 18px;
+                        color: #FFFFFF;
+                        padding: 5px;
+                        background: #ff6a00;
+                        border-radius: 5px;
+                    }
+
+            .ctrl {
+                margin-top: 15px;
+                text-align: center;
+            }
+
+                .ctrl .ctrl-btn {
+                    margin: 0;
+                    padding: 0;
+                    width: 60px;
+                    height: 60px;
+                }
+
+            .foot {
+                position: relative;
+                width: 100%;
+                height: auto;
+                margin: 0;
+                padding: 0;
+                font-size: 0;
+                color: #898989;
+            }
+
+                .foot .foot-info {
+                    position: absolute;
+                    width: 100%;
+                    height: auto;
+                    left: 0;
+                    top: 10px;
+                    text-align: center;
+                    color: #FFFFFF;
+                }
+        </style>
+    }
+}
+
+@section Script{
+    @if (Model.Step == ShareStep.Use)
+    {
+        <script type="text/javascript">
+            $(document).ready(function (){
+
+            });
+            function onSubmit(isuse){
+                if(isuse){
+
+                }else{
+                    $('#IsAgree').val('true');
+                    $('#Step').val('One');
+                }
+                $('#ShareProcess').submit();
+            }
+        </script>
+    }
+    @if (Model.Step == ShareStep.One)
+    {
+        <script type="text/javascript">
+            function openUs(){
+                window.location.href = '@MvcHtmlString.Create(Model.WxFollowUrl)';
+            }
+            function openFeedback(){
+                $('.iconbtn').hide();
+                $('#open-feedback').popup();
+            }
+            function onRadioTitle(txt){
+                $('#input-title').val(txt);
+            }
+            function submitFeedback(){
+                var data={};
+                data.title=$('#input-title').val();
+                data.title=$app.clearEmoji(data.title);
+                data.content=$('#input-content').val();
+                data.content=$app.clearEmoji(data.content);
+                data.phone=$('#input-phone').val();
+                data.deviceId='@Model.DeviceID';
+                data.status='0';
+                if($app.isNull(data.title)){
+                    $('#input-title').val('');
+                    $.toptip('问题主题不能为空',3000, 'error');
+                    return;
+                }
+                $iot.Host='@Model.IotHost';
+                $iot.Token=$('#IotToken').val();
+                $iot.OpenId='@Model.OpenID';
+                $.showLoading();
+                $iot.postFeedback(data,function(){
+                    $.hideLoading();
+                    closeFeedback();
+                    $.toptip('问题反馈提交成功',3000, 'success');
+                },function(){
+                    $.hideLoading();
+                    $.toptip('问题主题提交失败，请重试',3000, 'error');
+                },function(jwt){
+                    $('#IotToken').val(jwt);
+                });
+            }
+            function closeFeedback(){
+                $.closePopup();
+                $('.iconbtn').show();
+            }
+        </script>
+        <script type="text/javascript">
+            var devStatus=@Model.ToJsDevStatus();
+            $(document).ready(function () {
+                $("#IsAgree").change(function () {
+                    if(devStatus==1){
+                        var yes=$('#IsAgree').prop('checked');
+                        if(yes){
+                            $('#img-title').prop('src','/Content/Image/one-top-1.png');
+                            $('#img-submit').prop('src','/Content/Icon/one-btn-1.png');
+                        }else{
+                            $('#img-title').prop('src','/Content/Image/one-top-0.png');
+                            $('#img-submit').prop('src','/Content/Icon/one-btn-0.png');
+                        }
+                    }else{
+                        $.toptip('设备处于维护状态，不能使用',5000, 'error');
+                    }
+                });
+                var json={};
+                json.P=@Model.Attach["p"];
+                var aqi=$app.getIaqLevel(json);
+                $('#aqi-text').text(aqi.text);
+
+                onMqtt();
+            });
+            function onMqtt(){
+                var options=@MvcHtmlString.Create(@Model.jsonAttach);
+                $.showLoading();
+                $app.setTimeout(function(){
+                    $.hideLoading();
+                    $iot.mqttClientDisconnect();
+                    devStatus=0;
+                    $.toptip('设备处于维护状态，不能使用',5000, 'error');
+                });
+
+                $iot.mqttClientConnect(options,function(data){
+                    $app.clearTimeout();
+                    $iot.mqttClientDisconnect();
+                    devStatus=1;
+                    $.hideLoading();
+                    var aqi=$app.getIaqLevel(data);
+                    $('#aqi-text').text(aqi.text);
+                },function(err){
+                    $app.clearTimeout();
+                    $iot.mqttClientDisconnect();
+                    $.hideLoading();
+                    devStatus=0;
+                    $.toptip('设备处于维护状态，不能使用',5000, 'error');
+                });
+            }
+            function onSubmit() {
+                if (devStatus==1) {
+                    var IsAgree=$('#IsAgree').prop('checked');
+                    if(IsAgree){
+                        $('#ShareProcess').submit();
+                    }else{
+                        $.toptip('请同意《用户服务协议》',5000, 'error');
+                    }
+                } else {
+                    $.alert("设备处于维护状态，不能使用。", "警告");
+                }
+            }
+            function onAgreement(){
+                $('#Agreement').popup();
+            }
+            function closeAgreement(){
+                $.closePopup();
+            }
+        </script>
+    }
+    @if (Model.Step == ShareStep.Two)
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+
+            });
+            function onSubmit(Chips,Price,info) {
+                $('#Chips').val(Chips);
+                $('#Payment').val(Price);
+                $('#jsonAttach').val(JSON.stringify(info));
+                $('#ShareProcess').submit();
+            }
+        </script>
+    }
+    @if (Model.Step == ShareStep.Three)
+    {
+        <script type="text/javascript">
+            var iscontrol=false;
+            var isoncmd=false;
+
+            $(document).ready(function () {
+                $.showLoading();
+                $app.setTimeout(function(){
+                    if(!iscontrol){
+                        $iot.mqttClientDisconnect();
+                        $app.goTimeoutError();
+                    }else{
+                        $.hideLoading();
+                    }
+                });
+                onControl();
+            });
+            function onControl(){
+                var options=@MvcHtmlString.Create(@Model.jsonAttach);
+                $iot.mqttClientConnect(options,function(data){
+                    if(!isoncmd){
+                        onCommand(options);
+                        isoncmd=true;
+                    }
+
+                    if(!$app.isNull(data.DR)&&data.DR==1){
+                        $app.clearTimeout();
+                        $.hideLoading();
+                        iscontrol=true;
+                        $iot.mqttClientDisconnect();
+                    }
+                },function(err){
+                    $app.clearTimeout();
+                    $iot.mqttClientDisconnect();
+                    $app.goTimeoutError();
+                });
+            }
+            function onCommand(options){
+                $iot.Host=options.iotHost;
+                $iot.Token='@MvcHtmlString.Create(@Model.IotToken)';
+                $iot.DeviceId='@MvcHtmlString.Create(@Model.DeviceID.ToString())';
+                var cmd={};
+                cmd.DR=1;
+                $iot.sendCommand(cmd,function(){
+                    $.toptip('请注意设备是否打开',3000, 'success');
+                },function(){
+                    $app.clearTimeout();
+                    $iot.mqttClientDisconnect();
+                    $app.goTimeoutError();
+                },function(){
+                    $app.clearTimeout();
+                    $iot.mqttClientDisconnect();
+                    $app.goTimeoutError();
+                },function(token){
+                    
+                });
+            }
+            function onSubmit() {
+                if(iscontrol){
+                    document.forms['alipaysubmit'].submit();
+                }
+            }
+        </script>
+    }
+    @if (Model.Step == ShareStep.Four)
+    {
+        <script type="text/javascript">
+            function openUs(){
+                window.location.href = '@MvcHtmlString.Create(Model.WxFollowUrl)';
+            }
+            function openFeedback(){
+                $('.iconbtn').hide();
+                $('#open-feedback').popup();
+            }
+            function onRadioTitle(txt){
+                $('#input-title').val(txt);
+            }
+            function submitFeedback(){
+                var data={};
+                data.title=$('#input-title').val();
+                data.title=$app.clearEmoji(data.title);
+                data.content=$('#input-content').val();
+                data.content=$app.clearEmoji(data.content);
+                data.phone=$('#input-phone').val();
+                data.deviceId='@Model.DeviceID';
+                data.status='0';
+                if($app.isNull(data.title)){
+                    $('#input-title').val('');
+                    $.toptip('问题主题不能为空',3000, 'error');
+                    return;
+                }
+                $iot.Host='@Model.IotHost';
+                $iot.Token=$('#IotToken').val();
+                $iot.OpenId='@Model.OpenID';
+                $.showLoading();
+                $iot.postFeedback(data,function(){
+                    $.hideLoading();
+                    closeFeedback();
+                    $.toptip('问题反馈提交成功',3000, 'success');
+                },function(){
+                    $.hideLoading();
+                    $.toptip('问题主题提交失败，请重试',3000, 'error');
+                },function(token){
+                    $('#IotToken').val(token);
+                });
+            }
+            function closeFeedback(){
+                $.closePopup();
+                $('.iconbtn').show();
+            }
+        </script>
+        <script type="text/javascript">
+            var curr;
+            var isauto=false;
+            var ismessaage=false;
+            var ismqttconnect=false;
+            var iscommand=false;
+            function onCityWeather(){
+                var w=@MvcHtmlString.Create(@Model.jsonAttach);
+                if(w.city){
+                    $('#weather-city').text(w.city);
+                    $('#weather-temperature').text('  '+w.temperature);
+                    $('#weather-weather').text('  '+w.weather);
+                    $('#weather-humidity').text(w.humidity);
+                    $('#weather-aqi').text(w.aqi);
+                    $('#weather-windtitle').text(w.windtitle);
+                    $('#weather-windvalue').text(w.windvalue);
+                }
+            }
+            $(document).ready(function () {
+                $iot.Host='@Model.Attach["iotHost"]';
+                $iot.Token='@MvcHtmlString.Create(@Model.IotToken)';
+                $iot.DeviceId='@MvcHtmlString.Create(@Model.DeviceID.ToString())';
+                onMqtt();
+                onCityWeather();
+            });
+            function onRenew(){
+                $.confirm("您真的要进行续费吗？", function() {
+                    $('#IsAgree').val('true');
+                    $('#Step').val('One');
+                    $('#ShareProcess').submit();
+                }, function() {
+                    //点击取消后的回调函数
+                });
+            }
+            function onPostCommand(cmd){
+                $.showLoading();
+                $iot.sendCommand(cmd,function(){
+                    iscommand=true;
+                    window.setTimeout(function(){
+                        iscommand=false;
+                    }, 1000);
+                    $.hideLoading();
+                    createMessage(curr);
+                },function(){
+                    $.hideLoading();
+                    $.toptip('操作失败，请重试',3000, 'error');
+                    ismessaage=true;
+                },function(){
+                    $.hideLoading();
+                    $.toptip('操作失败，请重试',3000, 'error');
+                    ismessaage=true;
+                },function(token){
+                    
+                });
+            }
+            function onUV(){
+                if(isauto||iscommand){return;}
+                if(ismessaage&&!$app.isNull(curr)&&!$app.isNull(curr.UV)){
+                    ismessaage=false;
+                    var cmd={
+                        UV:curr.UV==0?1:0
+                    };
+                    curr.UV=cmd.UV;
+                    onPostCommand(cmd);
+                }
+            }
+            function onFA(){
+                if(isauto||iscommand){return;}
+                if(ismessaage&&!$app.isNull(curr)&&!$app.isNull(curr.FA)){
+                    ismessaage=false;
+                    var fa=curr.FA;
+                    if(fa<=0){
+                        fa=1;
+                    }
+                    else if(fa==1){
+                        fa=2;
+                    }
+                    else if(fa==2){
+                        fa=3;
+                    }
+                    else if(fa>=3){
+                        fa=1;
+                    }
+                    var cmd={
+                        FA:fa
+                    };
+                    curr.FA=cmd.FA;
+                    onPostCommand(cmd);
+                }
+            }
+            function onNI(){
+                if(isauto||iscommand){return;}
+                if(ismessaage&&!$app.isNull(curr)&&!$app.isNull(curr.NI)){
+                    ismessaage=false;
+                    var cmd={
+                        NI:curr.NI==0?1:0
+                    };
+                    curr.NI=cmd.NI;
+                    onPostCommand(cmd);
+                }
+            }
+            function onMute(){
+                if(isauto||iscommand){return;}
+                if(ismessaage&&!$app.isNull(curr)&&!$app.isNull(curr.SM)){
+                    ismessaage=false;
+                    var cmd={
+                        FA:1
+                    };
+                    curr.FA=cmd.FA;
+                    onPostCommand(cmd);
+                }
+            }
+            function onAuto(){
+                if(iscommand){return;}
+                if(ismessaage&&!$app.isNull(curr)&&!$app.isNull(curr.SM)){
+                    ismessaage=false;
+                    var cmd={
+                        SM:curr.SM!=1?1:0
+                    };
+                    curr.SM=cmd.SM;
+                    onPostCommand(cmd);
+                }
+            }
+            function onMqtt(){
+                var options=@MvcHtmlString.Create(@Model.Attach.ToString());
+                $.showLoading();
+                onTimeout();
+                ismqttconnect=true;
+                $iot.mqttClientConnect(options,onMessage,function(){});
+            }
+            function onTimeout(){
+                $app.setTimeout(function(){
+                    if(ismqttconnect){
+                        $iot.mqttClientDisconnect();
+                        $('#TimeoutError').submit();
+                    }
+                });
+            }
+            function onMessage(data){
+                if(ismqttconnect&&!$app.isNull(data.CHIPS)&&data.CHIPS>0){
+                    $app.clearTimeout();
+                    $.hideLoading();
+                    ismqttconnect=false;
+                }
+                if(!ismqttconnect){
+                    if(!$app.isNull(data.CHIPS)&&data.CHIPS<=0){
+                        $iot.mqttClientDisconnect();
+                        $('#IsAgree').val('true');
+                        $('#Step').val('One');
+                        $('#ShareProcess').submit();
+                        return;
+                    }
+                }
+                if(!$app.isNull(data.DR)||$app.isNull(data.P)){
+                    ismessaage=false;
+                    return;
+                }
+                createMessage(data);
+            }
+            function createMessage(data){
+                curr=data;
+                ismessaage=true;
+                isauto=curr.SM==1?true:false;
+                if(isauto){
+                    autoMessage(data);
+                }else{
+                    controlMessage(data);
+                }
+                monitorMessage(data);
+            }
+            function autoMessage(data){
+                if(data.UV&&data.UV>0){
+                    $('#ctrl-uv').prop('src','/Content/Icon/ctrl-uv-2.png');
+                }else{
+                    $('#ctrl-uv').prop('src','/Content/Icon/ctrl-uv-0.png');
+                }
+                if(data.NI&&data.NI>0){
+                    $('#ctrl-ni').prop('src','/Content/Icon/ctrl-ni-2.png');
+                }else{
+                    $('#ctrl-ni').prop('src','/Content/Icon/ctrl-ni-0.png');
+                }
+                if(data.FA&&data.FA>0){
+                    $('#ctrl-mute').prop('src','/Content/Icon/ctrl-mute-0.png');
+                    $('#ctrl-wind').prop('src','/Content/Icon/ctrl-wind-0.png');
+                    if(data.FA==1){
+                        $('#ctrl-wind').prop('src','/Content/Icon/ctrl-wind-2-1.png');
+                        $('#ctrl-mute').prop('src','/Content/Icon/ctrl-mute-2.png');
+                    }
+                    if(data.FA==2){
+                        $('#ctrl-wind').prop('src','/Content/Icon/ctrl-wind-2-2.png');
+                    }
+                    if(data.FA>=3){
+                        $('#ctrl-wind').prop('src','/Content/Icon/ctrl-wind-2-3.png');
+                    }
+                }else{
+                    $('#ctrl-mute').prop('src','/Content/Icon/ctrl-mute-0.png');
+                    $('#ctrl-wind').prop('src','/Content/Icon/ctrl-wind-0.png');
+                }
+            }
+            function controlMessage(data){
+                if(data.UV&&data.UV>0){
+                    $('#ctrl-uv').prop('src','/Content/Icon/ctrl-uv-1.png');
+                }else{
+                    $('#ctrl-uv').prop('src','/Content/Icon/ctrl-uv-0.png');
+                }
+                if(data.NI&&data.NI>0){
+                    $('#ctrl-ni').prop('src','/Content/Icon/ctrl-ni-1.png');
+                }else{
+                    $('#ctrl-ni').prop('src','/Content/Icon/ctrl-ni-0.png');
+                }
+                if(data.FA&&data.FA>0){
+                    $('#ctrl-mute').prop('src','/Content/Icon/ctrl-mute-0.png');
+                    $('#ctrl-wind').prop('src','/Content/Icon/ctrl-wind-0.png');
+                    if(data.FA==1){
+                        $('#ctrl-wind').prop('src','/Content/Icon/ctrl-wind-1.png');
+                        $('#ctrl-mute').prop('src','/Content/Icon/ctrl-mute-1.png');
+                    }
+                    if(data.FA==2){
+                        $('#ctrl-wind').prop('src','/Content/Icon/ctrl-wind-2.png');
+                    }
+                    if(data.FA>=3){
+                        $('#ctrl-wind').prop('src','/Content/Icon/ctrl-wind-3.png');
+                    }
+                }else{
+                    $('#ctrl-mute').prop('src','/Content/Icon/ctrl-mute-0.png');
+                    $('#ctrl-wind').prop('src','/Content/Icon/ctrl-wind-0.png');
+                }
+            }
+            function monitorMessage(data){
+                var iaq=$app.getIaqLevel(data);
+                $('#p-value').text(data.P);
+                $('#iaq-text').text(iaq.text);
+                $('#iaq-text').text(iaq.text);
+                $('#time-chips').text($app.minuteToDateString(data.CHIPS));
+                $('#iaq-text').css('background',iaq.color);
+                $('#iaq-point').css({
+                    "-webkit-transform":"rotate("+iaq.ratio+"deg)",
+                    "transform":"rotate("+iaq.ratio+"deg)"
+                });
+                if(data.SM&&data.SM>0){
+                    $('#ctrl-auto').prop('src','/Content/Icon/ctrl-auto-1.png');
+                }else{
+                    $('#ctrl-auto').prop('src','/Content/Icon/ctrl-auto-0.png');
+                }
+            }
+        </script>
+    }
+}

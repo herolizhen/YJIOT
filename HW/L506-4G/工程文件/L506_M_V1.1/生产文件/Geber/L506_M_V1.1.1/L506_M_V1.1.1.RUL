@@ -1,0 +1,6 @@
+DRC Rules Export File for PCB: Q:\工作\工程\L506-4G模块\工程文件\L506_M_V1.1\Project\PCB\L506_M_V1.1.1.PcbDoc
+RuleKind=SolderMaskExpansion|RuleName=SolderMaskExpansion|Scope=Board|Minimum=4.00
+RuleKind=Width|RuleName=Width|Scope=Board|Minimum=10.00
+RuleKind=Clearance|RuleName=Clearance|Scope=Board|Minimum=6.00
+RuleKind=ShortCircuit|RuleName=ShortCircuit|Scope=Board|Allowed=0
+RuleKind=Width|RuleName=DiffPair_Width|Scope=Board|Minimum=15.00

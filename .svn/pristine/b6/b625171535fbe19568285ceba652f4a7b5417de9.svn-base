@@ -1,0 +1,17 @@
+WIFI版共享机
+
+EP600SFV2@xxx是OTA上传文件，如果给WIFI烧录该程序，烧录地址是0x800C000
+
+EP600SFV2@xxx_512K是工厂烧录WIFI程序，烧录地址0x8000000
+
+
+
+TOUH-OB39A08T1@001是触摸按键的程序，LED灯控制IO使用准双向模式
+
+TOUH-OB39A08T1@002是触摸按键的程序，LED灯控制IO使用推挽模式，采用PWM方式，占空比2/3
+
+
+
+EP600SFV2@005修改了线程栈空间大小，解决OTA失败的问题
+修改了mico_rtos_create_thread( NULL, MICO_APPLICATION_PRIORITY, "FOG_V2_OTA", fog_ota_thread, 0x1800, (uint32_t)url );
+SDK原来占空间是0x2800，因为在共享机器中提前开启了其他线程，所以会导致栈出问题

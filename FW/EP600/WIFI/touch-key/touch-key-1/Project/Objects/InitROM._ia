@@ -1,0 +1,1 @@
+"..\User\InitROM.asm" SET (SMALL) DEBUG PRINT(.\Listings\InitROM.lst) OBJECT(.\Objects\InitROM.obj) EP

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.security.dao.PowRoleMapper">
+	<resultMap id="BaseResultMap" type="com.yjyz.iot.security.entity.PowRole">
+		<id column="role_id" jdbcType="VARCHAR" property="roleId" />
+		<id column="app_id" jdbcType="VARCHAR" property="appId" />
+		<result column="role_name" jdbcType="VARCHAR" property="roleName" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		role_id, app_id, role_name
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="com.yjyz.iot.security.entity.PowRoleKey"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_pow_role
+		where role_id = #{roleId,jdbcType=VARCHAR}
+		and app_id = #{appId,jdbcType=VARCHAR}
+	</select>
+
+	<select id="selectByAppId" parameterType="com.yjyz.iot.security.entity.PowRoleKey"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_pow_role
+		where app_id = #{appId,jdbcType=VARCHAR}
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="com.yjyz.iot.security.entity.PowRoleKey">
+		delete from t_pow_role
+		where role_id = #{roleId,jdbcType=VARCHAR}
+		and app_id = #{appId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.yjyz.iot.security.entity.PowRole">
+		insert into t_pow_role (role_id, app_id, role_name
+		)
+		values (#{roleId,jdbcType=VARCHAR}, #{appId,jdbcType=VARCHAR},
+		#{roleName,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.yjyz.iot.security.entity.PowRole">
+		insert into t_pow_role
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="roleId != null">
+				role_id,
+			</if>
+			<if test="appId != null">
+				app_id,
+			</if>
+			<if test="roleName != null">
+				role_name,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="roleId != null">
+				#{roleId,jdbcType=VARCHAR},
+			</if>
+			<if test="appId != null">
+				#{appId,jdbcType=VARCHAR},
+			</if>
+			<if test="roleName != null">
+				#{roleName,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yjyz.iot.security.entity.PowRole">
+		update t_pow_role
+		<set>
+			<if test="roleName != null">
+				role_name = #{roleName,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where role_id = #{roleId,jdbcType=VARCHAR}
+		and app_id = #{appId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yjyz.iot.security.entity.PowRole">
+		update t_pow_role
+		set role_name = #{roleName,jdbcType=VARCHAR}
+		where role_id = #{roleId,jdbcType=VARCHAR}
+		and app_id = #{appId,jdbcType=VARCHAR}
+	</update>
+</mapper>

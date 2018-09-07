@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.logistice.dao.DevLogisticeInfoMapper">
+  <resultMap id="BaseResultMap" type="com.yjyz.iot.logistice.entity.DevLogisticeInfo">
+    <id column="guid" jdbcType="VARCHAR" property="guid" />
+    <result column="device_id" jdbcType="VARCHAR" property="deviceId" />
+    <result column="op_date" jdbcType="TIMESTAMP" property="opDate" />
+    <result column="op_user" jdbcType="VARCHAR" property="opUser" />
+    <result column="op_memo" jdbcType="VARCHAR" property="opMemo" />
+    <result column="op_dest" jdbcType="VARCHAR" property="opDest" />
+    <result column="op_type" jdbcType="VARCHAR" property="opType" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    guid, device_id, op_date, op_user, op_memo, op_dest, op_type
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_dev_logistice_info
+    where guid = #{guid,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByDeviceId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_dev_logistice_info
+    where device_id = #{deviceId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_dev_logistice_info
+    where guid = #{guid,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yjyz.iot.logistice.entity.DevLogisticeInfo">
+    insert into t_dev_logistice_info (guid, device_id, op_date, 
+      op_user, op_memo, op_dest, 
+      op_type)
+    values (#{guid,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR}, #{opDate,jdbcType=TIMESTAMP}, 
+      #{opUser,jdbcType=VARCHAR}, #{opMemo,jdbcType=VARCHAR}, #{opDest,jdbcType=VARCHAR}, 
+      #{opType,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yjyz.iot.logistice.entity.DevLogisticeInfo">
+    insert into t_dev_logistice_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="guid != null">
+        guid,
+      </if>
+      <if test="deviceId != null">
+        device_id,
+      </if>
+      <if test="opDate != null">
+        op_date,
+      </if>
+      <if test="opUser != null">
+        op_user,
+      </if>
+      <if test="opMemo != null">
+        op_memo,
+      </if>
+      <if test="opDest != null">
+        op_dest,
+      </if>
+      <if test="opType != null">
+        op_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="guid != null">
+        #{guid,jdbcType=VARCHAR},
+      </if>
+      <if test="deviceId != null">
+        #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="opDate != null">
+        #{opDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="opUser != null">
+        #{opUser,jdbcType=VARCHAR},
+      </if>
+      <if test="opMemo != null">
+        #{opMemo,jdbcType=VARCHAR},
+      </if>
+      <if test="opDest != null">
+        #{opDest,jdbcType=VARCHAR},
+      </if>
+      <if test="opType != null">
+        #{opType,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yjyz.iot.logistice.entity.DevLogisticeInfo">
+    update t_dev_logistice_info
+    <set>
+      <if test="deviceId != null">
+        device_id = #{deviceId,jdbcType=VARCHAR},
+      </if>
+      <if test="opDate != null">
+        op_date = #{opDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="opUser != null">
+        op_user = #{opUser,jdbcType=VARCHAR},
+      </if>
+      <if test="opMemo != null">
+        op_memo = #{opMemo,jdbcType=VARCHAR},
+      </if>
+      <if test="opDest != null">
+        op_dest = #{opDest,jdbcType=VARCHAR},
+      </if>
+      <if test="opType != null">
+        op_type = #{opType,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where guid = #{guid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yjyz.iot.logistice.entity.DevLogisticeInfo">
+    update t_dev_logistice_info
+    set device_id = #{deviceId,jdbcType=VARCHAR},
+      op_date = #{opDate,jdbcType=TIMESTAMP},
+      op_user = #{opUser,jdbcType=VARCHAR},
+      op_memo = #{opMemo,jdbcType=VARCHAR},
+      op_dest = #{opDest,jdbcType=VARCHAR},
+      op_type = #{opType,jdbcType=VARCHAR}
+    where guid = #{guid,jdbcType=VARCHAR}
+  </update>
+</mapper>

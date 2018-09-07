@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+        http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context-4.3.xsd 
+        http://www.springframework.org/schema/tx      http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+        http://www.springframework.org/schema/mvc    http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.3.xsd">  
+	<!-- scan the package and the sub package -->
+
+	<!-- don't handle the static resource -->
+	<mvc:default-servlet-handler />
+	<!-- if you use annotation you must configure following setting -->
+	<mvc:annotation-driven />
+
+	<!-- 引入配置文件 -->
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="locations">
+			<list>
+				<value>classpath:config/jdbc.properties</value>
+				<value>classpath:config/sms.properties</value>
+				<value>classpath:config/amq.properties</value>
+				<value>classpath:config/cfg.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+    <task:annotation-driven /> 定时器开关  
+    <bean id="myTaskXml" class="com.yjyz.iot.mq.management.MqttConnection"></bean>  
+    <task:scheduled-tasks>  
+        <task:scheduled ref="myTaskXml" method="devOnlineUpdate" initial-delay="20000" fixed-delay="60000"/>  
+    </task:scheduled-tasks>  
+	
+	<context:component-scan base-package="com.yjyz.iot" />
+	
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+		id="internalResourceViewResolver">
+		<property name="prefix" value="/views/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<bean id="sendSMS" class="com.yjyz.iot.sms.ytx.SendSMS" />
+</beans>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.notice.dao.NoticeRuleMapper">
+	<resultMap id="BaseResultMap" type="com.yjyz.iot.notice.entity.NoticeRule">
+		<id column="product_id" jdbcType="VARCHAR" property="productId" />
+		<result column="device_open" jdbcType="BIT" property="deviceOpen" />
+		<result column="sms_open" jdbcType="BIT" property="smsOpen" />
+		<result column="notice_open" jdbcType="BIT" property="noticeOpen" />
+		<result column="voice_open" jdbcType="BIT" property="voiceOpen" />
+		<result column="time_open" jdbcType="BIT" property="timeOpen" />
+		<result column="time_open_start" jdbcType="VARCHAR" property="timeOpenStart" />
+		<result column="time_open_stop" jdbcType="VARCHAR" property="timeOpenStop" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		product_id, device_open, sms_open, notice_open, voice_open, time_open,
+		time_open_start,
+		time_open_stop
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_notice_rule
+		where product_id = #{productId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from t_notice_rule
+		where product_id = #{productId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.yjyz.iot.notice.entity.NoticeRule">
+		insert into t_notice_rule (product_id, device_open, sms_open,
+		notice_open, voice_open, time_open,
+		time_open_start, time_open_stop)
+		values (#{productId,jdbcType=VARCHAR}, #{deviceOpen,jdbcType=BIT},
+		#{smsOpen,jdbcType=BIT},
+		#{noticeOpen,jdbcType=BIT}, #{voiceOpen,jdbcType=BIT}, #{timeOpen,jdbcType=BIT},
+		#{timeOpenStart,jdbcType=VARCHAR}, #{timeOpenStop,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.yjyz.iot.notice.entity.NoticeRule">
+		insert into t_notice_rule
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="productId != null">
+				product_id,
+			</if>
+			<if test="deviceOpen != null">
+				device_open,
+			</if>
+			<if test="smsOpen != null">
+				sms_open,
+			</if>
+			<if test="noticeOpen != null">
+				notice_open,
+			</if>
+			<if test="voiceOpen != null">
+				voice_open,
+			</if>
+			<if test="timeOpen != null">
+				time_open,
+			</if>
+			<if test="timeOpenStart != null">
+				time_open_start,
+			</if>
+			<if test="timeOpenStop != null">
+				time_open_stop,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="productId != null">
+				#{productId,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceOpen != null">
+				#{deviceOpen,jdbcType=BIT},
+			</if>
+			<if test="smsOpen != null">
+				#{smsOpen,jdbcType=BIT},
+			</if>
+			<if test="noticeOpen != null">
+				#{noticeOpen,jdbcType=BIT},
+			</if>
+			<if test="voiceOpen != null">
+				#{voiceOpen,jdbcType=BIT},
+			</if>
+			<if test="timeOpen != null">
+				#{timeOpen,jdbcType=BIT},
+			</if>
+			<if test="timeOpenStart != null">
+				#{timeOpenStart,jdbcType=VARCHAR},
+			</if>
+			<if test="timeOpenStop != null">
+				#{timeOpenStop,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yjyz.iot.notice.entity.NoticeRule">
+		update t_notice_rule
+		<set>
+			<if test="deviceOpen != null">
+				device_open = #{deviceOpen,jdbcType=BIT},
+			</if>
+			<if test="smsOpen != null">
+				sms_open = #{smsOpen,jdbcType=BIT},
+			</if>
+			<if test="noticeOpen != null">
+				notice_open = #{noticeOpen,jdbcType=BIT},
+			</if>
+			<if test="voiceOpen != null">
+				voice_open = #{voiceOpen,jdbcType=BIT},
+			</if>
+			<if test="timeOpen != null">
+				time_open = #{timeOpen,jdbcType=BIT},
+			</if>
+			<if test="timeOpenStart != null">
+				time_open_start = #{timeOpenStart,jdbcType=VARCHAR},
+			</if>
+			<if test="timeOpenStop != null">
+				time_open_stop = #{timeOpenStop,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where product_id = #{productId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yjyz.iot.notice.entity.NoticeRule">
+		update t_notice_rule
+		set device_open = #{deviceOpen,jdbcType=BIT},
+		sms_open = #{smsOpen,jdbcType=BIT},
+		notice_open = #{noticeOpen,jdbcType=BIT},
+		voice_open = #{voiceOpen,jdbcType=BIT},
+		time_open = #{timeOpen,jdbcType=BIT},
+		time_open_start = #{timeOpenStart,jdbcType=VARCHAR},
+		time_open_stop = #{timeOpenStop,jdbcType=VARCHAR}
+		where product_id = #{productId,jdbcType=VARCHAR}
+	</update>
+</mapper>

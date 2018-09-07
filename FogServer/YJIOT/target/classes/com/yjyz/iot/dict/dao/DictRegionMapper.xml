@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.dict.dao.DictRegionMapper">
+  <resultMap id="BaseResultMap" type="com.yjyz.iot.dict.entity.DictRegion">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="prov_name" jdbcType="VARCHAR" property="provName" />
+    <result column="city_name" jdbcType="VARCHAR" property="cityName" />
+    <result column="area_name" jdbcType="VARCHAR" property="areaName" />
+    <result column="prov_code" jdbcType="VARCHAR" property="provCode" />
+    <result column="city_code" jdbcType="VARCHAR" property="cityCode" />
+    <result column="area_code" jdbcType="VARCHAR" property="areaCode" />
+    <result column="alia_name" jdbcType="VARCHAR" property="aliaName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, prov_name, city_name, area_name, prov_code, city_code, area_code, alia_name
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_dict_region
+    where ID = #{id,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectByPCA" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_dict_region tdr
+	WHERE
+		tdr.prov_name LIKE  #{provName,jdbcType=VARCHAR}
+	AND tdr.city_name LIKE  #{cityName,jdbcType=VARCHAR}
+	AND tdr.area_name LIKE  #{areaName,jdbcType=VARCHAR}
+  </select>  
+  <select id="selectByPCAFree" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_dict_region tdr
+	WHERE
+		(tdr.prov_name LIKE  #{provName,jdbcType=VARCHAR} or #{provName,jdbcType=VARCHAR} ='all')
+	AND (tdr.city_name LIKE  #{cityName,jdbcType=VARCHAR} or #{cityName,jdbcType=VARCHAR} ='all')
+	AND (tdr.area_name LIKE  #{areaName,jdbcType=VARCHAR} or #{areaName,jdbcType=VARCHAR} ='all')
+  </select> 
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from t_dict_region
+    where ID = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.yjyz.iot.dict.entity.DictRegion">
+    insert into t_dict_region (ID, prov_name, city_name, 
+      area_name, prov_code, city_code, 
+      area_code, alia_name)
+    values (#{id,jdbcType=VARCHAR}, #{provName,jdbcType=VARCHAR}, #{cityName,jdbcType=VARCHAR}, 
+      #{areaName,jdbcType=VARCHAR}, #{provCode,jdbcType=VARCHAR}, #{cityCode,jdbcType=VARCHAR}, 
+      #{areaCode,jdbcType=VARCHAR}, #{aliaName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.yjyz.iot.dict.entity.DictRegion">
+    insert into t_dict_region
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="provName != null">
+        prov_name,
+      </if>
+      <if test="cityName != null">
+        city_name,
+      </if>
+      <if test="areaName != null">
+        area_name,
+      </if>
+      <if test="provCode != null">
+        prov_code,
+      </if>
+      <if test="cityCode != null">
+        city_code,
+      </if>
+      <if test="areaCode != null">
+        area_code,
+      </if>
+      <if test="aliaName != null">
+        alia_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="provName != null">
+        #{provName,jdbcType=VARCHAR},
+      </if>
+      <if test="cityName != null">
+        #{cityName,jdbcType=VARCHAR},
+      </if>
+      <if test="areaName != null">
+        #{areaName,jdbcType=VARCHAR},
+      </if>
+      <if test="provCode != null">
+        #{provCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cityCode != null">
+        #{cityCode,jdbcType=VARCHAR},
+      </if>
+      <if test="areaCode != null">
+        #{areaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="aliaName != null">
+        #{aliaName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yjyz.iot.dict.entity.DictRegion">
+    update t_dict_region
+    <set>
+      <if test="provName != null">
+        prov_name = #{provName,jdbcType=VARCHAR},
+      </if>
+      <if test="cityName != null">
+        city_name = #{cityName,jdbcType=VARCHAR},
+      </if>
+      <if test="areaName != null">
+        area_name = #{areaName,jdbcType=VARCHAR},
+      </if>
+      <if test="provCode != null">
+        prov_code = #{provCode,jdbcType=VARCHAR},
+      </if>
+      <if test="cityCode != null">
+        city_code = #{cityCode,jdbcType=VARCHAR},
+      </if>
+      <if test="areaCode != null">
+        area_code = #{areaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="aliaName != null">
+        alia_name = #{aliaName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yjyz.iot.dict.entity.DictRegion">
+    update t_dict_region
+    set prov_name = #{provName,jdbcType=VARCHAR},
+      city_name = #{cityName,jdbcType=VARCHAR},
+      area_name = #{areaName,jdbcType=VARCHAR},
+      prov_code = #{provCode,jdbcType=VARCHAR},
+      city_code = #{cityCode,jdbcType=VARCHAR},
+      area_code = #{areaCode,jdbcType=VARCHAR},
+      alia_name = #{aliaName,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

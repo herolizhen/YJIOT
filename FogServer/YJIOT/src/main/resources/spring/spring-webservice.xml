@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xsi:schemaLocation="http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+	default-lazy-init="true">
+	<bean id="m26Server" class="com.yjyz.iot.webservice.impl.M26WebServiceImpl" />
+	<!-- jax-ws endpoint定义 -->
+	<jaxws:endpoint id="m26ws" implementor="#m26Server"
+		address="/M26">
+	</jaxws:endpoint>
+	<!--发布webservice -->
+</beans>
+

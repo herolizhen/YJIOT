@@ -1,0 +1,35 @@
+﻿@{
+    ViewBag.Title = "异常错误";
+}
+<div class="app-content">
+    <div class="weui-msg">
+        <div class="weui-msg__icon-area"><i class="weui-icon-warn weui-icon_msg"></i></div>
+        <div class="weui-msg__text-area">
+            <h2 class="weui-msg__title">异常错误</h2>
+            <p class="weui-msg__desc">
+                @ViewBag.Error
+            </p>
+        </div>
+        <div class="weui-msg__text-area">
+            <h2 class="weui-msg__title">请重新扫码操作</h2>
+            <p class="weui-msg__desc">
+                <img src="~/Content/Image/one-top-1.png" width="100%" />
+            </p>
+        </div>
+        <div class="weui-msg__extra-area">
+            <div class="weui-footer">
+                <p class="weui-footer__links">
+                    <a href="javascript:void(0);" class="weui-footer__link">北京易净优智环境科技有限公司</a>
+                </p>
+                <p class="weui-footer__text">Copyright © 2017 易净优智</p>
+            </div>
+        </div>
+    </div>
+</div>
+@section Script{
+    <script type="text/javascript">
+        function onSubmit() {
+            $('#ShareProcess').submit();
+        }
+    </script>
+}

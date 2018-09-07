@@ -1,0 +1,4 @@
+Record=SheetSymbol|SourceDocument=EP600_M_V1.6.SchDoc|Designator=U_01-POWER|SchDesignator=U_01-POWER|FileName=01-POWER.SchDoc|SymbolType=Normal|RawFileName=01-POWER.SchDoc
+Record=SheetSymbol|SourceDocument=EP600_M_V1.6.SchDoc|Designator=U_02-MCU|SchDesignator=U_02-MCU|FileName=02-MCU.SchDoc|SymbolType=Normal|RawFileName=02-MCU.SchDoc
+Record=SheetSymbol|SourceDocument=EP600_M_V1.6.SchDoc|Designator=U_03-WIFI|SchDesignator=U_03-WIFI|FileName=03-WIFI.SchDoc|SymbolType=Normal|RawFileName=03-WIFI.SchDoc
+Record=TopLevelDocument|FileName=EP600_M_V1.6.SchDoc

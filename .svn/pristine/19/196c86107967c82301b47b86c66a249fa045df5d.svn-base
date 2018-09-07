@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.notice.dao.NoticePushMapper">
+	<resultMap id="BaseResultMap" type="com.yjyz.iot.notice.entity.NoticePush">
+		<id column="product_id" jdbcType="VARCHAR" property="productId" />
+		<id column="push_no" jdbcType="INTEGER" property="pushNo" />
+		<result column="push_info" jdbcType="VARCHAR" property="pushInfo" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		product_id, push_no, push_info
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="com.yjyz.iot.notice.entity.NoticePushKey"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_notice_push
+		where product_id = #{productId,jdbcType=VARCHAR}
+		and
+		push_no = #{pushNo,jdbcType=INTEGER}
+	</select>
+	<select id="selectByProductId" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_notice_push
+		where product_id = #{productId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="com.yjyz.iot.notice.entity.NoticePushKey">
+		delete from
+		t_notice_push
+		where product_id = #{productId,jdbcType=VARCHAR}
+		and
+		push_no = #{pushNo,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.yjyz.iot.notice.entity.NoticePush">
+		insert into t_notice_push
+		(product_id, push_no, push_info
+		)
+		values (#{productId,jdbcType=VARCHAR},
+		#{pushNo,jdbcType=INTEGER},
+		#{pushInfo,jdbcType=VARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.yjyz.iot.notice.entity.NoticePush">
+		insert into t_notice_push
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="productId != null">
+				product_id,
+			</if>
+			<if test="pushNo != null">
+				push_no,
+			</if>
+			<if test="pushInfo != null">
+				push_info,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="productId != null">
+				#{productId,jdbcType=VARCHAR},
+			</if>
+			<if test="pushNo != null">
+				#{pushNo,jdbcType=INTEGER},
+			</if>
+			<if test="pushInfo != null">
+				#{pushInfo,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yjyz.iot.notice.entity.NoticePush">
+		update t_notice_push
+		<set>
+			<if test="pushInfo != null">
+				push_info = #{pushInfo,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where product_id = #{productId,jdbcType=VARCHAR}
+		and push_no =
+		#{pushNo,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yjyz.iot.notice.entity.NoticePush">
+		update
+		t_notice_push
+		set push_info = #{pushInfo,jdbcType=VARCHAR}
+		where
+		product_id = #{productId,jdbcType=VARCHAR}
+		and push_no =
+		#{pushNo,jdbcType=INTEGER}
+	</update>
+</mapper>

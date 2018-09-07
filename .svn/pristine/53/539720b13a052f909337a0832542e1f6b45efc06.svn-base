@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjyz.iot.security.dao.PowUserDevMapper">
+	<resultMap id="BaseResultMap" type="com.yjyz.iot.security.entity.PowUserDev">
+		<id column="client_id" jdbcType="VARCHAR" property="clientId" />
+		<id column="device_id" jdbcType="VARCHAR" property="deviceId" />
+		<result column="own_type" jdbcType="BIT" property="ownType" />
+	</resultMap>
+
+	<resultMap id="DevInfoAccMapper" type="com.yjyz.iot.security.entity.DeviceInfoQuery">
+		<id column="device_id" jdbcType="VARCHAR" property="deviceId" />
+		<result column="device_pw" jdbcType="VARCHAR" property="devicePw" />
+		<result column="device_mac" jdbcType="VARCHAR" property="deviceMac" />
+		<result column="product_id" jdbcType="VARCHAR" property="productId" />
+		<result column="module_name" jdbcType="VARCHAR" property="moduleName" />
+		<result column="firmware" jdbcType="VARCHAR" property="firmware" />
+		<result column="firmware_type" jdbcType="VARCHAR" property="firmwareType" />
+		<result column="is_activate" jdbcType="BIT" property="isActivate" />
+		<result column="is_recovery" jdbcType="BIT" property="isRecovery" />
+		<result column="iot_version" jdbcType="VARCHAR" property="iotVersion" />
+		<result column="own_type" jdbcType="BIT" property="ownType" />
+	</resultMap>
+
+	<resultMap id="DevClientUser" type="com.yjyz.iot.security.entity.PowClientUser">
+		<id column="openid" jdbcType="VARCHAR" property="openid" />
+		<result column="client_id" jdbcType="VARCHAR" property="clientId" />
+		<result column="tel" jdbcType="VARCHAR" property="tel" />
+		<result column="nickname" jdbcType="VARCHAR" property="nickname" />
+		<result column="sex" jdbcType="VARCHAR" property="sex" />
+		<result column="city" jdbcType="VARCHAR" property="city" />
+		<result column="country" jdbcType="VARCHAR" property="country" />
+		<result column="province" jdbcType="VARCHAR" property="province" />
+		<result column="language" jdbcType="VARCHAR" property="language" />
+		<result column="headimgurl" jdbcType="VARCHAR" property="headimgurl" />
+		<result column="remark" jdbcType="VARCHAR" property="remark" />
+		<result column="tagid_list" jdbcType="VARCHAR" property="tagidList" />
+		<result column="type" jdbcType="CHAR" property="type" />
+		<result column="password" jdbcType="VARCHAR" property="password" />
+		<result column="app_id" jdbcType="VARCHAR" property="appId" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		client_id, device_id, own_type
+	</sql>
+	<select id="selectUserDev" parameterType="java.lang.String"
+		resultMap="DevInfoAccMapper">
+		SELECT
+		di.*, da.is_online ,ud.own_type
+		FROM
+		t_dev_info di,
+		t_dev_account da,
+		t_pow_user_dev ud
+		WHERE
+		di.device_id = da.device_id
+		AND di.device_id =
+		ud.device_id
+		AND ud.client_id =#{clientId,jdbcType=VARCHAR}
+	</select>
+	<select id="selectDevUser" parameterType="java.lang.String"
+		resultMap="DevClientUser">
+		SELECT
+		cu.*
+		FROM
+		t_pow_user_dev pd,
+		t_pow_client_user cu
+		WHERE
+		pd.client_id = cu.client_id
+		AND pd.device_id =
+		#{deviceId,jdbcType=VARCHAR}
+	</select>
+
+	<select id="selectByPrimaryKey" parameterType="com.yjyz.iot.security.entity.PowUserDevKey"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from t_pow_user_dev
+		where client_id = #{clientId,jdbcType=VARCHAR}
+		and device_id = #{deviceId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="com.yjyz.iot.security.entity.PowUserDevKey">
+		delete from t_pow_user_dev
+		where client_id = #{clientId,jdbcType=VARCHAR}
+		and device_id = #{deviceId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.yjyz.iot.security.entity.PowUserDev">
+		insert into t_pow_user_dev (client_id, device_id, own_type
+		)
+		values (#{clientId,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR},
+		#{ownType,jdbcType=BIT}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.yjyz.iot.security.entity.PowUserDev">
+		insert into t_pow_user_dev
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="clientId != null">
+				client_id,
+			</if>
+			<if test="deviceId != null">
+				device_id,
+			</if>
+			<if test="ownType != null">
+				own_type,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="clientId != null">
+				#{clientId,jdbcType=VARCHAR},
+			</if>
+			<if test="deviceId != null">
+				#{deviceId,jdbcType=VARCHAR},
+			</if>
+			<if test="ownType != null">
+				#{ownType,jdbcType=BIT},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.yjyz.iot.security.entity.PowUserDev">
+		update t_pow_user_dev
+		<set>
+			<if test="ownType != null">
+				own_type = #{ownType,jdbcType=BIT},
+			</if>
+		</set>
+		where client_id = #{clientId,jdbcType=VARCHAR}
+		and device_id = #{deviceId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.yjyz.iot.security.entity.PowUserDev">
+		update t_pow_user_dev
+		set own_type = #{ownType,jdbcType=BIT}
+		where client_id = #{clientId,jdbcType=VARCHAR}
+		and device_id = #{deviceId,jdbcType=VARCHAR}
+	</update>
+</mapper>

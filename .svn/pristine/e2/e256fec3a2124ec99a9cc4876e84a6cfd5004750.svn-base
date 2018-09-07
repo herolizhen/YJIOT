@@ -1,0 +1,16 @@
+---------------------------------------------------------------------------
+NCDrill File Report For: SIM7600_M_V1.0.1.PcbDoc   2018/4/19  14:21:24
+---------------------------------------------------------------------------
+
+Layer Pair : Top Layer to Bottom Layer
+ASCII RoundHoles File : SIM7600_M_V1.TXT
+EIA File   : SIM7600_M_V1.0.1.DRL
+
+Tool         Hole Size           Hole Type     Hole Count Plated       Tool Travel
+---------------------------------------------------------------------------
+T1        12mil (0.3048mm)         Round          135              21.87 Inch (555.53 mm)
+T2        40mil (1.016mm)          Round          13               4.55 Inch (115.63 mm)
+---------------------------------------------------------------------------
+Totals                                            148              26.42 Inch (671.16 mm)
+
+Total Processing Time (hh:mm:ss) : 00:00:00

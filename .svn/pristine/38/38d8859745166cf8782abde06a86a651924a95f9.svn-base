@@ -1,0 +1,265 @@
+package com.yjyz.iot.notice.action;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.yjyz.iot.comm.ConstParm;
+import com.yjyz.iot.comm.RetInfoDto;
+import com.yjyz.iot.notice.entity.NoticeConfig;
+import com.yjyz.iot.notice.entity.NoticeRule;
+import com.yjyz.iot.notice.service.INoticeService;
+import com.yjyz.iot.security.utils.ClientJwtUtil;
+
+/**
+ * @class :PushController
+ * @TODO :
+ * @author:HeroLizhen
+ * @date :2018年5月12日下午4:20:52
+ */
+@RestController
+@RequestMapping("/notice")
+public class NoticeController {
+	private static Log log = LogFactory.getLog(NoticeController.class);
+	@Autowired
+	private INoticeService noticeService;
+	@Autowired
+	ClientJwtUtil jwtUtil;
+
+	@Transactional
+	@RequestMapping(value = "/addNoticeConfig", method = RequestMethod.POST)
+	public RetInfoDto addNoticeConfig(@RequestBody NoticeConfig dto, @RequestHeader String Authorization) {
+		RetInfoDto info = new RetInfoDto();
+		try {
+			jwtUtil.parseToken(Authorization);
+		} catch (Exception e) {
+			info.meta.put("message", "access token is wrong!");
+			info.meta.put("code", ConstParm.ERR_CODE_JWT);
+			return info;
+		}
+
+		try {
+			boolean isOk = this.noticeService.insNoticeConfig(dto);
+			if (isOk) {
+				info.meta.put("code", ConstParm.SUCESS_CODE);
+			} else {
+				info.meta.put("code", ConstParm.ERR_INSERT);
+				info.meta.put("message", "addNoticeConfig fail.");
+			}
+		} catch (Exception e) {
+			log.error(e);
+			info.meta.put("message", "addNoticeConfig fail.");
+			info.meta.put("code", ConstParm.ERR_INSERT);
+		}
+		return info;
+	}
+
+	@Transactional
+	@RequestMapping(value = "/selNoticeConfig", method = RequestMethod.POST)
+	public RetInfoDto selNoticeConfig(@RequestBody NoticeConfig dto, @RequestHeader String Authorization) {
+		RetInfoDto info = new RetInfoDto();
+		try {
+			jwtUtil.parseToken(Authorization);
+		} catch (Exception e) {
+			info.meta.put("message", "access token is wrong!");
+			info.meta.put("code", ConstParm.ERR_CODE_JWT);
+			return info;
+		}
+
+		try {
+			NoticeConfig noticeConfig = this.noticeService.selNoticeConfig(dto.getAppId());
+			if (noticeConfig != null) {
+				info.meta.put("code", ConstParm.SUCESS_CODE);
+				info.data.put("NoticeConfig", noticeConfig);
+			} else {
+				info.meta.put("code", ConstParm.ERR_SELECT);
+				info.meta.put("message", "selNoticeConfig fail.");
+			}
+		} catch (Exception e) {
+			log.error(e);
+			info.meta.put("message", "selNoticeConfig fail.");
+			info.meta.put("code", ConstParm.ERR_SELECT);
+		}
+		return info;
+	}
+
+	@Transactional
+	@RequestMapping(value = "/delNoticeConfig", method = RequestMethod.POST)
+	public RetInfoDto delNoticeConfig(@RequestBody NoticeConfig dto, @RequestHeader String Authorization) {
+
+		RetInfoDto info = new RetInfoDto();
+		try {
+			jwtUtil.parseToken(Authorization);
+		} catch (Exception e) {
+			info.meta.put("message", "access token is wrong!");
+			info.meta.put("code", ConstParm.ERR_CODE_JWT);
+			return info;
+		}
+
+		try {
+			boolean isOk = this.noticeService.delNoticeConfig(dto.getAppId());
+			if (isOk) {
+				info.meta.put("code", ConstParm.SUCESS_CODE);
+			} else {
+				info.meta.put("code", ConstParm.ERR_DELETE);
+				info.meta.put("message", "delPushConfig fail.");
+			}
+		} catch (Exception e) {
+			log.error(e);
+			info.meta.put("message", "delPushConfig fail.");
+			info.meta.put("code", ConstParm.ERR_DELETE);
+		}
+		return info;
+	}
+
+	@Transactional
+	@RequestMapping(value = "/updNoticeConfig", method = RequestMethod.POST)
+	public RetInfoDto updNoticeConfig(@RequestBody NoticeConfig dto, @RequestHeader String Authorization) {
+
+		RetInfoDto info = new RetInfoDto();
+		try {
+			jwtUtil.parseToken(Authorization);
+		} catch (Exception e) {
+			info.meta.put("message", "access token is wrong!");
+			info.meta.put("code", ConstParm.ERR_CODE_JWT);
+			return info;
+		}
+
+		try {
+			boolean isOk = this.noticeService.updNoticeConfig(dto);
+			if (isOk) {
+				info.meta.put("code", ConstParm.SUCESS_CODE);
+			} else {
+				info.meta.put("code", ConstParm.ERR_UPDATE);
+				info.meta.put("message", "updNoticeConfig fail.");
+			}
+		} catch (Exception e) {
+			log.error(e);
+			info.meta.put("message", "updNoticeConfig fail.");
+			info.meta.put("code", ConstParm.ERR_UPDATE);
+		}
+		return info;
+	}
+
+	@Transactional
+	@RequestMapping(value = "/addNoticeRule", method = RequestMethod.POST)
+	public RetInfoDto addNoticeRule(@RequestBody NoticeRule dto, @RequestHeader String Authorization) {
+		RetInfoDto info = new RetInfoDto();
+		try {
+			jwtUtil.parseToken(Authorization);
+		} catch (Exception e) {
+			info.meta.put("message", "access token is wrong!");
+			info.meta.put("code", ConstParm.ERR_CODE_JWT);
+			return info;
+		}
+
+		try {
+			boolean isOk = this.noticeService.insNoticeRule(dto);
+			if (isOk) {
+				info.meta.put("code", ConstParm.SUCESS_CODE);
+			} else {
+				info.meta.put("code", ConstParm.ERR_INSERT);
+				info.meta.put("message", "addNoticeRule fail.");
+			}
+		} catch (Exception e) {
+			log.error(e);
+			info.meta.put("message", "addNoticeRule fail.");
+			info.meta.put("code", ConstParm.ERR_INSERT);
+		}
+		return info;
+	}
+
+	@Transactional
+	@RequestMapping(value = "/selNoticeRule", method = RequestMethod.POST)
+	public RetInfoDto selNoticeRule(@RequestBody NoticeRule dto, @RequestHeader String Authorization) {
+		RetInfoDto info = new RetInfoDto();
+		try {
+			jwtUtil.parseToken(Authorization);
+		} catch (Exception e) {
+			info.meta.put("message", "access token is wrong!");
+			info.meta.put("code", ConstParm.ERR_CODE_JWT);
+			return info;
+		}
+
+		try {
+			NoticeRule noticeRule = this.noticeService.selNoticeRule(dto.getProductId());
+			if (noticeRule != null) {
+				info.meta.put("code", ConstParm.SUCESS_CODE);
+				info.data.put("NoticeRule", noticeRule);
+			} else {
+				info.meta.put("code", ConstParm.ERR_SELECT);
+				info.meta.put("message", "selNoticeRule fail.");
+			}
+		} catch (Exception e) {
+			log.error(e);
+			info.meta.put("message", "selNoticeRule fail.");
+			info.meta.put("code", ConstParm.ERR_SELECT);
+		}
+		return info;
+	}
+
+	@Transactional
+	@RequestMapping(value = "/delNoticeRule", method = RequestMethod.POST)
+	public RetInfoDto delNoticeRule(@RequestBody NoticeRule dto, @RequestHeader String Authorization) {
+
+		RetInfoDto info = new RetInfoDto();
+		try {
+			jwtUtil.parseToken(Authorization);
+		} catch (Exception e) {
+			info.meta.put("message", "access token is wrong!");
+			info.meta.put("code", ConstParm.ERR_CODE_JWT);
+			return info;
+		}
+
+		try {
+			boolean isOk = this.noticeService.delNoticeRule(dto.getProductId());
+			if (isOk) {
+				info.meta.put("code", ConstParm.SUCESS_CODE);
+			} else {
+				info.meta.put("code", ConstParm.ERR_DELETE);
+				info.meta.put("message", "delNoticeRule fail.");
+			}
+		} catch (Exception e) {
+			log.error(e);
+			info.meta.put("message", "delNoticeRule fail.");
+			info.meta.put("code", ConstParm.ERR_DELETE);
+		}
+		return info;
+	}
+
+	@Transactional
+	@RequestMapping(value = "/updNoticeRule", method = RequestMethod.POST)
+	public RetInfoDto updNoticeRule(@RequestBody NoticeRule dto, @RequestHeader String Authorization) {
+
+		RetInfoDto info = new RetInfoDto();
+		try {
+			jwtUtil.parseToken(Authorization);
+		} catch (Exception e) {
+			info.meta.put("message", "access token is wrong!");
+			info.meta.put("code", ConstParm.ERR_CODE_JWT);
+			return info;
+		}
+
+		try {
+			boolean isOk = this.noticeService.updNoticeRule(dto);
+			if (isOk) {
+				info.meta.put("code", ConstParm.SUCESS_CODE);
+			} else {
+				info.meta.put("code", ConstParm.ERR_UPDATE);
+				info.meta.put("message", "updNoticeRule fail.");
+			}
+		} catch (Exception e) {
+			log.error(e);
+			info.meta.put("message", "updNoticeRule fail.");
+			info.meta.put("code", ConstParm.ERR_UPDATE);
+		}
+		return info;
+	}
+
+}

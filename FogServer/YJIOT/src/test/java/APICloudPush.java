@@ -14,6 +14,7 @@ import com.yjyz.iot.push.PushResult;
 
 public class APICloudPush {
 
+	@SuppressWarnings("deprecation")
 	public static void main(String[] args) {
 
 		while (true) {
@@ -55,6 +56,7 @@ public class APICloudPush {
 					outputString +=output;
 				}
 				PushResult ret = (PushResult) JSON.parseObject(outputString, PushResult.class);
+				System.out.println(ret.getMsg());
 				httpConnection.disconnect();
 
 			} catch (MalformedURLException e) {

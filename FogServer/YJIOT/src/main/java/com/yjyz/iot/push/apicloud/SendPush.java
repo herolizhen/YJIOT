@@ -16,6 +16,7 @@ import com.yjyz.iot.push.PushResult;
 
 public class SendPush implements ISendPush {
 
+	@SuppressWarnings("deprecation")
 	public PushResult send(String apiAppId, String apiAppKey, String userIds, String title, String content) {
 		PushResult pushResult = new PushResult();
 		try {

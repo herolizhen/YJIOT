@@ -19,8 +19,8 @@ public class test {
 	public static void main(String[] args) {
 		test te = new test();
 		
-		String aa = "asdfasdf{devName}";
-		String str = aa.replace("{devName}", "xxx");
+//		String aa = "asdfasdf{devName}";
+//		String str = aa.replace("{devName}", "xxx");
 		try {
 			String pubKey = "xxx";
 			String priKey = "xxx";
